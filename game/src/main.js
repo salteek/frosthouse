@@ -4,6 +4,7 @@ import { VIEW } from './config.js';
 import { createInput } from './input.js';
 import { createGame, updateGame, drawGame } from './game.js';
 import { stageShot } from './shots.js';
+import { loadSprites } from './render/sprites.js';
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
@@ -22,6 +23,8 @@ fit();
 const params = new URLSearchParams(location.search);
 const shot = params.get('shot');
 const game = createGame();
+// The painted curlers and effects load first; every screen also draws without them.
+await loadSprites();
 
 if (shot) {
   canvas.style.borderRadius = '0';

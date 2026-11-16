@@ -10,13 +10,19 @@ const scenery = (() => {
   const pebble = [];
   for (let i = 0; i < 900; i++) pebble.push({ x: rng.range(-8, SHEET.end + 2), y: rng.range(-SHEET.width / 2, SHEET.width / 2), r: rng.range(0.6, 1.6) });
   const pines = [];
-  for (let i = 0; i < 70; i++) pines.push({ x: rng.range(-10, SHEET.end + 12), h: rng.range(26, 48), shade: rng.chance(0.5) });
+  const jewels = ['#1fae9a', '#d23d9b', '#d9a521', '#2f7be0', '#7b4fd6', '#1e8f62'];
+  for (let i = 0; i < 70; i++) pines.push({ x: rng.range(-10, SHEET.end + 12), h: rng.range(44, 92), shade: rng.chance(0.5), col: rng.pick(jewels) });
   const crowd = [];
   const coats = ['#e0383e', '#2f6fd6', '#f2b53a', '#2fa86b', '#9b6ad6', '#ff7a45', '#1d2a3a', '#f6fbff'];
   for (let i = 0; i < 160; i++) crowd.push({ x: rng.range(-10, SHEET.end + 10), row: rng.int(0, 2), coat: rng.pick(coats), hat: rng.pick(coats), phase: rng.range(0, TAU) });
   const flakes = [];
   for (let i = 0; i < 90; i++) flakes.push({ x: rng.range(0, VIEW.w), y: rng.range(0, VIEW.h), s: rng.range(1, 2.6), v: rng.range(14, 34), d: rng.range(0, TAU) });
-  return { pebble, pines, crowd, flakes };
+  // Skate-scratched night ice: long faint arcs, and glints that twinkle.
+  const scratches = [];
+  for (let i = 0; i < 140; i++) scratches.push({ x: rng.range(-6, SHEET.end), y: rng.range(-SHEET.width / 2, SHEET.width / 2), len: rng.range(0.6, 3.2), a: rng.range(-0.5, 0.5), bend: rng.range(-0.3, 0.3) });
+  const glints = [];
+  for (let i = 0; i < 260; i++) glints.push({ x: rng.range(-6, SHEET.end), y: rng.range(-SHEET.width / 2, SHEET.width / 2), ph: rng.range(0, TAU), s: rng.range(1.5, 3.5) });
+  return { pebble, pines, crowd, flakes, scratches, glints };
 })();
 
 const SKIES = {
@@ -27,41 +33,50 @@ const SKIES = {
 };
 
 export function drawBackdrop(ctx, cam, venue, time) {
-  const sky = SKIES[venue.time] ?? SKIES.morning;
+  // Every match is played under lights on a winter night; dusk venues get the aurora too.
   const g = ctx.createLinearGradient(0, 0, 0, CAMERA.sheetTop);
-  g.addColorStop(0, sky[0]);
-  g.addColorStop(1, sky[1]);
+  g.addColorStop(0, '#0a1630');
+  g.addColorStop(1, '#1d3d6e');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, VIEW.w, CAMERA.sheetTop);
-
-  if (venue.time === 'dusk') drawAurora(ctx, time);
+  if (venue.time === 'dusk' || venue.time === 'afternoon') drawAurora(ctx, time);
 
   // Pines on the far shore, drifting slowly with the camera for depth.
   for (const p of scenery.pines) {
     const x = (p.x - cam.x) * CAMERA.scale * 0.45 + VIEW.w / 2;
     if (x < -40 || x > VIEW.w + 40) continue;
-    const base = 112;
-    ctx.fillStyle = p.shade ? PALETTE.pineDark : PALETTE.pine;
+    const base = 116;
+    const tg = ctx.createLinearGradient(0, base - p.h, 0, base);
+    tg.addColorStop(0, p.col);
+    tg.addColorStop(1, p.shade ? '#0d1f3a' : '#16304f');
+    ctx.fillStyle = tg;
     ctx.beginPath();
     ctx.moveTo(x, base - p.h);
     ctx.lineTo(x + p.h * 0.36, base);
     ctx.lineTo(x - p.h * 0.36, base);
     ctx.closePath();
     ctx.fill();
-    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.fillStyle = 'rgba(235,245,255,0.75)';
     ctx.beginPath();
     ctx.moveTo(x, base - p.h);
-    ctx.lineTo(x + p.h * 0.12, base - p.h * 0.66);
-    ctx.lineTo(x - p.h * 0.12, base - p.h * 0.66);
+    ctx.lineTo(x + p.h * 0.1, base - p.h * 0.72);
+    ctx.lineTo(x - p.h * 0.1, base - p.h * 0.72);
     ctx.closePath();
     ctx.fill();
   }
 
   // The snowbank and the crowd along it.
-  ctx.fillStyle = PALETTE.snow;
+  const bank = ctx.createLinearGradient(0, 104, 0, CAMERA.sheetTop);
+  bank.addColorStop(0, '#3a5f93');
+  bank.addColorStop(1, '#22406b');
+  ctx.fillStyle = bank;
   ctx.fillRect(0, 104, VIEW.w, CAMERA.sheetTop - 104);
-  ctx.fillStyle = PALETTE.snowShade;
-  ctx.fillRect(0, CAMERA.sheetTop - 8, VIEW.w, 8);
+  // Floodlight glow spilling over the crowd.
+  const flood = ctx.createLinearGradient(0, 96, 0, CAMERA.sheetTop);
+  flood.addColorStop(0, 'rgba(160,210,255,0)');
+  flood.addColorStop(1, 'rgba(160,210,255,0.18)');
+  ctx.fillStyle = flood;
+  ctx.fillRect(0, 96, VIEW.w, CAMERA.sheetTop - 96);
   for (const c of scenery.crowd) {
     const x = (c.x - cam.x) * CAMERA.scale * 0.8 + VIEW.w / 2;
     if (x < -20 || x > VIEW.w + 20) continue;
@@ -105,13 +120,13 @@ export function drawSheet(ctx, cam, venue, time) {
   const right = sx(cam, SHEET.end);
 
   // Snow beyond the end of the sheet, banked up behind the hack with the Open's banner.
-  ctx.fillStyle = PALETTE.snow;
+  ctx.fillStyle = '#152c4f';
   ctx.fillRect(0, top, VIEW.w, bottom - top);
   const bank = sx(cam, SHEET.end + 0.25);
   if (bank < VIEW.w) {
     const bg = ctx.createLinearGradient(bank, 0, bank + 90, 0);
-    bg.addColorStop(0, '#dfeaf4');
-    bg.addColorStop(1, '#ffffff');
+    bg.addColorStop(0, '#1d3a64');
+    bg.addColorStop(1, '#2b5285');
     ctx.fillStyle = bg;
     ctx.fillRect(bank, top - 6, VIEW.w - bank, bottom - top + 12);
     ctx.fillStyle = PALETTE.player;
@@ -127,24 +142,59 @@ export function drawSheet(ctx, cam, venue, time) {
     ctx.restore();
   }
 
+  // Night ice: deep blue at the boards, lit along the centre line, the venue's tint washed over it.
   const g = ctx.createLinearGradient(0, top, 0, bottom);
-  g.addColorStop(0, venue.tint);
-  g.addColorStop(0.5, '#f7fbff');
-  g.addColorStop(1, venue.tint);
+  g.addColorStop(0, '#123a6b');
+  g.addColorStop(0.5, '#1f5a9c');
+  g.addColorStop(1, '#0f3260');
   ctx.fillStyle = g;
   ctx.fillRect(left, top, right - left, bottom - top);
+  ctx.save();
+  ctx.globalAlpha = 0.05;
+  ctx.fillStyle = venue.tint;
+  ctx.fillRect(left, top, right - left, bottom - top);
+  ctx.restore();
+  // A sheen of floodlight across the ice.
+  const sheen = ctx.createLinearGradient(0, top, VIEW.w, bottom);
+  sheen.addColorStop(0, 'rgba(255,255,255,0)');
+  sheen.addColorStop(0.45, 'rgba(190,230,255,0.10)');
+  sheen.addColorStop(0.55, 'rgba(190,230,255,0.02)');
+  sheen.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = sheen;
+  ctx.fillRect(left, top, right - left, bottom - top);
 
-  ctx.fillStyle = PALETTE.pebble;
+  ctx.fillStyle = 'rgba(220,240,255,0.10)';
   for (const p of scenery.pebble) {
     const x = sx(cam, p.x);
     if (x < -4 || x > VIEW.w + 4) continue;
     ctx.fillRect(x, sy(p.y), p.r, p.r);
   }
+  ctx.strokeStyle = 'rgba(220,240,255,0.10)';
+  ctx.lineWidth = 1;
+  for (const k of scenery.scratches) {
+    const x = sx(cam, k.x);
+    if (x < -300 || x > VIEW.w + 40) continue;
+    const y = sy(k.y);
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.quadraticCurveTo(x + px(k.len) / 2, y + px(k.len) * k.bend, x + px(k.len), y + px(k.len) * k.a);
+    ctx.stroke();
+  }
+  for (const k of scenery.glints) {
+    const x = sx(cam, k.x);
+    if (x < -10 || x > VIEW.w + 10) continue;
+    const a = Math.max(0, Math.sin(time * 2 + k.ph));
+    if (a < 0.3) continue;
+    ctx.fillStyle = `rgba(255,255,255,${(a * 0.8).toFixed(2)})`;
+    const y = sy(k.y), r = k.s * a;
+    ctx.fillRect(x - r, y - 0.6, r * 2, 1.2);
+    ctx.fillRect(x - 0.6, y - r, 1.2, r * 2);
+  }
 
   // A painted sponsor logo under the ice, between the hog line and the house.
   ctx.save();
-  ctx.globalAlpha = 0.09;
-  ctx.fillStyle = PALETTE.accent;
+  ctx.globalAlpha = 0.07;
+  ctx.fillStyle = '#bfe6ff';
   ctx.font = '900 64px Georgia, serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
@@ -156,38 +206,58 @@ export function drawSheet(ctx, cam, venue, time) {
   drawLines(ctx, cam);
 
   // Side boards.
-  ctx.fillStyle = '#2f6fd6';
-  ctx.fillRect(left, top - 5, right - left, 5);
-  ctx.fillRect(left, bottom, right - left, 5);
-  ctx.fillStyle = '#ffffff';
-  for (let x = Math.ceil(cam.x - 8); x < SHEET.end; x += 2) {
-    ctx.fillRect(sx(cam, x), top - 5, px(0.6), 5);
-    ctx.fillRect(sx(cam, x), bottom, px(0.6), 5);
-  }
+  ctx.save();
+  ctx.fillStyle = '#0c1d38';
+  ctx.fillRect(left, top - 6, right - left, 6);
+  ctx.fillRect(left, bottom, right - left, 6);
+  ctx.shadowColor = '#5fd0ff';
+  ctx.shadowBlur = 10;
+  ctx.fillStyle = '#7fdcff';
+  ctx.fillRect(left, top - 1.5, right - left, 1.5);
+  ctx.fillRect(left, bottom, right - left, 1.5);
+  ctx.restore();
   if (venue.wind) drawWind(ctx, venue, time);
 }
 
+// The house in neon: a soft glow under the ice and four lit rings, cold blue outside to gold at the button.
 function drawHouse(ctx, cam) {
   const cx = sx(cam, SHEET.tee);
   const cy = sy(0);
   const [r12, r8, r4, rb] = SHEET.rings.map(px);
-  const ring = (r, color) => {
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.arc(cx, cy, r, 0, TAU);
-    ctx.fill();
-  };
-  ring(r12, PALETTE.ringOuter);
-  ring(r8, PALETTE.ringMid);
-  ring(r4, PALETTE.ringInner);
-  ring(rb, PALETTE.button);
-  ctx.strokeStyle = 'rgba(29,42,58,0.25)';
-  ctx.lineWidth = 1;
-  for (const r of [r12, r8, r4, rb]) {
+  const halo = ctx.createRadialGradient(cx, cy, r4, cx, cy, r12 * 1.25);
+  halo.addColorStop(0, 'rgba(255,80,140,0.20)');
+  halo.addColorStop(0.6, 'rgba(80,140,255,0.22)');
+  halo.addColorStop(1, 'rgba(80,140,255,0)');
+  ctx.fillStyle = halo;
+  ctx.beginPath();
+  ctx.arc(cx, cy, r12 * 1.25, 0, TAU);
+  ctx.fill();
+  const disc = (r, color) => { ctx.fillStyle = color; ctx.beginPath(); ctx.arc(cx, cy, r, 0, TAU); ctx.fill(); };
+  disc(r12, 'rgba(40,110,255,0.22)');
+  disc(r8, 'rgba(150,60,255,0.16)');
+  disc(r4, 'rgba(255,50,90,0.38)');
+  disc(rb, 'rgba(255,215,60,0.22)');
+  const neon = (r, color, w) => {
+    ctx.save();
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 16;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = w;
     ctx.beginPath();
     ctx.arc(cx, cy, r, 0, TAU);
     ctx.stroke();
-  }
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = 'rgba(255,255,255,0.75)';
+    ctx.lineWidth = Math.max(1, w * 0.3);
+    ctx.stroke();
+    ctx.restore();
+  };
+  neon(r12, '#36b6ff', 8);
+  neon(r12 - 11, '#7b5cff', 4);
+  neon(r8, '#ff4fd8', 7);
+  neon(r8 - 9, '#b14dff', 3);
+  neon(r4, '#ff3b5c', 8);
+  neon(rb, '#ffd93a', 6);
 }
 
 function drawLines(ctx, cam) {
@@ -197,11 +267,15 @@ function drawLines(ctx, cam) {
     ctx.fillStyle = color;
     ctx.fillRect(sx(cam, x) - w / 2, top, w, bottom - top);
   };
-  vline(SHEET.hogFar, 7, PALETTE.hog);
-  vline(SHEET.hogNear, 7, PALETTE.hog);
-  vline(SHEET.tee, 2, PALETTE.ink);
-  vline(SHEET.back, 2, PALETTE.ink);
-  ctx.fillStyle = PALETTE.ink;
+  ctx.save();
+  ctx.shadowColor = '#ff3b5c';
+  ctx.shadowBlur = 12;
+  vline(SHEET.hogFar, 6, '#ff4766');
+  vline(SHEET.hogNear, 6, '#ff4766');
+  ctx.restore();
+  vline(SHEET.tee, 2, 'rgba(230,245,255,0.55)');
+  vline(SHEET.back, 2, 'rgba(230,245,255,0.55)');
+  ctx.fillStyle = 'rgba(230,245,255,0.35)';
   ctx.fillRect(sx(cam, SHEET.hogNear), sy(0) - 1, sx(cam, SHEET.back) - sx(cam, SHEET.hogNear), 2);
   // The hack at the far end.
   ctx.fillStyle = '#1d2a3a';
@@ -209,9 +283,9 @@ function drawLines(ctx, cam) {
   ctx.fillRect(sx(cam, SHEET.end - 0.55), sy(0.06), px(0.2), px(0.12));
   ctx.font = '700 11px system-ui, sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillStyle = 'rgba(208,51,74,0.85)';
+  ctx.fillStyle = 'rgba(255,120,140,0.95)';
   ctx.fillText('HOG LINE', sx(cam, SHEET.hogFar), top + 14);
-  ctx.fillStyle = 'rgba(29,42,58,0.55)';
+  ctx.fillStyle = 'rgba(220,240,255,0.7)';
   ctx.fillText('TEE', sx(cam, SHEET.tee), top + 14);
   ctx.fillText('BACK', sx(cam, SHEET.back), top + 14);
 }
@@ -221,32 +295,32 @@ function drawPatches(ctx, cam, venue, time) {
     const x = sx(cam, p.x);
     const y = sy(p.y);
     if (p.kind === 'snow') {
-      ctx.fillStyle = 'rgba(160,185,210,0.35)';
+      ctx.fillStyle = 'rgba(6,16,36,0.35)';
       ctx.beginPath();
       ctx.ellipse(x + 4, y + 5, px(p.rx), px(p.ry), 0, 0, TAU);
       ctx.fill();
-      ctx.fillStyle = '#ffffff';
+      ctx.fillStyle = 'rgba(214,232,250,0.92)';
       for (let i = 0; i < 7; i++) {
         const a = (i / 7) * TAU;
         ctx.beginPath();
         ctx.ellipse(x + Math.cos(a) * px(p.rx) * 0.45, y + Math.sin(a) * px(p.ry) * 0.4, px(p.rx) * 0.55, px(p.ry) * 0.6, 0, 0, TAU);
         ctx.fill();
       }
-      ctx.fillStyle = '#7f95ad';
+      ctx.fillStyle = '#5d7fa6';
       ctx.font = '800 12px system-ui, sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText('SNOW DRIFT', x, y + 4);
     } else {
-      ctx.fillStyle = 'rgba(120,150,170,0.28)';
+      ctx.fillStyle = 'rgba(110,200,220,0.22)';
       ctx.beginPath();
       ctx.ellipse(x, y, px(p.rx), px(p.ry), 0, 0, TAU);
       ctx.fill();
-      ctx.strokeStyle = 'rgba(90,120,145,0.35)';
+      ctx.strokeStyle = 'rgba(150,230,255,0.45)';
       ctx.setLineDash([8, 10]);
       ctx.lineDashOffset = -time * 6;
       ctx.stroke();
       ctx.setLineDash([]);
-      ctx.fillStyle = 'rgba(70,95,120,0.7)';
+      ctx.fillStyle = 'rgba(190,240,255,0.85)';
       ctx.font = '800 12px system-ui, sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText('SLUSH LANE', x, y + 4);
@@ -257,7 +331,7 @@ function drawPatches(ctx, cam, venue, time) {
 function drawWind(ctx, venue, time) {
   const dir = Math.sign(venue.wind);
   ctx.save();
-  ctx.strokeStyle = 'rgba(47,111,214,0.35)';
+  ctx.strokeStyle = 'rgba(190,230,255,0.35)';
   ctx.lineWidth = 2;
   ctx.lineCap = 'round';
   for (let i = 0; i < 9; i++) {

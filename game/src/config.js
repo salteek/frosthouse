@@ -63,6 +63,12 @@ export const PALETTE = {
   granite: '#8a8f99',
   graniteLight: '#b9bec7',
   ink: '#1d2a3a',
+  text: '#eef5ff',          // type on the dark glass panels
+  textSoft: '#a4b8d6',
+  glass: 'rgba(22,32,58,0.86)',
+  glassTop: 'rgba(44,62,104,0.9)',
+  glassEdge: 'rgba(150,205,255,0.38)',
+  night: '#0d1830',
   inkSoft: '#4f6075',
   panel: '#ffffff',
   panelEdge: '#c9d8e6',

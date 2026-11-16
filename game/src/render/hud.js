@@ -7,7 +7,8 @@ import { RIVALS } from '../rivals.js';
 import { currentTeam, stonesLeft, total } from '../match.js';
 import { weightName } from '../scenes/play.js';
 import { kitItems } from '../tournament.js';
-import { panel, text, chip, bar, keycap, roundRect, formatScore, FONT_TITLE } from './ui.js';
+import { panel, text, chip, bar, keycap, roundRect, formatScore, FONT_TITLE, callout } from './ui.js';
+import { drawSprite, portraitFor } from './sprites.js';
 import { drawStone, teamColours } from './stones.js';
 import { drawKitIcon, trophy } from './icons.js';
 
@@ -21,10 +22,25 @@ export function drawMatchHud(ctx, scene, time, best) {
   drawRivalCard(ctx, m);
   drawShotPanel(ctx, scene, time);
   drawSheetMap(ctx, m);
+  if (m.phase === 'aim' && currentTeam(m) === 'player' && scene.intro <= 0) drawHintPills(ctx);
   if (m.lastCall && m.phase === 'settle') drawCall(ctx, m.lastCall, m);
   if (m.phase === 'endScore' && m.endResult) drawEndSummary(ctx, m, time);
   if (m.phase === 'over') drawMatchOver(ctx, scene, time);
   if (scene.intro > 0) drawIntro(ctx, scene);
+}
+
+// Three glass pills over the near end of the sheet: the whole control scheme while you line up a throw.
+function drawHintPills(ctx) {
+  const pills = [['MOUSE', 'aim the broom'], ['W/S', 'set the weight'], ['SPACE', 'hold to sweep']];
+  let x = 420;
+  for (const [key, label] of pills) {
+    ctx.font = `800 14px ${'system-ui, sans-serif'}`;
+    const w = 46 + ctx.measureText(label).width + key.length * 9;
+    panel(ctx, x, 570, w, 36, { radius: 18, glow: '#5fd0ff', fillTop: 'rgba(14,26,52,0.9)', fill: 'rgba(14,26,52,0.9)' });
+    const kw = keycap(ctx, key, x + 10, 594);
+    text(ctx, label, x + 18 + kw, 594, { size: 14, weight: 800 });
+    x += w + 14;
+  }
 }
 
 function teamName(m, team) {
@@ -58,7 +74,7 @@ function drawScoreboard(ctx, m) {
     if (m.hammer === team && m.phase !== 'over') drawHammer(ctx, x + 146, ry - 6);
     m.scores[team].forEach((pts, i) => {
       const cx = x + 168 + i * cell + cell / 2;
-      text(ctx, String(pts), cx, ry, { size: 18, weight: 900, align: 'center', color: pts > 0 ? c0 : 'rgba(29,42,58,0.3)' });
+      text(ctx, String(pts), cx, ry, { size: 18, weight: 900, align: 'center', color: pts > 0 ? c0 : 'rgba(255,255,255,0.28)', raw: true });
     });
     roundRect(ctx, x + w - 50, ry - 21, 40, 28, 8);
     ctx.fillStyle = c0;
@@ -89,7 +105,7 @@ function drawOpenStrip(ctx, run, m) {
   text(ctx, `${MATCH.lossesAllowed} match losses`, x + 68, 86, { size: 13, weight: 700 });
   for (let i = 0; i < MATCH.lossesAllowed; i++) {
     const cx = x + 184 + i * 20;
-    ctx.fillStyle = i < run.losses ? PALETTE.bad : 'rgba(29,42,58,0.15)';
+    ctx.fillStyle = i < run.losses ? PALETTE.bad : 'rgba(255,255,255,0.18)';
     ctx.beginPath();
     ctx.arc(cx, 81, 7, 0, TAU);
     ctx.fill();
@@ -100,7 +116,7 @@ function drawOpenStrip(ctx, run, m) {
 function drawScorePanel(ctx, run, best, m) {
   const x = 734;
   const w = 150;
-  panel(ctx, x, 10, w, 90);
+  panel(ctx, x, 10, w, 90, m.streak >= 2 ? { glow: '#ff6a1f', fillTop: 'rgba(120,40,20,0.92)', fill: 'rgba(60,18,14,0.92)' } : {});
   if (m.streak >= 2) {
     chip(ctx, `HOT STREAK x${Math.min(SCORE.streakMax, m.streak)}`, x + w / 2, 30, { align: 'center', fill: PALETTE.player, size: 11, h: 20 });
   } else {
@@ -121,7 +137,8 @@ function drawRivalCard(ctx, m) {
   text(ctx, 'VS', x + 22, 33, { size: 12, weight: 900, color: PALETTE.inkSoft });
   text(ctx, r.name, x + 46, 33, { size: 15, weight: 900, color: PALETTE.ink });
   text(ctx, r.skip, x + 22, 53, { size: 12, weight: 700, color: PALETTE.inkSoft });
-  chip(ctx, r.style.toUpperCase(), x + w - 12, 49, { align: 'right', fill: r.dark, size: 10, h: 18 });
+  drawSprite(ctx, portraitFor(r), x + w - 30, 99, 88);
+  chip(ctx, r.style.toUpperCase(), x + w - 62, 49, { align: 'right', fill: r.dark, size: 10, h: 18 });
   text(ctx, `“${r.motto}”`, x + 22, 72, { size: 11, weight: 600, color: PALETTE.inkSoft, font: 'Georgia, serif' });
   // Stones left for each side.
   ['player', 'rival'].forEach((team, i) => {
@@ -244,7 +261,7 @@ function drawSheetMap(ctx, m) {
   const k = (w - 28) / (SHEET.end + 1);
   const mx = (sxm) => x + 14 + (sxm + 1) * k;
   const my = (sym) => y + 52 + sym * k;
-  ctx.fillStyle = '#eef6fc';
+  ctx.fillStyle = '#1f4f86';
   ctx.fillRect(mx(-1), my(-SHEET.width / 2), (SHEET.end + 1) * k, SHEET.width * k);
   ctx.strokeStyle = PALETTE.panelEdge;
   ctx.strokeRect(mx(-1), my(-SHEET.width / 2), (SHEET.end + 1) * k, SHEET.width * k);
@@ -289,10 +306,12 @@ function drawCall(ctx, call, m) {
   ctx.translate(640, 200);
   ctx.scale(scale, scale);
   const who = call.team === 'player' ? '' : `${m.rival.short}: `;
-  text(ctx, who + call.text, 0, 0, { size: 46, weight: 900, align: 'center', color: colour, outline: '#ffffff', outlineWidth: 10, font: FONT_TITLE });
-  text(ctx, call.sub + (call.perfect ? ' · PERFECT RELEASE' : ''), 0, 30, { size: 16, weight: 800, align: 'center', color: PALETTE.ink, outline: '#ffffff', outlineWidth: 6 });
+  // Great shots burn, good ones glow ice-blue, the rival's and the bad ones go cold violet.
+  const tone = call.team !== 'player' ? 'violet' : call.tone === 'great' ? 'fire' : call.tone === 'bad' ? 'violet' : 'ice';
+  callout(ctx, who + call.text, 0, 0, call.tone === 'great' ? 58 : 46, { tone, sparkle: call.tone === 'great' });
+  text(ctx, call.sub + (call.perfect ? ' · PERFECT RELEASE' : ''), 0, 34, { size: 17, weight: 800, align: 'center', color: '#ffffff', outline: 'rgba(12,24,52,0.85)', outlineWidth: 6, raw: true });
   if (call.team === 'player' && call.streak > 1) {
-    chip(ctx, `HOT STREAK x${call.streak} · POINTS x${call.streak}`, 0, 62, { align: 'center', fill: PALETTE.player, size: 14, h: 26 });
+    chip(ctx, `HOT STREAK x${call.streak} · POINTS x${call.streak}`, 0, 68, { align: 'center', fill: '#ff5a1f', size: 15, h: 28 });
   }
   ctx.restore();
 }
@@ -306,7 +325,7 @@ function drawEndSummary(ctx, m, time) {
   const w = 460;
   const x = (VIEW.w - w) / 2;
   const y = 168;
-  panel(ctx, x, y, w, 120, { stroke: r.team ? teamColours(r.team, m.rival)[0] : PALETTE.panelEdge, lineWidth: 4 });
+  panel(ctx, x, y, w, 120, { glow: r.team ? teamColours(r.team, m.rival)[0] : undefined });
   text(ctx, `END ${m.end} OF ${m.ends}`, VIEW.w / 2, y + 26, { size: 13, weight: 900, align: 'center', color: PALETTE.inkSoft });
   let head;
   if (r.tea) head = 'THERMOS OF TEA: END BLANKED';
@@ -320,14 +339,15 @@ function drawEndSummary(ctx, m, time) {
 function drawMatchOver(ctx, scene, time) {
   const m = scene.match;
   const won = m.winner === 'player';
-  ctx.fillStyle = 'rgba(29,42,58,0.35)';
+  ctx.fillStyle = 'rgba(6,12,28,0.5)';
   ctx.fillRect(0, 0, VIEW.w, VIEW.h);
   const w = 560;
   const x = (VIEW.w - w) / 2;
   const y = 190;
-  panel(ctx, x, y, w, 230, { stroke: won ? PALETTE.good : PALETTE.bad, lineWidth: 4 });
-  if (won) trophy(ctx, VIEW.w / 2, y + 52, 54);
-  text(ctx, won ? 'MATCH WON!' : 'MATCH LOST', VIEW.w / 2, y + (won ? 120 : 80), { size: 48, weight: 900, align: 'center', color: won ? PALETTE.good : PALETTE.bad, font: FONT_TITLE });
+  panel(ctx, x, y, w, 230, { glow: won ? PALETTE.good : PALETTE.bad });
+  if (won) { trophy(ctx, VIEW.w / 2, y + 52, 54); drawSprite(ctx, 'cheer_blue', x - 10, y + 232, 190); drawSprite(ctx, 'cheer_green2', x + w + 10, y + 232, 190); }
+  else drawSprite(ctx, 'crouch_yellow', x - 6, y + 232, 150);
+  callout(ctx, won ? 'MATCH WON!' : 'MATCH LOST', VIEW.w / 2, y + (won ? 124 : 84), 50, { tone: won ? 'gold' : 'violet' });
   text(ctx, `${total(m, 'player')} – ${total(m, 'rival')} vs ${m.rival.name}`, VIEW.w / 2, y + (won ? 154 : 116), { size: 18, weight: 800, align: 'center' });
   const run = scene.run;
   const note = won
@@ -342,10 +362,15 @@ function drawIntro(ctx, scene) {
   const a = Math.min(1, scene.intro * 2);
   ctx.save();
   ctx.globalAlpha = a;
-  ctx.fillStyle = 'rgba(255,255,255,0.75)';
+  const band = ctx.createLinearGradient(0, 230, 0, 420);
+  band.addColorStop(0, 'rgba(8,16,38,0.92)');
+  band.addColorStop(1, 'rgba(22,40,80,0.92)');
+  ctx.fillStyle = band;
   ctx.fillRect(0, 230, VIEW.w, 190);
+  drawSprite(ctx, 'idle_red', 200, 420, 200);
+  drawSprite(ctx, portraitFor(m.rival), 1080, 420, 200, { flip: true });
   text(ctx, `MATCH ${scene.run.round + 1}${m.rival.champion ? ' · THE FINAL' : ''}`, VIEW.w / 2, 272, { size: 18, weight: 900, align: 'center', color: PALETTE.accent });
-  text(ctx, `vs ${m.rival.name}`, VIEW.w / 2, 324, { size: 46, weight: 900, align: 'center', color: PALETTE.ink, font: FONT_TITLE });
+  callout(ctx, `vs ${m.rival.name}`, VIEW.w / 2, 326, 46, { tone: 'ice', sparkle: false });
   text(ctx, `${m.venue.name} · ${m.venue.note}`, VIEW.w / 2, 358, { size: 17, weight: 700, align: 'center', color: PALETTE.inkSoft });
   text(ctx, m.hammer === 'player' ? 'You have the hammer: last stone of the end' : `${m.rival.short} have the hammer. You throw first.`, VIEW.w / 2, 392, { size: 15, weight: 800, align: 'center', color: m.hammer === 'player' ? PALETTE.good : PALETTE.player });
   ctx.restore();

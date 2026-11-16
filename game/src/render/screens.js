@@ -7,7 +7,8 @@ import { RIVALS } from '../rivals.js';
 import { VENUES, venueById } from '../venues.js';
 import { KIT } from '../kit.js';
 import { DIFFICULTIES, kitItems, grade } from '../tournament.js';
-import { panel, text, chip, button, hints, roundRect, inside, formatScore, FONT_TITLE } from './ui.js';
+import { panel, text, chip, button, hints, roundRect, inside, formatScore, FONT_TITLE, nightSky, callout, shade } from './ui.js';
+import { drawSprite, hasSprite, portraitFor } from './sprites.js';
 import { drawStone } from './stones.js';
 import { drawKitIcon, trophy, star } from './icons.js';
 import { drawBackdrop, drawSheet, drawSnowfall } from './ice.js';
@@ -49,25 +50,15 @@ export function drawTitle(ctx, state, time, save) {
   const hits = [];
   const cam = { x: 23.2 + Math.sin(time * 0.1) * 0.6 };
   const venue = VENUES[0];
-  drawBackdrop(ctx, cam, venue, time);
-  drawSheet(ctx, cam, venue, time);
-  const rival = RIVALS[2];
-  for (const [team, x, y] of DEMO) {
-    drawStone(ctx, (x - cam.x) * 100 + VIEW.w / 2, 138 + (y + SHEET.width / 2) * 100, x, team === 'player' ? [PALETTE.player, PALETTE.playerDark] : [rival.colour, rival.dark]);
-  }
+  nightSky(ctx, VIEW.w, VIEW.h, time);
   drawSnowfall(ctx, time);
-  ctx.fillStyle = 'rgba(246,251,255,0.55)';
-  ctx.fillRect(0, 0, VIEW.w, VIEW.h);
-  const veil = ctx.createLinearGradient(0, 0, 0, 190);
-  veil.addColorStop(0, 'rgba(246,251,255,0.2)');
-  veil.addColorStop(0.5, 'rgba(246,251,255,0.85)');
-  veil.addColorStop(1, 'rgba(246,251,255,0.6)');
-  ctx.fillStyle = veil;
-  ctx.fillRect(0, 0, VIEW.w, 190);
+  // The home rink waits in the wings: a sweeper on the left, the skip calling the line on the right.
+  drawSprite(ctx, 'sweep_red', 150, 190, 150);
+  drawSprite(ctx, 'skip_red', 1128, 192, 160, { flip: true });
 
-  logo(ctx, VIEW.w / 2, 112, 92);
-  text(ctx, 'A CURLING TOURNAMENT ON THE FROZEN LAKES', VIEW.w / 2, 146, { size: 17, weight: 900, align: 'center', color: PALETTE.accent });
-  text(ctx, '6 rival rinks · 5 frozen lakes · 14 kit upgrades · 3 difficulties · real stone physics', VIEW.w / 2, 172, { size: 15, weight: 700, align: 'center', color: PALETTE.inkSoft });
+  if (!drawSprite(ctx, 'logo', VIEW.w / 2, 18, 112, { ay: 0 })) logo(ctx, VIEW.w / 2, 112, 92);
+  text(ctx, 'A CURLING TOURNAMENT ON THE FROZEN LAKES', VIEW.w / 2, 154, { size: 17, weight: 900, align: 'center', color: '#8fd3ff' });
+  text(ctx, '6 rival rinks · 5 frozen lakes · 14 kit upgrades · hot streaks to x4 · 3 difficulties', VIEW.w / 2, 178, { size: 15, weight: 700, align: 'center', color: PALETTE.inkSoft });
 
   // How the game works, as labelled rules.
   const rx = 40;
@@ -102,36 +93,34 @@ export function drawTitle(ctx, state, time, save) {
     const bx = px0 + 24 + i * 180;
     const by = ry + 146;
     const sel = state.difficulty === d.id;
-    roundRect(ctx, bx, by, 168, 64, 12);
-    ctx.fillStyle = sel ? PALETTE.accent : hov === `diff:${d.id}` ? '#e3eefa' : '#f1f6fb';
-    ctx.fill();
-    ctx.strokeStyle = sel ? PALETTE.ink : PALETTE.panelEdge;
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    text(ctx, d.name, bx + 84, by + 28, { size: 20, weight: 900, align: 'center', color: sel ? '#ffffff' : PALETTE.ink, font: FONT_TITLE });
-    text(ctx, d.note, bx + 84, by + 50, { size: 10, weight: 700, align: 'center', color: sel ? '#dbe9fb' : PALETTE.inkSoft });
+    const face = ['#b8dcf5', '#2f6fd6', '#2a3a8c'][i];
+    button(ctx, '', bx, by, 168, 64, { fill: face, hover: hov === `diff:${d.id}`, glow: sel, radius: 14 });
+    const dark = i === 0;
+    text(ctx, d.name, bx + 84, by + 30, { size: 21, weight: 900, align: 'center', color: dark ? '#14335c' : '#ffffff', font: FONT_TITLE, raw: true });
+    text(ctx, d.note, bx + 84, by + 51, { size: 10, weight: 800, align: 'center', color: dark ? '#2b5684' : 'rgba(255,255,255,0.82)', raw: true });
     hit(hits, `diff:${d.id}`, bx, by, 168, 64);
   });
   text(ctx, 'LAST RUNS', px0 + 24, ry + 244, { size: 11, weight: 900, color: PALETTE.inkSoft });
   const last = save.lastRuns.length ? save.lastRuns : [{ outcome: null }];
   last.forEach((r, i) => {
     const label = r.outcome == null ? 'No runs yet: the lake is waiting' : r.outcome === 'champion' ? `CHAMPION · ${formatScore(r.score)}` : `OUT IN ROUND ${r.round + 1} · ${formatScore(r.score)}`;
-    chip(ctx, label, px0 + 24 + i * 180, ry + 270, { fill: r.outcome === 'champion' ? PALETTE.good : r.outcome ? '#f1d6d8' : '#e8eef5', color: r.outcome === 'champion' ? '#ffffff' : PALETTE.ink, size: 11, h: 24 });
+    chip(ctx, label, px0 + 24 + i * 180, ry + 270, { fill: r.outcome === 'champion' ? PALETTE.good : r.outcome ? PALETTE.bad : '#3a4f78', size: 11, h: 24 });
   });
 
   // The rinks waiting on the ladder.
   panel(ctx, 40, 512, 1200, 120);
-  text(ctx, 'THE LADDER', 60, 538, { size: 12, weight: 900, color: PALETTE.inkSoft });
+  text(ctx, 'THE LADDER', VIEW.w - 64, 538, { size: 12, weight: 900, color: PALETTE.inkSoft, align: 'right' });
   RIVALS.forEach((r, i) => {
     const cx = 120 + i * 196;
-    drawStone(ctx, cx, 578, time * 0.5 + i, [r.colour, r.dark], { radius: 15 });
-    text(ctx, r.name, cx + 26, 572, { size: r.name.length > 20 ? 11 : 13, weight: 900 });
-    text(ctx, `${venueById(r.venue).name} · ${r.style}`, cx + 26, 590, { size: 11, weight: 700, color: PALETTE.inkSoft });
+    if (!drawSprite(ctx, portraitFor(r), cx - 2, 628, 104)) drawStone(ctx, cx, 578, time * 0.5 + i, [r.colour, r.dark], { radius: 15 });
+    drawStone(ctx, cx + 22, 612, time * 0.5 + i, [r.colour, r.dark], { radius: 10 });
+    text(ctx, r.name, cx + 36, 572, { size: r.name.length > 16 ? 10.5 : 13, weight: 900 });
+    text(ctx, `${venueById(r.venue).name} · ${r.style}`, cx + 36, 590, { size: 11, weight: 700, color: PALETTE.inkSoft });
     if (r.champion) trophy(ctx, cx + 150, 610, 22);
     for (let s = 0; s < 5; s++) {
-      ctx.fillStyle = s < Math.round(r.skill * 5) ? PALETTE.gold : 'rgba(29,42,58,0.15)';
+      ctx.fillStyle = s < Math.round(r.skill * 5) ? '#ff9a2e' : 'rgba(255,255,255,0.16)';
       ctx.beginPath();
-      ctx.arc(cx + 30 + s * 12, 608, 4.5, 0, TAU);
+      ctx.arc(cx + 40 + s * 12, 608, 4.5, 0, TAU);
       ctx.fill();
     }
   });
@@ -142,21 +131,16 @@ export function drawTitle(ctx, state, time, save) {
 
 export function drawClubhouse(ctx, state, time, run) {
   const hits = [];
-  const g = ctx.createLinearGradient(0, 0, 0, VIEW.h);
-  g.addColorStop(0, '#f3e6d3');
-  g.addColorStop(1, '#e2cdb0');
-  ctx.fillStyle = g;
+  nightSky(ctx, VIEW.w, VIEW.h, time);
+  // Warm lamplight from the clubhouse windows over the cold night.
+  const lamp = ctx.createRadialGradient(VIEW.w * 0.5, VIEW.h * 1.1, 40, VIEW.w * 0.5, VIEW.h * 1.1, VIEW.w * 0.75);
+  lamp.addColorStop(0, 'rgba(255,170,80,0.22)');
+  lamp.addColorStop(1, 'rgba(255,170,80,0)');
+  ctx.fillStyle = lamp;
   ctx.fillRect(0, 0, VIEW.w, VIEW.h);
-  // Pine-plank walls.
-  ctx.strokeStyle = 'rgba(120,80,40,0.15)';
-  ctx.lineWidth = 2;
-  for (let y = 0; y < VIEW.h; y += 36) {
-    ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(VIEW.w, y);
-    ctx.stroke();
-  }
-  text(ctx, 'THE CLUBHOUSE', 40, 62, { size: 40, weight: 900, color: PALETTE.ink, font: FONT_TITLE });
+  callout(ctx, 'THE CLUBHOUSE', 40, 66, 44, { align: 'left', tone: 'ice', sparkle: false });
+  const lastWon = run.results[run.results.length - 1]?.won;
+  drawSprite(ctx, lastWon ? 'cheer_blue' : 'crouch_yellow', 480, 112, 100);
   const last = run.results[run.results.length - 1];
   const sub = last ? (last.won ? `You beat ${RIVALS.find((r) => r.id === last.rival).name} ${last.p}–${last.r}.` : `Lost ${last.p}–${last.r}. One more loss and the Open is over.`) : '';
   text(ctx, sub, 40, 92, { size: 17, weight: 800, color: last?.won ? PALETTE.good : PALETTE.bad });
@@ -172,18 +156,16 @@ export function drawClubhouse(ctx, state, time, run) {
     const beaten = res.some((x) => x.won);
     const next = i === run.round;
     roundRect(ctx, 56, y - 14, 368, 64, 10);
-    ctx.fillStyle = next ? '#e3eefa' : beaten ? '#e5f5ec' : '#f6f8fb';
+    ctx.fillStyle = next ? 'rgba(80,150,255,0.28)' : beaten ? 'rgba(60,200,130,0.14)' : 'rgba(255,255,255,0.06)';
     ctx.fill();
-    if (next) {
-      ctx.strokeStyle = PALETTE.accent;
-      ctx.lineWidth = 3;
-      ctx.stroke();
-    }
+    ctx.strokeStyle = next ? '#7cc4ff' : 'rgba(150,205,255,0.18)';
+    ctx.lineWidth = next ? 3 : 1;
+    if (next) { ctx.save(); ctx.shadowColor = '#4aa8ff'; ctx.shadowBlur = 14; ctx.stroke(); ctx.restore(); } else ctx.stroke();
     drawStone(ctx, 84, y + 18, i, [r.colour, r.dark], { radius: 15 });
     text(ctx, r.name, 110, y + 12, { size: 15, weight: 900 });
     text(ctx, `${venueById(r.venue).name} · ${r.style}`, 110, y + 32, { size: 12, weight: 700, color: PALETTE.inkSoft });
     const tag = beaten ? `WON ${res.find((x) => x.won).p}–${res.find((x) => x.won).r}` : next ? 'NEXT' : 'LOCKED';
-    chip(ctx, tag, 412, y + 18, { align: 'right', fill: beaten ? PALETTE.good : next ? PALETTE.accent : '#c9d3de', size: 11, h: 22 });
+    chip(ctx, tag, 412, y + 18, { align: 'right', fill: beaten ? PALETTE.good : next ? PALETTE.accent : '#4a5a78', size: 11, h: 22 });
     for (const lost of res.filter((x) => !x.won)) chip(ctx, `LOST ${lost.p}–${lost.r}`, 412, y + 44, { align: 'right', fill: PALETTE.bad, size: 9, h: 16 });
   });
 
@@ -198,9 +180,13 @@ export function drawClubhouse(ctx, state, time, run) {
       const hov = state.hover === `kit:${i}`;
       ctx.save();
       if (hov) ctx.translate(0, -6);
-      panel(ctx, x, y, 232, 296, { stroke: hov ? PALETTE.accent : PALETTE.panelEdge, lineWidth: hov ? 4 : 2, fill: '#ffffff' });
+      const rim = ['#9fd0ff', '#ffc23a', '#ff4d6d'][i];
+      panel(ctx, x, y, 232, 296, { glow: hov ? rim : shade(rim, -0.25), fillTop: 'rgba(70,90,130,0.92)', fill: 'rgba(30,40,66,0.94)' });
+      const disc = ctx.createRadialGradient(x + 106, y + 60, 6, x + 116, y + 74, 52);
+      disc.addColorStop(0, 'rgba(255,255,255,0.35)');
+      disc.addColorStop(1, 'rgba(255,255,255,0.06)');
       roundRect(ctx, x + 66, y + 24, 100, 100, 50);
-      ctx.fillStyle = '#eef5fb';
+      ctx.fillStyle = disc;
       ctx.fill();
       drawKitIcon(ctx, k.icon, x + 116, y + 74, 64);
       text(ctx, k.name, x + 116, y + 160, { size: 20, weight: 900, align: 'center', font: FONT_TITLE });
@@ -243,31 +229,34 @@ export function drawClubhouse(ctx, state, time, run) {
 export function drawResults(ctx, state, time, run, saveInfo) {
   const hits = [];
   const champ = run.outcome === 'champion';
-  const g = ctx.createLinearGradient(0, 0, 0, VIEW.h);
-  g.addColorStop(0, champ ? '#fff3cf' : '#e6eef7');
-  g.addColorStop(1, champ ? '#f7d58b' : '#c8d7e8');
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, VIEW.w, VIEW.h);
+  nightSky(ctx, VIEW.w, VIEW.h, time);
   if (champ) {
+    for (let i = 0; i < 6; i++) drawSprite(ctx, i % 2 ? 'confetti' : 'sparkles', 120 + i * 210, 40 + (i % 3) * 40, 150, { ay: 0, rot: i * 0.6, alpha: 0.9 });
     for (let i = 0; i < 40; i++) {
       const x = (i * 97 + time * 60) % VIEW.w;
       const y = (i * 53 + time * (40 + (i % 5) * 12)) % VIEW.h;
-      star(ctx, x, y, 5 + (i % 3) * 2, ['#e0383e', '#2f6fd6', '#2fa86b', '#f2b53a'][i % 4]);
+      star(ctx, x, y, 4 + (i % 3) * 2, ['#ff4d6d', '#4aa8ff', '#3ddc97', '#ffc23a'][i % 4]);
     }
   }
 
-  panel(ctx, 24, 18, VIEW.w - 48, 104, { stroke: champ ? PALETTE.gold : PALETTE.accent, lineWidth: 4 });
   const head = champ ? 'CHAMPIONS OF THE OPEN!' : `KNOCKED OUT IN ROUND ${run.round + 1}`;
-  text(ctx, head, VIEW.w / 2, 90, { size: 60, weight: 900, align: 'center', color: champ ? '#c4471c' : PALETTE.ink, font: FONT_TITLE, outline: '#ffffff', outlineWidth: 8 });
+  callout(ctx, head, VIEW.w / 2, 96, 66, { tone: champ ? 'gold' : 'ice' });
 
   // Left column: the trophy (or the rink that beat you) and your kit.
   panel(ctx, 24, 138, 330, 500);
   if (champ) {
+    const glow = ctx.createRadialGradient(189, 230, 10, 189, 230, 130);
+    glow.addColorStop(0, 'rgba(255,200,60,0.45)');
+    glow.addColorStop(1, 'rgba(255,200,60,0)');
+    ctx.fillStyle = glow;
+    ctx.fillRect(40, 140, 300, 220);
     trophy(ctx, 189, 240, 140);
+    drawSprite(ctx, 'cheer_blue', 82, 330, 150);
+    drawSprite(ctx, 'cheer_pink', 300, 330, 140);
     text(ctx, 'The Frost Lake Open is yours', 189, 340, { size: 17, weight: 900, align: 'center' });
   } else {
     const by = RIVALS[Math.min(run.round, RIVALS.length - 1)];
-    drawStone(ctx, 189, 230, time, [by.colour, by.dark], { radius: 44 });
+    if (!drawSprite(ctx, portraitFor(by), 189, 284, 140)) drawStone(ctx, 189, 230, time, [by.colour, by.dark], { radius: 44 });
     text(ctx, `Beaten by ${by.name}`, 189, 300, { size: 16, weight: 900, align: 'center' });
     text(ctx, `“${by.motto}”`, 189, 326, { size: 13, weight: 600, align: 'center', font: 'Georgia, serif', color: PALETTE.inkSoft });
   }
@@ -288,9 +277,9 @@ export function drawResults(ctx, state, time, run, saveInfo) {
   ctx.beginPath();
   ctx.arc(450, 214, 52, 0, TAU);
   ctx.fill();
-  ctx.strokeStyle = PALETTE.ink;
+  ctx.strokeStyle = '#fff4c2';
   ctx.lineWidth = 4;
-  ctx.stroke();
+  ctx.save(); ctx.shadowColor = 'rgba(255,200,60,0.8)'; ctx.shadowBlur = 20; ctx.stroke(); ctx.restore();
   text(ctx, gr, 450, 236, { size: 62, weight: 900, align: 'center', color: '#ffffff', font: FONT_TITLE });
   text(ctx, 'SCORE', 524, 182, { size: 13, weight: 900, color: PALETTE.inkSoft });
   text(ctx, formatScore(run.score), 522, 246, { size: 64, weight: 900, color: PALETTE.ink, font: FONT_TITLE });
@@ -312,9 +301,7 @@ export function drawResults(ctx, state, time, run, saveInfo) {
   tiles.forEach(([label, value, col], i) => {
     const x = 394 + (i % 4) * 212;
     const y = 290 + Math.floor(i / 4) * 92;
-    roundRect(ctx, x, y, 200, 80, 12);
-    ctx.fillStyle = col;
-    ctx.fill();
+    button(ctx, '', x, y, 200, 80, { fill: col === PALETTE.ink ? '#24345c' : col, radius: 12 });
     text(ctx, label, x + 100, y + 26, { size: 12, weight: 900, align: 'center', color: 'rgba(255,255,255,0.85)' });
     text(ctx, value, x + 100, y + 62, { size: value.length > 10 ? 18 : 28, weight: 900, align: 'center', color: '#ffffff' });
   });
@@ -322,10 +309,10 @@ export function drawResults(ctx, state, time, run, saveInfo) {
   const hov = state.hover;
   button(ctx, 'R · PLAY AGAIN', 394, 484, 420, 76, { size: 32, hover: hov === 'again', fill: PALETTE.player });
   hit(hits, 'again', 394, 484, 420, 76);
-  button(ctx, 'ESC · TITLE', 834, 484, 200, 76, { size: 22, hover: hov === 'title', fill: PALETTE.ink });
+  button(ctx, 'ESC · TITLE', 834, 484, 200, 76, { size: 22, hover: hov === 'title', fill: '#2a3a6c' });
   hit(hits, 'title', 834, 484, 200, 76);
   const goal = champ ? (run.difficulty === 'champion' ? 'NEXT GOAL: an S grade on CHAMPION' : 'NEXT GOAL: win on CHAMPION difficulty') : `NEXT GOAL: get past ${RIVALS[Math.min(run.round, RIVALS.length - 1)].name}`;
-  text(ctx, goal, 1232, 600, { size: 13, weight: 900, color: '#c4471c', align: 'right' });
+  text(ctx, goal, 1232, 600, { size: 13, weight: 900, color: '#ffb35c', align: 'right' });
   text(ctx, `${run.difficulty.toUpperCase()} · seed ${run.seed}`, 1232, 622, { size: 11, weight: 700, color: PALETTE.inkSoft, align: 'right' });
   text(ctx, 'M · MUTE', 1146, 528, { size: 13, weight: 900, color: PALETTE.inkSoft, align: 'center' });
   const lr = saveInfo.lastRuns ?? [];

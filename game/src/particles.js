@@ -41,7 +41,14 @@ export function addFloater(world, x, y, text, color = '#f4ead5', size = 18) {
   world.floaters.push({ x, y, text, color, size, life: 1.1, max: 1.1 });
 }
 
+// A painted sprite that pops in, swells a little and fades: sparks, rings, confetti.
+export function addFlash(world, name, x, y, size, life) {
+  (world.flashes ??= []).push({ name, x, y, size, life, max: life, rot: world.rng.range(0, Math.PI * 2) });
+}
+
 export function updateParticles(world, dt) {
+  const fl = world.flashes ?? [];
+  for (let i = fl.length - 1; i >= 0; i--) if ((fl[i].life -= dt) <= 0) fl.splice(i, 1);
   const ps = world.particles;
   for (let i = ps.length - 1; i >= 0; i--) {
     const p = ps[i];

@@ -1,0 +1,434 @@
+[
+ {
+  "name": "spark_a",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
+  "box": [
+   1286,
+   960,
+   223,
+   223
+  ],
+  "mode": "glow",
+  "scale": 0.5
+ },
+ {
+  "name": "spark_b",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
+  "box": [
+   2091,
+   960,
+   223,
+   223
+  ],
+  "mode": "glow",
+  "scale": 0.5
+ },
+ {
+  "name": "spark_star",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
+  "box": [
+   1551,
+   1226,
+   223,
+   223
+  ],
+  "mode": "glow",
+  "scale": 0.5
+ },
+ {
+  "name": "ring_a",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
+  "box": [
+   1826,
+   1226,
+   223,
+   223
+  ],
+  "mode": "glow",
+  "scale": 0.5
+ },
+ {
+  "name": "ring_b",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
+  "box": [
+   1551,
+   1483,
+   223,
+   223
+  ],
+  "mode": "glow",
+  "scale": 0.5
+ },
+ {
+  "name": "confetti",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
+  "box": [
+   2091,
+   1483,
+   223,
+   223
+  ],
+  "mode": "glow",
+  "scale": 0.5
+ },
+ {
+  "name": "snowflake",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
+  "box": [
+   1303,
+   386,
+   206,
+   197
+  ],
+  "mode": "glow",
+  "scale": 0.5
+ },
+ {
+  "name": "star",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
+  "box": [
+   1834,
+   137,
+   206,
+   206
+  ],
+  "mode": "glow",
+  "scale": 0.5
+ },
+ {
+  "name": "sparkles",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
+  "box": [
+   1834,
+   386,
+   206,
+   197
+  ],
+  "mode": "glow",
+  "scale": 0.5
+ },
+ {
+  "name": "shards",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
+  "box": [
+   2091,
+   137,
+   223,
+   206
+  ],
+  "mode": "glow",
+  "scale": 0.5
+ },
+ {
+  "name": "trail_ice",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
+  "box": [
+   651,
+   1474,
+   549,
+   171
+  ],
+  "mode": "glow",
+  "scale": 0.5
+ },
+ {
+  "name": "trail_cyan",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
+  "box": [
+   369,
+   960,
+   231,
+   223
+  ],
+  "mode": "glow",
+  "scale": 0.5
+ },
+ {
+  "name": "trail_gold",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
+  "box": [
+   69,
+   960,
+   274,
+   223
+  ],
+  "mode": "glow",
+  "scale": 0.5
+ },
+ {
+  "name": "trail_violet",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
+  "box": [
+   369,
+   1234,
+   231,
+   189
+  ],
+  "mode": "glow",
+  "scale": 0.5
+ },
+ {
+  "name": "idle_blue",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+  "box": [
+   118,
+   48,
+   304,
+   454
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "idle_yellow",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+  "box": [
+   448,
+   48,
+   314,
+   454
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "thumbs_blue",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+  "box": [
+   768,
+   58,
+   284,
+   444
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "idle_goggles",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+  "box": [
+   1058,
+   48,
+   344,
+   454
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "idle_red",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+  "box": [
+   1368,
+   68,
+   344,
+   434
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "cheer_blue",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+  "box": [
+   1678,
+   8,
+   364,
+   494
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "cheer_green",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+  "box": [
+   2018,
+   8,
+   364,
+   494
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "sweep_blue",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+  "box": [
+   68,
+   488,
+   434,
+   404
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "sweep_red",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+  "box": [
+   1398,
+   508,
+   364,
+   404
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "sweep_blue2",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+  "box": [
+   48,
+   878,
+   424,
+   414
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "sweep_red2",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+  "box": [
+   788,
+   878,
+   354,
+   434
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "skip_blue",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+  "box": [
+   1308,
+   858,
+   464,
+   454
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "cheer_pink",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+  "box": [
+   1738,
+   828,
+   274,
+   474
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "cheer_green2",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+  "box": [
+   2028,
+   748,
+   374,
+   524
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "idle_pink",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+  "box": [
+   108,
+   1298,
+   334,
+   464
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "skip_red",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+  "box": [
+   428,
+   1308,
+   354,
+   454
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "fist_green",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+  "box": [
+   768,
+   1328,
+   294,
+   424
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "crouch_yellow",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+  "box": [
+   1058,
+   1358,
+   274,
+   394
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "idle_teal",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+  "box": [
+   1438,
+   1298,
+   334,
+   454
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "thumbs_navy",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+  "box": [
+   1768,
+   1288,
+   294,
+   464
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "idle_green",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+  "box": [
+   2058,
+   1288,
+   244,
+   464
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "logo",
+  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (2).jpeg",
+  "box": [
+   70,
+   100,
+   1130,
+   215
+  ],
+  "mode": "solid",
+  "scale": 0.62
+ }
+]

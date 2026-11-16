@@ -93,6 +93,24 @@ export function stageShot(game, shot, seed) {
     game.save = { best: 18240, trophies: 1, runs: 6, lastRuns: [] };
     return;
   }
+  if (shot === 'run') {
+    // A throw in flight: the player's stone swept down the sheet, sweepers and frost trail in view.
+    winMatches(run, 1);
+    const scene = createPlayScene(run);
+    scene.intro = 0;
+    const m = scene.match;
+    m.hammer = 'player';
+    for (let i = 0; i < 4; i++) autoThrow(scene, 0.85);
+    m.streak = 2;
+    deliver(m, 'player', executeShot(chooseShot(m, 'player', m.rng), 0.97, 1, m.rng));
+    const sweep = { ...quietInput, isDown: (k) => k === 'Space' };
+    let guard = 0;
+    while (m.phase === 'running' && m.shot && m.shot.x < 24.2 && guard++ < 6000) updatePlay(scene, 1 / 60, m.shot.x > 21 ? sweep : quietInput);
+    game.play = scene;
+    game.mode = 'play';
+    game.save = { best: 18240, trophies: 1, runs: 6, lastRuns: [] };
+    return;
+  }
   if (shot === 'clubhouse') {
     winMatches(run, 3);
     giveKit(run, ['birch', 'eye', 'steady']);

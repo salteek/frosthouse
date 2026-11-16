@@ -8,7 +8,7 @@ import { currentRival, currentVenue, endsPerMatch, previewLength } from '../tour
 import { createCamera, followStone, toSheet, SHEET_BOTTOM } from '../render/camera.js';
 import { CAMERA } from '../config.js';
 import { sfx, setIceSounds } from '../audio.js';
-import { spawnBurst, addFloater, updateParticles } from '../particles.js';
+import { spawnBurst, addFloater, addFlash, updateParticles } from '../particles.js';
 import { sx, sy } from '../render/camera.js';
 import { clamp } from '../geometry.js';
 
@@ -30,7 +30,7 @@ export function createPlayScene(run) {
     endTimer: 0,
     overTimer: 0,
     intro: 2.6,
-    fx: { rng: run.rng, particles: [], floaters: [] },
+    fx: { rng: run.rng, particles: [], floaters: [], flashes: [] },
     sweeping: false,
     shake: 0,
     done: false,
@@ -165,6 +165,9 @@ function consumeEvents(scene) {
       const y = sy((e.a.y + e.b.y) / 2);
       spawnBurst(scene.fx, x, y, { count: 8 + Math.min(20, e.impulse * 10), color: '#ffffff', speed: 120 + e.impulse * 80, life: 0.5, size: 2.5 });
       scene.shake = Math.max(scene.shake, Math.min(8, e.impulse * 4));
+      // A painted spark and an impact ring where granite meets granite.
+      addFlash(scene.fx, e.impulse > 0.6 ? 'spark_a' : 'spark_star', x, y, 40 + Math.min(70, e.impulse * 50), 0.38);
+      if (e.impulse > 0.4) addFlash(scene.fx, 'ring_a', x, y, 50 + Math.min(80, e.impulse * 60), 0.45);
     } else if (e.type === 'release') {
       sfx.release();
     } else if (e.type === 'hog') {
@@ -183,6 +186,8 @@ function consumeEvents(scene) {
           for (const color of [PALETTE.gold, PALETTE.player, PALETTE.accent]) {
             spawnBurst(scene.fx, fx, fy + 72, { count: 18, color, speed: 280, life: 1.3, size: 5, drag: 1.6 });
           }
+          addFlash(scene.fx, 'confetti', fx, fy + 40, 190, 1.4);
+          addFlash(scene.fx, 'spark_b', fx, fy + 72, 120, 0.5);
         }
       }
     } else if (e.type === 'rivalCall') {

@@ -8,6 +8,8 @@ import { drawBackdrop, drawSheet, drawSnowfall } from './ice.js';
 import { drawStones, drawSkipBroom, drawPathPreview, drawCounting, drawSitting, teamColours } from './stones.js';
 import { countEnd } from '../scoring.js';
 import { drawMatchHud } from './hud.js';
+import { drawSprite } from './sprites.js';
+import { callout } from './ui.js';
 
 export function drawMatch(ctx, scene, time, best) {
   const m = scene.match;
@@ -44,17 +46,16 @@ function drawFx(ctx, fx) {
     ctx.fill();
   }
   ctx.globalAlpha = 1;
-  ctx.textAlign = 'center';
-  for (const f of fx.floaters) {
-    ctx.globalAlpha = Math.min(1, (f.life / f.max) * 1.6);
-    ctx.font = `900 ${f.size}px system-ui, sans-serif`;
-    ctx.lineWidth = 6;
-    ctx.strokeStyle = '#ffffff';
-    ctx.strokeText(f.text, f.x, f.y);
-    ctx.fillStyle = f.color;
-    ctx.fillText(f.text, f.x, f.y);
+  for (const f of fx.flashes ?? []) {
+    const k = 1 - f.life / f.max;
+    drawSprite(ctx, f.name, f.x, f.y, f.size * (0.6 + 0.6 * Math.min(1, k * 3)), { ay: 0.5, rot: f.rot * (f.name === 'confetti' ? 0.2 : 1), alpha: Math.min(1, (f.life / f.max) * 2) });
   }
-  ctx.globalAlpha = 1;
+  for (const f of fx.floaters) {
+    ctx.save();
+    ctx.globalAlpha = Math.min(1, (f.life / f.max) * 1.6);
+    callout(ctx, f.text, f.x, f.y, f.size * 1.15, { tone: f.size > 30 ? 'fire' : 'gold', sparkle: f.size > 30 });
+    ctx.restore();
+  }
 }
 
 export { VIEW };
