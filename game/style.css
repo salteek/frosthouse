@@ -1,0 +1,24 @@
+/* Frosthouse page: a full-window stage that letterboxes the 16:9 canvas. */
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: #cfe6f7;
+  overflow: hidden;
+}
+
+#stage {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#game {
+  display: block;
+  cursor: crosshair;
+  border-radius: 6px;
+  box-shadow: 0 10px 40px rgba(29, 42, 58, 0.25);
+  touch-action: none;
+}
