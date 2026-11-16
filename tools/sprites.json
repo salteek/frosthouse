@@ -123,10 +123,10 @@
   "name": "trail_ice",
   "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
   "box": [
-   651,
-   1474,
-   549,
-   171
+   626,
+   1431,
+   595,
+   257
   ],
   "mode": "glow",
   "scale": 0.5
@@ -135,10 +135,10 @@
   "name": "trail_cyan",
   "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
   "box": [
-   369,
-   960,
-   231,
-   223
+   351,
+   934,
+   266,
+   266
   ],
   "mode": "glow",
   "scale": 0.5
@@ -147,10 +147,10 @@
   "name": "trail_gold",
   "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
   "box": [
-   69,
-   960,
-   274,
-   223
+   51,
+   934,
+   309,
+   266
   ],
   "mode": "glow",
   "scale": 0.5
@@ -159,10 +159,10 @@
   "name": "trail_violet",
   "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
   "box": [
-   369,
-   1234,
-   231,
-   189
+   351,
+   1209,
+   274,
+   240
   ],
   "mode": "glow",
   "scale": 0.5

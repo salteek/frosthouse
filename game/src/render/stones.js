@@ -41,7 +41,7 @@ export function drawStone(ctx, x, y, spin, colours, opts = {}) {
   // The neon band.
   ctx.save();
   ctx.shadowColor = colours[0];
-  ctx.shadowBlur = r * 0.9;
+  ctx.shadowBlur = r * 0.9 * (opts.boost ?? 1);
   ctx.strokeStyle = colours[0];
   ctx.lineWidth = Math.max(2, r * 0.16);
   ctx.beginPath();
@@ -102,7 +102,7 @@ export function drawStones(ctx, cam, match, time) {
         ctx.stroke();
       }
     }
-    drawStone(ctx, x, y, s.spin, teamColours(s.team, match.rival));
+    drawStone(ctx, x, y, s.spin, teamColours(s.team, match.rival), { boost: s.moving ? 1.8 + Math.sin(time * 18) * 0.4 : 1 });
     if (s === match.shot && s.swept) drawSweepers(ctx, x, y, s, match, time);
   }
 }

@@ -4,6 +4,11 @@ import { SHEET, VIEW, PALETTE, CAMERA } from '../config.js';
 import { createRng } from '../rng.js';
 import { TAU } from '../geometry.js';
 import { sx, sy, px, SHEET_BOTTOM } from './camera.js';
+import { spriteCanvas } from './sprites.js';
+
+// The fans in the stands: the painted curlers, calm until a great shot sets them jumping.
+const FANS = ['idle_blue', 'idle_yellow', 'thumbs_blue', 'idle_goggles', 'idle_red', 'idle_pink', 'idle_teal', 'idle_green', 'thumbs_navy', 'fist_green'];
+const CHEER = ['cheer_blue', 'cheer_green', 'cheer_pink', 'cheer_green2', 'fist_green', 'thumbs_blue'];
 
 const scenery = (() => {
   const rng = createRng(2026);
@@ -14,7 +19,8 @@ const scenery = (() => {
   for (let i = 0; i < 70; i++) pines.push({ x: rng.range(-10, SHEET.end + 12), h: rng.range(44, 92), shade: rng.chance(0.5), col: rng.pick(jewels) });
   const crowd = [];
   const coats = ['#e0383e', '#2f6fd6', '#f2b53a', '#2fa86b', '#9b6ad6', '#ff7a45', '#1d2a3a', '#f6fbff'];
-  for (let i = 0; i < 160; i++) crowd.push({ x: rng.range(-10, SHEET.end + 10), row: rng.int(0, 2), coat: rng.pick(coats), hat: rng.pick(coats), phase: rng.range(0, TAU) });
+  for (let i = 0; i < 260; i++) crowd.push({ x: rng.range(-12, SHEET.end + 12), row: rng.int(0, 1), coat: rng.pick(coats), hat: rng.pick(coats), phase: rng.range(0, TAU), fan: rng.int(0, 9), cheer: rng.int(0, 5), flip: rng.chance(0.5) });
+  crowd.sort((a, b) => a.row - b.row);
   const flakes = [];
   for (let i = 0; i < 90; i++) flakes.push({ x: rng.range(0, VIEW.w), y: rng.range(0, VIEW.h), s: rng.range(1, 2.6), v: rng.range(14, 34), d: rng.range(0, TAU) });
   // Skate-scratched night ice: long faint arcs, and glints that twinkle.
@@ -32,7 +38,7 @@ const SKIES = {
   dusk: ['#5b6fb5', '#f5b38a'],
 };
 
-export function drawBackdrop(ctx, cam, venue, time) {
+export function drawBackdrop(ctx, cam, venue, time, excite = 0) {
   // Every match is played under lights on a winter night; dusk venues get the aurora too.
   const g = ctx.createLinearGradient(0, 0, 0, CAMERA.sheetTop);
   g.addColorStop(0, '#0a1630');
@@ -80,6 +86,22 @@ export function drawBackdrop(ctx, cam, venue, time) {
   for (const c of scenery.crowd) {
     const x = (c.x - cam.x) * CAMERA.scale * 0.8 + VIEW.w / 2;
     if (x < -20 || x > VIEW.w + 20) continue;
+    // Back row smaller and dimmer; when the crowd is excited, most jump and switch to a cheer.
+    const back = c.row === 0;
+    const h = back ? 30 : 38;
+    const jumping = excite > 0 && Math.sin(c.phase * 7) > -0.6;
+    const bounce = jumping ? Math.abs(Math.sin(time * 9 + c.phase)) * 9 * excite : Math.abs(Math.sin(time * 2 + c.phase)) * 1.2;
+    const img = spriteCanvas(jumping ? CHEER[c.cheer] : FANS[c.fan], h);
+    if (img) {
+      const fy = (back ? 126 : CAMERA.sheetTop - 1) - bounce;
+      ctx.save();
+      if (back) ctx.globalAlpha = 0.8;
+      ctx.translate(x, fy);
+      if (c.flip) ctx.scale(-1, 1);
+      ctx.drawImage(img, -img.width / 2, -img.height);
+      ctx.restore();
+      continue;
+    }
     const y = 112 + c.row * 7 + Math.abs(Math.sin(time * 3 + c.phase)) * (time % 7 < 1.2 ? 3 : 0.6);
     ctx.fillStyle = c.coat;
     ctx.beginPath();
@@ -202,7 +224,7 @@ export function drawSheet(ctx, cam, venue, time) {
   ctx.restore();
 
   drawPatches(ctx, cam, venue, time);
-  drawHouse(ctx, cam);
+  drawHouse(ctx, cam, time);
   drawLines(ctx, cam);
 
   // Side boards.
@@ -220,7 +242,9 @@ export function drawSheet(ctx, cam, venue, time) {
 }
 
 // The house in neon: a soft glow under the ice and four lit rings, cold blue outside to gold at the button.
-function drawHouse(ctx, cam) {
+function drawHouse(ctx, cam, time = 0) {
+  // The neon breathes: each ring pulses a little out of step with the others.
+  const pulse = (i) => 0.75 + 0.25 * Math.sin(time * 2.2 + i * 1.3);
   const cx = sx(cam, SHEET.tee);
   const cy = sy(0);
   const [r12, r8, r4, rb] = SHEET.rings.map(px);
@@ -237,10 +261,13 @@ function drawHouse(ctx, cam) {
   disc(r8, 'rgba(150,60,255,0.16)');
   disc(r4, 'rgba(255,50,90,0.38)');
   disc(rb, 'rgba(255,215,60,0.22)');
+  let ringNo = 0;
   const neon = (r, color, w) => {
+    const p = pulse(ringNo++);
     ctx.save();
     ctx.shadowColor = color;
-    ctx.shadowBlur = 16;
+    ctx.shadowBlur = 10 + 14 * p;
+    ctx.globalAlpha = 0.7 + 0.3 * p;
     ctx.strokeStyle = color;
     ctx.lineWidth = w;
     ctx.beginPath();

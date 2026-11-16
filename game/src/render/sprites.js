@@ -23,6 +23,30 @@ export function loadSprites(base = 'assets/') {
 
 export const hasSprite = (name) => !!cache[name];
 
+// A sprite pre-scaled once to `h` pixels tall (smooth downscale), for drawing many small copies fast.
+const small = {};
+export function spriteCanvas(name, h) {
+  const key = `${name}@${h}`;
+  if (small[key] !== undefined) return small[key];
+  const im = cache[name];
+  if (!im || typeof document === 'undefined') return null;
+  const c = document.createElement('canvas');
+  c.height = h;
+  c.width = Math.max(1, Math.round((im.width * h) / im.height));
+  const g = c.getContext('2d');
+  g.imageSmoothingQuality = 'high';
+  // Halve in steps so a large sprite stays crisp at crowd size.
+  let src = im, w = im.width, hh = im.height;
+  while (hh / 2 > h * 1.5) {
+    const t = document.createElement('canvas');
+    t.width = Math.round(w / 2); t.height = Math.round(hh / 2);
+    t.getContext('2d').drawImage(src, 0, 0, t.width, t.height);
+    src = t; w = t.width; hh = t.height;
+  }
+  g.drawImage(src, 0, 0, c.width, c.height);
+  return (small[key] = c);
+}
+
 // Draw a sprite `h` pixels tall. Anchor (ax, ay) is a fraction of its box: the default is its feet.
 export function drawSprite(ctx, name, x, y, h, o = {}) {
   const im = cache[name];

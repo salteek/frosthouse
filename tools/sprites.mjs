@@ -71,7 +71,7 @@ function cut(img, bg, x0, y0, w, h, mode) {
     } else {
       let a = 0;
       for (let c = 0; c < 3; c++) a = Math.max(a, d[i + c] > bg[c] ? (d[i + c] - bg[c]) / (255 - bg[c]) : (bg[c] - d[i + c]) / bg[c]);
-      if (a < 0.04) continue;
+      if (a < 0.1) continue; // JPEG noise in the flat background reads as faint speckle below this
       for (let c = 0; c < 3; c++) out[o + c] = Math.max(0, Math.min(255, Math.round(bg[c] + (d[i + c] - bg[c]) / a)));
       out[o + 3] = Math.round(a * 255);
     }

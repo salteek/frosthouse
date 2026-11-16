@@ -7,7 +7,7 @@ import { RIVALS } from '../rivals.js';
 import { currentTeam, stonesLeft, total } from '../match.js';
 import { weightName } from '../scenes/play.js';
 import { kitItems } from '../tournament.js';
-import { panel, text, chip, bar, keycap, roundRect, formatScore, FONT_TITLE, callout } from './ui.js';
+import { panel, text, chip, bar, keycap, roundRect, formatScore, FONT_TITLE, callout, twinkle } from './ui.js';
 import { drawSprite, portraitFor } from './sprites.js';
 import { drawStone, teamColours } from './stones.js';
 import { drawKitIcon, trophy } from './icons.js';
@@ -18,7 +18,7 @@ export function drawMatchHud(ctx, scene, time, best) {
   const m = scene.match;
   drawScoreboard(ctx, m);
   drawOpenStrip(ctx, scene.run, m);
-  drawScorePanel(ctx, scene.run, best, m);
+  drawScorePanel(ctx, scene.run, best, m, time);
   drawRivalCard(ctx, m);
   drawShotPanel(ctx, scene, time);
   drawSheetMap(ctx, m);
@@ -27,6 +27,37 @@ export function drawMatchHud(ctx, scene, time, best) {
   if (m.phase === 'endScore' && m.endResult) drawEndSummary(ctx, m, time);
   if (m.phase === 'over') drawMatchOver(ctx, scene, time);
   if (scene.intro > 0) drawIntro(ctx, scene);
+}
+
+// Flames licking up around a box: taller and faster the hotter the streak.
+function flames(ctx, x, y, w, h, time, heat) {
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  const n = 16;
+  for (let i = 0; i < n; i++) {
+    const bx = x + 6 + (i / (n - 1)) * (w - 12);
+    const flick = Math.sin(time * (11 + (i % 3) * 3) + i * 1.9) * 0.5 + 0.5;
+    const fh = (16 + heat * 6) * (0.55 + 0.6 * flick);
+    const fw = 9 + (i % 2) * 4;
+    const g = ctx.createRadialGradient(bx, y + 6, 1, bx, y + 2 - fh * 0.4, fh);
+    g.addColorStop(0, 'rgba(255,240,170,0.95)');
+    g.addColorStop(0.35, 'rgba(255,150,40,0.75)');
+    g.addColorStop(1, 'rgba(255,60,20,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.moveTo(bx - fw, y + 8);
+    ctx.quadraticCurveTo(bx - fw * 0.6, y - fh * 0.4, bx + Math.sin(time * 7 + i) * 4, y - fh);
+    ctx.quadraticCurveTo(bx + fw * 0.6, y - fh * 0.4, bx + fw, y + 8);
+    ctx.fill();
+  }
+  // Embers rising off the box.
+  for (let i = 0; i < 10; i++) {
+    const t = (time * 0.8 + i * 0.37) % 1;
+    const ex = x + 10 + ((i * 53) % (w - 20)) + Math.sin(time * 3 + i) * 6;
+    ctx.fillStyle = `rgba(255,${180 - i * 6},60,${(1 - t).toFixed(2)})`;
+    ctx.fillRect(ex, y - t * (30 + heat * 8), 2.5, 2.5);
+  }
+  ctx.restore();
 }
 
 // Three glass pills over the near end of the sheet: the whole control scheme while you line up a throw.
@@ -113,17 +144,26 @@ function drawOpenStrip(ctx, run, m) {
   text(ctx, run.losses ? `${run.losses} used` : 'none yet', x + 230, 86, { size: 12, weight: 800, color: run.losses ? PALETTE.bad : PALETTE.inkSoft });
 }
 
-function drawScorePanel(ctx, run, best, m) {
+function drawScorePanel(ctx, run, best, m, time = 0) {
   const x = 734;
   const w = 150;
   panel(ctx, x, 10, w, 90, m.streak >= 2 ? { glow: '#ff6a1f', fillTop: 'rgba(120,40,20,0.92)', fill: 'rgba(60,18,14,0.92)' } : {});
+  if (m.streak >= 2) {
+    // Fire inside the box, rising from its floor behind the score.
+    ctx.save();
+    roundRect(ctx, x, 10, w, 90, 14);
+    ctx.clip();
+    flames(ctx, x, 100, w, 90, time, Math.min(SCORE.streakMax, m.streak));
+    ctx.restore();
+  }
   if (m.streak >= 2) {
     chip(ctx, `HOT STREAK x${Math.min(SCORE.streakMax, m.streak)}`, x + w / 2, 30, { align: 'center', fill: PALETTE.player, size: 11, h: 20 });
   } else {
     text(ctx, 'SCORE', x + w / 2, 32, { size: 12, weight: 900, align: 'center', color: PALETTE.inkSoft });
   }
-  text(ctx, formatScore(run.score), x + w / 2, 66, { size: 30, weight: 900, align: 'center', color: PALETTE.ink, font: FONT_TITLE });
-  text(ctx, `BEST ${formatScore(Math.max(best, run.score))}`, x + w / 2, 88, { size: 11, weight: 800, align: 'center', color: PALETTE.inkSoft });
+  const hot = m.streak >= 2 ? { outline: 'rgba(60,10,6,0.9)', outlineWidth: 5 } : {};
+  text(ctx, formatScore(run.score), x + w / 2, 66, { size: 30, weight: 900, align: 'center', color: PALETTE.ink, font: FONT_TITLE, ...hot });
+  text(ctx, `BEST ${formatScore(Math.max(best, run.score))}`, x + w / 2, 88, { size: 11, weight: 800, align: 'center', color: m.streak >= 2 ? '#fff4d6' : PALETTE.inkSoft, ...hot });
 }
 
 function drawRivalCard(ctx, m) {
@@ -299,16 +339,27 @@ function drawCall(ctx, call, m) {
   const t = call.t;
   const a = Math.min(1, t * 5) * Math.min(1, Math.max(0, (1.6 - t) * 3));
   if (a <= 0) return;
-  const scale = 1 + Math.max(0, 0.25 - t) * 1.6;
+  // A springy pop: overshoots, settles, then keeps a faint living wobble.
+  const u = Math.min(1, t / 0.3), v = u - 1;
+  const scale = t < 0.3 ? Math.max(0.05, 1 + 2.7 * v * v * v + 1.7 * v * v) : 1 + 0.018 * Math.sin(t * 8);
+  const tilt = -0.07 * (1 - Math.min(1, t / 0.4)) + 0.012 * Math.sin(t * 5);
   const colour = call.tone === 'great' ? PALETTE.gold : call.tone === 'good' ? PALETTE.accent : call.tone === 'bad' ? PALETTE.bad : PALETTE.inkSoft;
   ctx.save();
   ctx.globalAlpha = a;
   ctx.translate(640, 200);
   ctx.scale(scale, scale);
+  ctx.rotate(tilt);
   const who = call.team === 'player' ? '' : `${m.rival.short}: `;
   // Great shots burn, good ones glow ice-blue, the rival's and the bad ones go cold violet.
   const tone = call.team !== 'player' ? 'violet' : call.tone === 'great' ? 'fire' : call.tone === 'bad' ? 'violet' : 'ice';
   callout(ctx, who + call.text, 0, 0, call.tone === 'great' ? 58 : 46, { tone, sparkle: call.tone === 'great' });
+  if (call.tone === 'great') {
+    // Two sparkles orbit the words.
+    for (let i = 0; i < 2; i++) {
+      const a = t * 3 + i * Math.PI;
+      twinkle(ctx, Math.cos(a) * 230, -20 + Math.sin(a) * 34, 7 + Math.sin(t * 9 + i) * 2);
+    }
+  }
   text(ctx, call.sub + (call.perfect ? ' · PERFECT RELEASE' : ''), 0, 34, { size: 17, weight: 800, align: 'center', color: '#ffffff', outline: 'rgba(12,24,52,0.85)', outlineWidth: 6, raw: true });
   if (call.team === 'player' && call.streak > 1) {
     chip(ctx, `HOT STREAK x${call.streak} · POINTS x${call.streak}`, 0, 68, { align: 'center', fill: '#ff5a1f', size: 15, h: 28 });
