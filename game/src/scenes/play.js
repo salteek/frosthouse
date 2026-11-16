@@ -49,6 +49,8 @@ function previewPath(scene) {
   return r.path;
 }
 
+const AIM_LIMIT = SHEET.width / 2 + 0.25;
+
 export function weightName(w) {
   return THROW.weights.find((z) => w <= z.upTo).name;
 }
@@ -112,13 +114,14 @@ export function updatePlay(scene, dt, input) {
 function handleAim(scene, dt, input) {
   const { aim, match } = scene;
   const mouse = input.mouse;
-  const overSheet = mouse.y > CAMERA.sheetTop && mouse.y < SHEET_BOTTOM;
+  // The broom may be held right out to the boards; on curly ice the best line starts there.
+  const overSheet = mouse.y > CAMERA.sheetTop - 30 && mouse.y < SHEET_BOTTOM + 30;
   if (overSheet && !scene.charging) {
     const p = toSheet(scene.cam, mouse.x, mouse.y);
-    aim.y = clamp(p.y, -SHEET.width / 2 + 0.3, SHEET.width / 2 - 0.3);
+    aim.y = clamp(p.y, -AIM_LIMIT, AIM_LIMIT);
   }
-  if (input.isDown('ArrowUp')) aim.y = clamp(aim.y - dt * 1.2, -2, 2);
-  if (input.isDown('ArrowDown')) aim.y = clamp(aim.y + dt * 1.2, -2, 2);
+  if (input.isDown('ArrowUp')) aim.y = clamp(aim.y - dt * 1.2, -AIM_LIMIT, AIM_LIMIT);
+  if (input.isDown('ArrowDown')) aim.y = clamp(aim.y + dt * 1.2, -AIM_LIMIT, AIM_LIMIT);
   const step = input.isDown('ShiftLeft') ? 0.004 : 0.01;
   if (input.wasPressed('KeyW') || input.wasPressed('ArrowRight')) aim.weight = clamp(aim.weight + step, 0, 1);
   if (input.wasPressed('KeyS') || input.wasPressed('ArrowLeft')) aim.weight = clamp(aim.weight - step, 0, 1);
@@ -132,7 +135,7 @@ function handleAim(scene, dt, input) {
     sfx.toggle();
   }
 
-  const startCharge = (input.clicked && overSheet) || input.wasPressed('Space');
+  const startCharge = input.clicked || input.wasPressed('Space');
   if (!scene.charging && startCharge) {
     scene.charging = true;
     scene.chargeT = 0;
