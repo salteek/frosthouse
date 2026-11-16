@@ -24,7 +24,8 @@ export function drawMatch(ctx, scene, time, best) {
     drawSkipBroom(ctx, scene.cam, Math.sin(time * 1.3) * 0.5, 1, m.rival.colour, time);
   }
   drawStones(ctx, scene.cam, m, time);
-  if (m.phase === 'aim' || m.phase === 'settle') drawSitting(ctx, scene.cam, countEnd(m.stones), m.rival);
+  const calling = m.phase === 'settle' && m.lastCall && m.lastCall.t < 1.6;
+  if (m.phase === 'aim' || (m.phase === 'settle' && !calling)) drawSitting(ctx, scene.cam, countEnd(m.stones), m.rival);
   if (m.phase === 'endScore' && m.endResult?.team) {
     drawCounting(ctx, scene.cam, m.endResult.counting, teamColours(m.endResult.team, m.rival)[0], m.endResult.t);
   }

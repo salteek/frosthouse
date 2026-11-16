@@ -174,7 +174,17 @@ function consumeEvents(scene) {
       if (e.call.tone === 'great') sfx.cheer(1);
       else if (e.call.tone === 'bad') sfx.groan();
       else sfx.cheer(0.3);
-      if (e.points > 0) addFloater(scene.fx, 640, 238, `+${e.points}`, PALETTE.good, 26);
+      if (e.points > 0) {
+        const fx = e.x > -9 ? clamp(sx(scene.cam, e.x), 120, 1160) : 640;
+        const fy = e.y > -9 ? clamp(sy(e.y) - 72, 170, 560) : 300;
+        addFloater(scene.fx, fx, fy, e.mult > 1 ? `+${e.points}  x${e.mult}` : `+${e.points}`, e.mult > 1 ? PALETTE.gold : PALETTE.good, e.mult > 1 ? 34 : 26);
+        if (e.call.tone === 'great') {
+          // Confetti from the stands for a great shot: gold, red and blue flakes over the stone.
+          for (const color of [PALETTE.gold, PALETTE.player, PALETTE.accent]) {
+            spawnBurst(scene.fx, fx, fy + 72, { count: 18, color, speed: 280, life: 1.3, size: 5, drag: 1.6 });
+          }
+        }
+      }
     } else if (e.type === 'rivalCall') {
       if (e.call.tone === 'great') sfx.groan();
     } else if (e.type === 'endScored') {

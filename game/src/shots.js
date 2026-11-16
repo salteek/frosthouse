@@ -41,6 +41,7 @@ function winMatches(run, n) {
     m.stats.buttons = 1 + (i % 2);
     m.stats.pointsFor = 5;
     m.stats.pointsAgainst = 1;
+    m.stats.bestStreak = 2 + i;
     m.stats.bestCall = { text: i === 2 ? 'DOUBLE TAKEOUT!' : 'ON THE BUTTON!', points: i === 2 ? 250 : 200 };
     recordMatch(run, m);
     run.offer = null;
@@ -58,12 +59,15 @@ export function stageShot(game, shot, seed) {
   const run = createRun('club', 4000 + seed);
   game.run = run;
   if (shot === 'play') {
-    // Try a handful of seeded ends and keep the busiest house: the player holds the last stone.
+    // The cover: the moment after a big hit. Try seeded ends until the player's throw (thrown by
+    // the AI at a high skill, on a hot streak) clears stones from the house, then hold that frame.
+    const rank = (c) => (c.text.startsWith('TRIPLE') || c.text.startsWith('DOUBLE') ? 3 : c.text.startsWith('HIT') ? 2 : c.tone === 'great' ? 1 : 0);
     let best = null;
-    for (let k = 0; k < 10; k++) {
+    for (let k = 0; k < 60; k++) {
       const r = createRun('club', 4100 + seed * 31 + k);
       winMatches(r, 1);
       giveKit(r, ['birch', 'eye']);
+      r.score = 2740;
       const scene = createPlayScene(r);
       scene.intro = 0;
       const m = scene.match;
@@ -71,22 +75,19 @@ export function stageShot(game, shot, seed) {
       m.scores.player = [2, 0];
       m.scores.rival = [0, 1];
       m.end = 3;
-      for (let i = 0; i < 7; i++) autoThrow(scene, 0.8);
-      const live = m.stones.filter((st) => !st.out).length;
-      if (!best || live > best.live) best = { live, scene, run: r };
+      for (let i = 0; i < 5; i++) autoThrow(scene, 0.85);
+      m.streak = 2;
+      deliver(m, 'player', executeShot(chooseShot(m, 'player', m.rng), 0.97, 1, m.rng));
+      let guard = 0;
+      while (m.phase === 'running' && guard++ < 6000) updatePlay(scene, 1 / 60, quietInput);
+      if (!m.lastCall || m.phase !== 'settle') continue;
+      const score = rank(m.lastCall) * 3 + m.stones.length * 2;
+      if (!best || score > best.score) best = { score, rank: rank(m.lastCall), scene, run: r };
     }
     const { scene, run: r } = best;
     game.run = r;
-    r.score = 2740;
-    const m = scene.match;
-    scene.aim = { y: 0.5, weight: 0.4, turn: -1 };
-    m.phase = 'aim';
-    const aimInput = { ...quietInput, mouse: { x: 900, y: 138 + (0.5 + 2.375) * 100, down: false } };
-    updatePlay(scene, 1 / 60, aimInput);
-    scene.charging = true;
-    scene.needle = 0.05;
-    scene.fx.particles.length = 0;
-    m.lastCall = null;
+    // Hold the frame a third of a second after the call, while the confetti is still in the air.
+    for (let i = 0; i < 20; i++) updatePlay(scene, 1 / 60, quietInput);
     game.play = scene;
     game.mode = 'play';
     game.save = { best: 18240, trophies: 1, runs: 6, lastRuns: [] };

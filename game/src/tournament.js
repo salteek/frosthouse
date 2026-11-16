@@ -25,7 +25,7 @@ export function createRun(difficulty, seed) {
     score: 0,
     offer: null,
     outcome: null,      // 'champion' | 'eliminated'
-    stats: { perfects: 0, takeouts: 0, buttons: 0, pointsFor: 0, pointsAgainst: 0, endsWon: 0, ends: 0, bestCall: null, hogged: 0 },
+    stats: { perfects: 0, takeouts: 0, buttons: 0, pointsFor: 0, pointsAgainst: 0, endsWon: 0, ends: 0, bestCall: null, hogged: 0, bestStreak: 0 },
   };
 }
 
@@ -48,6 +48,7 @@ export function recordMatch(run, match) {
   s.pointsFor += ms.pointsFor;
   s.pointsAgainst += ms.pointsAgainst;
   s.hogged += ms.hogged;
+  s.bestStreak = Math.max(s.bestStreak ?? 0, ms.bestStreak ?? 0);
   s.ends += match.scores.player.length;
   s.endsWon += match.scores.player.filter((x) => x > 0).length;
   if (ms.bestCall && (!s.bestCall || ms.bestCall.points > s.bestCall.points)) s.bestCall = ms.bestCall;

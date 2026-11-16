@@ -306,7 +306,7 @@ export function drawResults(ctx, state, time, run, saveInfo) {
     ['PERFECT RELEASES', String(s.perfects), PALETTE.good],
     ['TAKEOUTS', String(s.takeouts), '#ff7a45'],
     ['ON THE BUTTON', String(s.buttons), PALETTE.gold],
-    ['HOGGED', String(s.hogged), '#7f95ad'],
+    ['BEST STREAK', `x${Math.min(4, Math.max(1, s.bestStreak ?? 0))}`, '#7f95ad'],
     ['BEST SHOT', s.bestCall ? s.bestCall.text.replace('!', '') : '—', PALETTE.ink],
   ];
   tiles.forEach(([label, value, col], i) => {

@@ -1,7 +1,7 @@
 // The match HUD: scoreboard, the Open's win/lose line, rival card, the shot panel (weight, turn,
 // release needle, sweep), the full-sheet map, shot calls and the end summary.
 
-import { VIEW, SHEET, THROW, PALETTE, MATCH } from '../config.js';
+import { VIEW, SHEET, THROW, PALETTE, MATCH, SCORE } from '../config.js';
 import { TAU } from '../geometry.js';
 import { RIVALS } from '../rivals.js';
 import { currentTeam, stonesLeft, total } from '../match.js';
@@ -17,7 +17,7 @@ export function drawMatchHud(ctx, scene, time, best) {
   const m = scene.match;
   drawScoreboard(ctx, m);
   drawOpenStrip(ctx, scene.run, m);
-  drawScorePanel(ctx, scene.run, best);
+  drawScorePanel(ctx, scene.run, best, m);
   drawRivalCard(ctx, m);
   drawShotPanel(ctx, scene, time);
   drawSheetMap(ctx, m);
@@ -97,11 +97,15 @@ function drawOpenStrip(ctx, run, m) {
   text(ctx, run.losses ? `${run.losses} used` : 'none yet', x + 230, 86, { size: 12, weight: 800, color: run.losses ? PALETTE.bad : PALETTE.inkSoft });
 }
 
-function drawScorePanel(ctx, run, best) {
+function drawScorePanel(ctx, run, best, m) {
   const x = 734;
   const w = 150;
   panel(ctx, x, 10, w, 90);
-  text(ctx, 'SCORE', x + w / 2, 32, { size: 12, weight: 900, align: 'center', color: PALETTE.inkSoft });
+  if (m.streak >= 2) {
+    chip(ctx, `HOT STREAK x${Math.min(SCORE.streakMax, m.streak)}`, x + w / 2, 30, { align: 'center', fill: PALETTE.player, size: 11, h: 20 });
+  } else {
+    text(ctx, 'SCORE', x + w / 2, 32, { size: 12, weight: 900, align: 'center', color: PALETTE.inkSoft });
+  }
   text(ctx, formatScore(run.score), x + w / 2, 66, { size: 30, weight: 900, align: 'center', color: PALETTE.ink, font: FONT_TITLE });
   text(ctx, `BEST ${formatScore(Math.max(best, run.score))}`, x + w / 2, 88, { size: 11, weight: 800, align: 'center', color: PALETTE.inkSoft });
 }
@@ -287,6 +291,9 @@ function drawCall(ctx, call, m) {
   const who = call.team === 'player' ? '' : `${m.rival.short}: `;
   text(ctx, who + call.text, 0, 0, { size: 46, weight: 900, align: 'center', color: colour, outline: '#ffffff', outlineWidth: 10, font: FONT_TITLE });
   text(ctx, call.sub + (call.perfect ? ' · PERFECT RELEASE' : ''), 0, 30, { size: 16, weight: 800, align: 'center', color: PALETTE.ink, outline: '#ffffff', outlineWidth: 6 });
+  if (call.team === 'player' && call.streak > 1) {
+    chip(ctx, `HOT STREAK x${call.streak} · POINTS x${call.streak}`, 0, 62, { align: 'center', fill: PALETTE.player, size: 14, h: 26 });
+  }
   ctx.restore();
 }
 

@@ -79,4 +79,5 @@ export const SCORE = {
   matchWin: 600,
   champion: 3000,
   perfectRelease: 25,
+  streakMax: 4,
 };

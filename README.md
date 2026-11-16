@@ -11,6 +11,7 @@ Climb the Frost Lake Open: six rival rinks, each with its own style (draw, guard
 - Real stone physics: friction, curl that grows as the stone slows, sweeping, collisions, the hog rule.
 - Rival skips that read the ice: they list candidate shots, simulate each one with the same physics, and play the best for their style.
 - Three difficulties, 14 kit upgrades, shot calls (Double Takeout! Freeze! On the Button!), end scoring with the hammer, and a results card with a grade.
+- Hot streaks: every good shot in a row raises a points multiplier up to x4, with confetti from the stands on the great ones; one poor shot breaks it.
 - No libraries, no images, no network: canvas drawing and Web Audio synthesis only.
 
 ## Run it

@@ -39,7 +39,8 @@ export function createMatch({ rival, venue, kit, difficulty, rng, ends = MATCH.e
     mittenReady: kit.mitten,
     perfect: false,
     events: [],
-    stats: { perfects: 0, calls: [], bestCall: null, takeouts: 0, buttons: 0, pointsFor: 0, pointsAgainst: 0, hogged: 0 },
+    stats: { perfects: 0, calls: [], bestCall: null, takeouts: 0, buttons: 0, pointsFor: 0, pointsAgainst: 0, hogged: 0, bestStreak: 0 },
+    streak: 0,             // the player's run of good shots in a row; it multiplies shot-call points
     winner: null,
     clock: 0,
   };
@@ -141,14 +142,19 @@ function finishThrow(m) {
     m.events.push({ type: 'hog', stone: s });
   }
   const call = callShot(m.before, m.stones, s.id, s.team);
-  m.lastCall = { ...call, team: s.team, t: 0, perfect: s.team === 'player' && m.perfect };
+  m.lastCall = { ...call, team: s.team, t: 0, perfect: s.team === 'player' && m.perfect, streak: 1 };
   if (s.team === 'player') {
+    // A hot streak: every good shot in a row raises the multiplier, up to x4; a poor one breaks it.
+    m.streak = call.tone === 'great' || call.tone === 'good' ? m.streak + 1 : 0;
+    const mult = Math.min(SCORE.streakMax, Math.max(1, m.streak));
+    m.lastCall.streak = mult;
+    m.stats.bestStreak = Math.max(m.stats.bestStreak, m.streak);
     m.stats.calls.push(call.text);
     if (!m.stats.bestCall || call.points > m.stats.bestCall.points) m.stats.bestCall = call;
     if (call.text.includes('TAKEOUT') || call.text.includes('HIT')) m.stats.takeouts++;
     if (call.text === 'ON THE BUTTON!') m.stats.buttons++;
     if (s.hogged) m.stats.hogged++;
-    m.events.push({ type: 'call', call, points: Math.round((call.points + (m.perfect ? SCORE.perfectRelease : 0)) * m.kit.scoreMul) });
+    m.events.push({ type: 'call', call, mult, points: Math.round((call.points + (m.perfect ? SCORE.perfectRelease : 0)) * m.kit.scoreMul * mult), x: s.x, y: s.y });
   } else {
     m.events.push({ type: 'rivalCall', call });
   }
