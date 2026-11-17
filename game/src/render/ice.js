@@ -378,10 +378,10 @@ function drawWind(ctx, venue, time) {
     if (age < 0 || age > life) continue;
     const p = age / life;
     const w = 180 + rnd(n, 3) * 240, h = w * (frames[0].height / frames[0].width);
-    const speed = 40 + rnd(n, 4) * 40;
+    const speed = 120 + rnd(n, 4) * 90;
     const x = 80 + rnd(n, 5) * (VIEW.w - 160) + age * speed;
     const y = top + rnd(n, 6) * span + dir * age * 6;
-    const peak = 0.22 + rnd(n, 7) * 0.38;
+    const peak = 0.08 + rnd(n, 7) * 0.12;
     // Quick to appear, a varied fade away.
     const fadeIn = Math.min(1, p / 0.18), fadeOut = Math.min(1, (1 - p) / (0.3 + rnd(n, 8) * 0.4));
     const alpha = peak * fadeIn * fadeOut;
