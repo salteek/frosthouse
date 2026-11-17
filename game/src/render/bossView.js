@@ -33,6 +33,7 @@ export function drawBossFigure(ctx, scene) {
   ctx.beginPath();
   ctx.ellipse(x - 10, feet - 6, 120, 20, 0, 0, TAU);
   ctx.fill();
-  drawSprite(ctx, broken ? 'boss_cracked' : 'boss_full', x, feet, broken ? h * 0.96 : h, { flip: true });
+  // Facing left, down the sheet toward the thrower.
+  drawSprite(ctx, broken ? 'boss_cracked' : 'boss_full', x, feet, broken ? h * 0.96 : h);
   ctx.restore();
 }

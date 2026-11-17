@@ -523,7 +523,7 @@ function drawIntro(ctx, scene) {
     ctx.fillRect(0, 230, VIEW.w, 190);
   }
   drawSprite(ctx, 'idle_red', 200, 420, 200);
-  drawSprite(ctx, portraitFor(m.rival), 1080, 420, m.boss ? 300 : 200, { flip: true });
+  drawSprite(ctx, portraitFor(m.rival), 1080, 420, m.boss ? 300 : 200, { flip: !m.boss }); // the boss art already faces left
   text(ctx, `MATCH ${scene.run.round + 1}${m.rival.champion ? ' · THE FINAL' : ''}`, VIEW.w / 2, 272, { size: 18, weight: 900, align: 'center', color: PALETTE.accent });
   callout(ctx, `vs ${m.rival.name}`, VIEW.w / 2, 326, 46, { tone: 'ice', sparkle: false });
   text(ctx, m.boss ? 'BOSS MATCH · score to break his Resolve · 3 phases, then he cracks' : `${m.venue.name} · ${m.venue.note}`, VIEW.w / 2, 358, { size: 17, weight: 700, align: 'center', color: PALETTE.inkSoft });

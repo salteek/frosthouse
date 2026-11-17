@@ -183,7 +183,9 @@ export function stageShot(game, shot, seed) {
     scene.intro = 0;
     const m = scene.match;
     m.hammer = 'player';
-    for (let i = 0; i < 4; i++) autoThrow(scene, 0.85);
+    // &n= stones already thrown this end (default 4; 7 makes this the end's last stone, in slow motion).
+    const thrown = Number(new URLSearchParams(globalThis.location?.search ?? '').get('n') ?? 4);
+    for (let i = 0; i < thrown; i++) autoThrow(scene, 0.85);
     m.streak = 2;
     deliver(m, 'player', executeShot(chooseShot(m, 'player', m.rng), 0.97, 1, m.rng));
     const sweep = { ...quietInput, isDown: (k) => k === 'Space' };
