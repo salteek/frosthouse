@@ -13,6 +13,7 @@ import { spawnBurst, addFloater, updateParticles } from '../particles.js';
 import { impact, celebrate, sparkle, sweepSpray, updateFx, recordTrails, emitSnowSmoke, addFlash, burstSprites } from '../fx.js';
 import { sx, sy } from '../render/camera.js';
 import { updateBoss, BOSS_PHASES } from '../boss.js';
+import { startCrack, updateCrack, crackBurstDue, crackTips } from '../render/crack.js';
 import { clamp } from '../geometry.js';
 
 export function createPlayScene(run) {
@@ -72,6 +73,15 @@ export function updatePlay(scene, dt, input) {
   emitSnowSmoke(scene, dt);
   if (scene.skillBanner) scene.skillBanner.t += dt;
   updateBoss(scene.match, dt);
+  updateCrack(scene, dt);
+  if (crackBurstDue(scene)) {
+    // Shards burst off the button and off the end of every main crack.
+    const cx = sx(scene.cam, SHEET.tee), cy = sy(0);
+    burstSprites(scene.fx, 'snowflake', cx, cy, { count: 22, speed: [140, 380], size: [12, 24], life: [0.6, 1.1], spin: 3 });
+    spawnBurst(scene.fx, cx, cy, { count: 40, color: '#dff6ff', speed: 340, life: 0.9, size: 3.5, drag: 2 });
+    addFlash(scene.fx, 'ring_a', cx, cy, 60, 0.7, { grow: 3, blend: 'lighter' });
+    for (const p of crackTips(scene)) spawnBurst(scene.fx, p.x, p.y, { count: 10, color: '#9fe6ff', speed: 180, life: 0.6, size: 3, drag: 2 });
+  }
   // Boss banners wait while the end's score is up, and are dropped if the match is over.
   const fls = scene.fx.floaters;
   for (let i = fls.length - 1; i >= 0; i--) {
@@ -94,7 +104,13 @@ export function updatePlay(scene, dt, input) {
   let fastest = 0;
   for (const s of m.stones) if (s.moving) fastest = Math.max(fastest, Math.hypot(s.vx, s.vy));
 
-  if (m.phase === 'aim') {
+  // The crack cinematic: the camera stays on the house and nobody throws until it has played out
+  // (it waits while the end's score is up, like the banner it goes with).
+  if (scene.cinematic > 0 && m.phase !== 'endScore') scene.cinematic -= dt;
+  const holding = scene.cinematic > 0 && m.phase !== 'endScore' && m.phase !== 'over';
+  if (m.phase === 'aim' && holding) {
+    scene.thinkTimer = Math.max(scene.thinkTimer, 0.6);
+  } else if (m.phase === 'aim') {
     const team = currentTeam(m);
     if (team === 'player') handleAim(scene, dt, input);
     else {
@@ -260,10 +276,11 @@ function consumeEvents(scene) {
       holdForEnd(scene, 2);
     } else if (e.type === 'bossCracked') {
       sfx.cheer(1.4);
+      scene.cinematic = 3.8; // nobody throws until the crack has played out (render/crack.js)
       addFloater(scene.fx, 640, 250, 'THE GLACIER CRACKS!', PALETTE.gold, 44, 2.4, 1.5);
+      scene.fx.floaters[scene.fx.floaters.length - 1].onShow = () => { startCrack(scene); sfx.crack(); };
       addFloater(scene.fx, 640, 296, 'Her powers are gone', '#eaf4ff', 20, 2.4, 1.5);
       holdForEnd(scene, 2);
-      burstSprites(scene.fx, 'snowflake', 640, 250, { count: 30, speed: [160, 420], size: [12, 24], life: [0.6, 1.1], spin: 3 });
     } else if (e.type === 'combo') {
       const el = e.el;
       const x = sx(scene.cam, e.x ?? SHEET.tee), y = sy(e.y ?? 0);

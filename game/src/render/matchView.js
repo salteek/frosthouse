@@ -4,7 +4,8 @@ import { PALETTE, VIEW } from '../config.js';
 import { TAU } from '../geometry.js';
 import { currentTeam } from '../match.js';
 import { previewLength } from '../tournament.js';
-import { drawBackdrop, drawSheet, drawSnowfall, drawSpikes } from './ice.js';
+import { drawBackdrop, drawSheet, drawSnowfall, drawSpikes, drawObstacleSet } from './ice.js';
+import { drawCrack } from './crack.js';
 import { drawStones, drawSkipBroom, drawPathPreview, drawCounting, drawSitting, teamColours } from './stones.js';
 import { countEnd } from '../scoring.js';
 import { drawMatchHud } from './hud.js';
@@ -35,6 +36,19 @@ export function drawMatch(ctx, scene, time, best) {
   drawSnowSmoke(ctx, scene, (x) => toX(scene.cam, x), toY);
   drawTrails(ctx, scene, (x) => toX(scene.cam, x), toY, time);
   drawSpikes(ctx, scene.cam, m.venue, time);
+  // The boss's obstacles stand until the crack reaches them, then melt away.
+  const melt = m.boss?.melting;
+  if (melt) {
+    const t = scene.crack ? scene.crack.t - 0.6 : 0;
+    const a = Math.max(0, 1 - t / 0.9);
+    if (a > 0) {
+      ctx.save();
+      ctx.globalAlpha = a;
+      drawObstacleSet(ctx, scene.cam, melt, time);
+      ctx.restore();
+    } else m.boss.melting = null;
+  }
+  drawCrack(ctx, scene);
   drawStones(ctx, scene.cam, m, time);
   drawLocks(ctx, scene, time);
   drawChargedStone(ctx, scene, time);

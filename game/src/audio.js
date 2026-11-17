@@ -152,6 +152,13 @@ export const sfx = {
     hiss({ dur: 0.8, vol: 0.2, freq: 300, q: 0.3, attack: 0.02 });
     tone({ freq: 120, to: 60, type: 'sawtooth', dur: 0.5, vol: 0.08 });
   },
+  // The Glacier cracks: a sharp snap, splintering ice and a deep groan from under the lake.
+  crack: () => {
+    hiss({ dur: 0.09, vol: 0.32, freq: 6000, q: 0.5 });
+    for (let i = 0; i < 6; i++) hiss({ dur: 0.05, vol: 0.16, freq: 3000 + i * 400, q: 1.2, delay: 0.08 + i * 0.07 });
+    tone({ freq: 110, to: 38, type: 'sawtooth', dur: 1.1, vol: 0.1, delay: 0.05 });
+    [2637, 2093, 1568].forEach((f, i) => tone({ freq: f, type: 'sine', dur: 0.3, vol: 0.05, delay: 0.75 + i * 0.05 }));
+  },
   hail: () => {
     for (let i = 0; i < 8; i++) tone({ freq: 2200 + i * 130, to: 900, type: 'triangle', dur: 0.06, vol: 0.05, delay: i * 0.05 });
   },

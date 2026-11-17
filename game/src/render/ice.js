@@ -402,6 +402,12 @@ export function drawSpikes(ctx, cam, venue, time) {
   }
 }
 
+// Draw a set of obstacles on its own (the boss's melting ones), with the caller's alpha.
+export function drawObstacleSet(ctx, cam, set, time) {
+  drawPatches(ctx, cam, { patches: set.patches ?? [] }, time);
+  drawSpikes(ctx, cam, { spikes: set.spikes ?? [] }, time);
+}
+
 function drawPatches(ctx, cam, venue, time) {
   for (const p of venue.patches) {
     const x = sx(cam, p.x);

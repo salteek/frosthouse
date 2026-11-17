@@ -12,7 +12,7 @@ import { stoneById } from './stones.js';
 import { setPlayerStone } from './render/stones.js';
 import { createStone } from './physics.js';
 import { SHEET } from './config.js';
-import { layObstacles } from './boss.js';
+import { layObstacles, hurtBoss } from './boss.js';
 
 const quietInput = {
   mouse: { x: 900, y: 380, down: false },
@@ -134,6 +134,31 @@ export function stageShot(game, shot, seed) {
       updatePlay(scene, 1 / 60, quietInput);
       if (m.phase === 'endScore') t += 1 / 60;
     }
+    game.play = scene;
+    game.mode = 'play';
+    game.save = { best: 18240, trophies: 1, runs: 6, lastRuns: [] };
+    return;
+  }
+  if (shot === 'crack') {
+    // The Glacier cracking: a phase-3 end with stones in the house, her last Resolve broken by a shot call;
+    // held ?at= seconds after the crack starts (default 0.5).
+    winMatches(run, 5);
+    const scene = createPlayScene(run);
+    scene.intro = 0;
+    const m = scene.match;
+    m.hammer = 'player';
+    m.end = 3;
+    m.scores.player = [1, 0];
+    m.scores.rival = [0, 1];
+    m.boss.resolve = 33;
+    m.boss.phase = 3;
+    layObstacles(m);
+    for (let i = 0; i < 4; i++) autoThrow(scene, 0.85);
+    m.boss.resolve = 3;
+    hurtBoss(m, 5);
+    const at = Number(new URLSearchParams(globalThis.location?.search ?? '').get('at') ?? 0.5);
+    let guard = 0;
+    while (guard++ < 2000 && !(scene.crack && scene.crack.t >= at)) updatePlay(scene, 1 / 60, quietInput);
     game.play = scene;
     game.mode = 'play';
     game.save = { best: 18240, trophies: 1, runs: 6, lastRuns: [] };

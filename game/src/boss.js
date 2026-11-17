@@ -71,6 +71,7 @@ export function hurtBoss(m, amount) {
   m.events.push({ type: 'bossHurt', amount });
   if (b.resolve <= 0) {
     b.cracked = true;
+    b.melting = b.obstacles; // drawn melting away by the crack animation (render/crack.js)
     b.obstacles = null;
     m.venue = b.baseVenue;
     m.events.push({ type: 'bossCracked' });

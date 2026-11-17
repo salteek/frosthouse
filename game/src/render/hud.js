@@ -153,6 +153,22 @@ function drawBossBar(ctx, m, time) {
     ctx.fillRect(bx + bw * t - 1.5, by - 2, 3, bh + 4);
   }
   text(ctx, `${Math.ceil(b.resolve)}`, bx + Math.max(bh, bw * frac) - 6, by + 11, { size: 11, weight: 900, align: 'right', color: '#0a1024' });
+  if (b.cracked) {
+    // The empty bar is split by glowing cracks.
+    ctx.save();
+    ctx.strokeStyle = 'rgba(200,240,255,0.9)';
+    ctx.shadowColor = '#8fe3ff';
+    ctx.shadowBlur = 6;
+    ctx.lineWidth = 1.5;
+    for (const [x0, k] of [[0.18, 1], [0.47, -1], [0.79, 1]]) {
+      let cx = bx + bw * x0, cy = by - 3;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      for (let i = 1; i <= 4; i++) { cx += k * (i % 2 ? 7 : -4); cy += (bh + 6) / 4; ctx.lineTo(cx, cy); }
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
   // The three phases named under their thirds of the bar (the bar drains right to left, so phase 1 is on the right).
   BOSS_PHASES.forEach((ph, i) => {
     const cx = bx + bw * (1 - (i + 0.5) / 3);
