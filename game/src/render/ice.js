@@ -324,11 +324,90 @@ function drawLines(ctx, cam) {
   ctx.fillText('BACK', sx(cam, SHEET.back), top + 14);
 }
 
+// The boss final's frost ridge: a raised band of rime across one side of the sheet.
+function drawRidge(ctx, cam, p) {
+  const x = sx(cam, p.x), y = sy(p.y), rx = px(p.rx), ry = px(p.ry);
+  ctx.save();
+  const g = ctx.createLinearGradient(x - rx, 0, x + rx, 0);
+  g.addColorStop(0, 'rgba(160,220,255,0)');
+  g.addColorStop(0.35, 'rgba(200,240,255,0.75)');
+  g.addColorStop(0.5, 'rgba(245,252,255,0.95)');
+  g.addColorStop(0.65, 'rgba(200,240,255,0.75)');
+  g.addColorStop(1, 'rgba(160,220,255,0)');
+  ctx.fillStyle = g;
+  ctx.shadowColor = '#8fe3ff';
+  ctx.shadowBlur = 12;
+  ctx.beginPath();
+  ctx.ellipse(x, y, rx * 1.6, ry, 0, 0, TAU);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+  // Rime crystals along its crest.
+  ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+  ctx.lineWidth = 1.5;
+  for (let i = -5; i <= 5; i++) {
+    const cy = y + (i / 5.6) * ry;
+    const len = 5 + ((i * 7 + 11) % 5);
+    ctx.beginPath();
+    ctx.moveTo(x - len, cy - len * 0.4);
+    ctx.lineTo(x, cy);
+    ctx.lineTo(x + len, cy - len * 0.4);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+// An ice spike seen from above: a faceted crystal on its own shadow, with a cold glow.
+export function drawSpikes(ctx, cam, venue, time) {
+  for (const p of venue.spikes ?? []) {
+    const x = sx(cam, p.x), y = sy(p.y), r = px(p.r);
+    ctx.save();
+    ctx.fillStyle = 'rgba(4,10,30,0.45)';
+    ctx.beginPath();
+    ctx.ellipse(x + r * 0.45, y + r * 0.55, r * 1.5, r * 1.3, 0, 0, TAU);
+    ctx.fill();
+    const halo = ctx.createRadialGradient(x, y, r * 0.4, x, y, r * 2.8);
+    halo.addColorStop(0, 'rgba(150,230,255,0.45)');
+    halo.addColorStop(1, 'rgba(150,230,255,0)');
+    ctx.fillStyle = halo;
+    ctx.beginPath();
+    ctx.arc(x, y, r * 2.8, 0, TAU);
+    ctx.fill();
+    // A six-pointed crystal: each point split into a lit and a shaded facet, lit from the top-left.
+    const n = 6, rot = p.x * 3.1, ro = r * 1.55, ri = r * 0.78;
+    for (let i = 0; i < n; i++) {
+      const a = rot + (i / n) * TAU, h = Math.PI / n;
+      const tip = [x + Math.cos(a) * ro, y + Math.sin(a) * ro];
+      const l = [x + Math.cos(a - h) * ri, y + Math.sin(a - h) * ri];
+      const rr = [x + Math.cos(a + h) * ri, y + Math.sin(a + h) * ri];
+      const lit = 0.5 + 0.5 * Math.cos(a + 2.3);
+      ctx.fillStyle = `rgb(${Math.round(150 + 105 * lit)},${Math.round(215 + 40 * lit)},255)`;
+      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(...l); ctx.lineTo(...tip); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = `rgb(${Math.round(70 + 90 * lit)},${Math.round(150 + 60 * lit)},${Math.round(225 + 30 * lit)})`;
+      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(...tip); ctx.lineTo(...rr); ctx.closePath(); ctx.fill();
+    }
+    ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    for (let i = 0; i <= n * 2; i++) {
+      const a = rot + (i / (n * 2)) * TAU, rad = i % 2 ? ri : ro;
+      ctx[i ? 'lineTo' : 'moveTo'](x + Math.cos(a) * rad, y + Math.sin(a) * rad);
+    }
+    ctx.stroke();
+    // The point of the spike catches the light.
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(x - r * 0.12, y - r * 0.12, r * 0.18, 0, TAU);
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
 function drawPatches(ctx, cam, venue, time) {
   for (const p of venue.patches) {
     const x = sx(cam, p.x);
     const y = sy(p.y);
     const w = px(p.rx) * 2, h = px(p.ry) * 2;
+    if (p.kind === 'ridge') { drawRidge(ctx, cam, p); continue; }
     if (p.kind === 'snow') {
       // Wind-blown powder lying on the ice; the drift's shape is picked by how long it is.
       const r = p.rx / p.ry;

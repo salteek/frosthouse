@@ -508,7 +508,7 @@ function drawIntro(ctx, scene) {
   drawSprite(ctx, portraitFor(m.rival), 1080, 420, 200, { flip: true });
   text(ctx, `MATCH ${scene.run.round + 1}${m.rival.champion ? ' · THE FINAL' : ''}`, VIEW.w / 2, 272, { size: 18, weight: 900, align: 'center', color: PALETTE.accent });
   callout(ctx, `vs ${m.rival.name}`, VIEW.w / 2, 326, 46, { tone: 'ice', sparkle: false });
-  text(ctx, m.boss ? 'BOSS MATCH · score points to break her Resolve: three phases, then she cracks' : `${m.venue.name} · ${m.venue.note}`, VIEW.w / 2, 358, { size: 17, weight: 700, align: 'center', color: PALETTE.inkSoft });
+  text(ctx, m.boss ? 'BOSS MATCH · her Resolve falls each end and with every point you score: three phases, then she cracks' : `${m.venue.name} · ${m.venue.note}`, VIEW.w / 2, 358, { size: 17, weight: 700, align: 'center', color: PALETTE.inkSoft });
   text(ctx, m.hammer === 'player' ? 'You have the hammer: last stone of the end' : `${m.rival.short} have the hammer. You throw first.`, VIEW.w / 2, 392, { size: 15, weight: 800, align: 'center', color: m.hammer === 'player' ? PALETTE.good : PALETTE.player });
   ctx.restore();
 }

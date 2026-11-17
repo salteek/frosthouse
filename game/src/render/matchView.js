@@ -4,7 +4,7 @@ import { PALETTE, VIEW } from '../config.js';
 import { TAU } from '../geometry.js';
 import { currentTeam } from '../match.js';
 import { previewLength } from '../tournament.js';
-import { drawBackdrop, drawSheet, drawSnowfall } from './ice.js';
+import { drawBackdrop, drawSheet, drawSnowfall, drawSpikes } from './ice.js';
 import { drawStones, drawSkipBroom, drawPathPreview, drawCounting, drawSitting, teamColours } from './stones.js';
 import { countEnd } from '../scoring.js';
 import { drawMatchHud } from './hud.js';
@@ -34,6 +34,7 @@ export function drawMatch(ctx, scene, time, best) {
   }
   drawSnowSmoke(ctx, scene, (x) => toX(scene.cam, x), toY);
   drawTrails(ctx, scene, (x) => toX(scene.cam, x), toY, time);
+  drawSpikes(ctx, scene.cam, m.venue, time);
   drawStones(ctx, scene.cam, m, time);
   drawLocks(ctx, scene, time);
   drawChargedStone(ctx, scene, time);

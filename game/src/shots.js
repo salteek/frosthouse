@@ -12,7 +12,7 @@ import { stoneById } from './stones.js';
 import { setPlayerStone } from './render/stones.js';
 import { createStone } from './physics.js';
 import { SHEET } from './config.js';
-import { applyPhase } from './boss.js';
+import { layObstacles } from './boss.js';
 
 const quietInput = {
   mouse: { x: 900, y: 380, down: false },
@@ -93,10 +93,12 @@ export function stageShot(game, shot, seed) {
       m.scores.player = [2, 0, 1];
       m.scores.rival = [0, 2, 0];
       m.end = 4;
-      for (let i = 0; i < 5; i++) autoThrow(scene, 0.85);
+      // Phase 3 from the first stone of the end, so its ice spikes are already standing.
       m.boss.resolve = 33;
       m.boss.phase = 3;
-      applyPhase(m);
+      layObstacles(m);
+      for (let i = 0; i < 5; i++) autoThrow(scene, 0.85);
+      m.boss.resolve = 33;
       m.energy = { player: 4, rival: 2 };
       m.streak = 2;
       deliver(m, 'player', executeShot(chooseShot(m, 'player', m.rng), 0.97, 1, m.rng));

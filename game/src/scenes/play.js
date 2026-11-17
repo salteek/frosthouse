@@ -227,6 +227,14 @@ function consumeEvents(scene) {
       sfx.cheer(0.6);
     } else if (e.type === 'energy') {
       if (e.gain > 0) addFloater(scene.fx, 250, 456, `+${e.gain} ENERGY`, '#6fd3ff', 18);
+    } else if (e.type === 'spike') {
+      sfx.clack(e.impulse);
+      const x = sx(scene.cam, e.spike.x), y = sy(e.spike.y);
+      impact(scene.fx, x, y, Math.min(1.2, e.impulse));
+      burstSprites(scene.fx, 'snowflake', x, y, { count: 8, speed: [80, 220], size: [10, 18], life: [0.4, 0.7], spin: 3 });
+      scene.shake = Math.max(scene.shake, Math.min(5, e.impulse * 3));
+    } else if (e.type === 'bossObstacles') {
+      addFloater(scene.fx, 640, 330, `THE GLACIER RAISES ${e.names.join(' + ')}`, '#b8f0ff', 30, 2.2, 0.4);
     } else if (e.type === 'bossPhase') {
       const ph = BOSS_PHASES[e.phase - 1];
       setTimeout(() => sfx.thunder(), 1500);

@@ -7,7 +7,7 @@ import { callShot } from './callouts.js';
 import { chooseShot, executeShot, rivalWantsSweep } from './ai.js';
 import { applySkillHit, gainEnergy } from './skills.js';
 import { chargeFor, comboOnHit } from './combos.js';
-import { createBoss, hurtBoss, RESOLVE_PER_POINT, RESOLVE_PER_CALL, bossSkillMod } from './boss.js';
+import { createBoss, layObstacles, hurtBoss, RESOLVE_PER_POINT, RESOLVE_PER_CALL, bossSkillMod } from './boss.js';
 
 const R = SHEET.stoneR;
 
@@ -51,6 +51,7 @@ export function createMatch({ rival, venue, kit, difficulty, rng, ends = MATCH.e
     clock: 0,
     boss: createBoss(rival, venue), // the final's boss state (boss.js), or null
   };
+  if (m.boss) layObstacles(m);
   return m;
 }
 
@@ -242,5 +243,9 @@ export function nextEnd(m) {
   m.skillUsed = {};
   m.phase = 'aim';
   m.endResult = null;
+  if (m.boss) {
+    const fresh = layObstacles(m);
+    if (fresh.length) m.events.push({ type: 'bossObstacles', names: fresh });
+  }
   return true;
 }

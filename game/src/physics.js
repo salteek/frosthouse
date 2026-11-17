@@ -128,6 +128,31 @@ export function stepStones(stones, venue, dt) {
     }
   }
 
+  // Ice spikes (the boss final): fixed crystals; a stone bounces off them and loses a little speed.
+  if (venue.spikes?.length) {
+    for (const s of stones) {
+      if (!s.moving || s.out) continue;
+      for (const p of venue.spikes) {
+        const dx = s.x - p.x;
+        const dy = s.y - p.y;
+        const rr = R + p.r;
+        const d2 = dx * dx + dy * dy;
+        if (d2 >= rr * rr || d2 === 0) continue;
+        const d = Math.sqrt(d2);
+        const nx = dx / d;
+        const ny = dy / d;
+        s.x = p.x + nx * rr;
+        s.y = p.y + ny * rr;
+        const vn = s.vx * nx + s.vy * ny;
+        if (vn >= 0) continue;
+        s.vx -= (1 + 0.7) * vn * nx;
+        s.vy -= (1 + 0.7) * vn * ny;
+        s.touched = true;
+        events.push({ type: 'spike', stone: s, spike: p, impulse: -vn });
+      }
+    }
+  }
+
   const half = SHEET.width / 2;
   for (const s of stones) {
     if (s.out) continue;
