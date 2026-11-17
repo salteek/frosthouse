@@ -12,6 +12,7 @@ import { stoneById } from './stones.js';
 import { setPlayerStone } from './render/stones.js';
 import { createStone } from './physics.js';
 import { SHEET } from './config.js';
+import { applyPhase } from './boss.js';
 
 const quietInput = {
   mouse: { x: 900, y: 380, down: false },
@@ -78,18 +79,25 @@ export function stageShot(game, shot, seed) {
     const rank = (c) => (c.text.startsWith('TRIPLE') || c.text.startsWith('DOUBLE') ? 3 : c.text.startsWith('HIT') ? 2 : c.tone === 'great' ? 1 : 0);
     let best = null;
     for (let k = 0; k < 60; k++) {
+      // The final against the boss: last end, a one-point lead, her Resolve in its last phase.
       const r = createRun('club', 4100 + seed * 31 + k);
-      winMatches(r, 1);
-      giveKit(r, ['birch', 'eye']);
-      r.score = 2740;
+      winMatches(r, 5);
+      giveKit(r, ['birch', 'eye', 'steady', 'granite']);
+      r.kit.skills = [{ id: 'bolt', level: 2 }, { id: 'thunder', level: 3 }];
+      r.losses = 1;
+      r.score = 15420;
       const scene = createPlayScene(r);
       scene.intro = 0;
       const m = scene.match;
       m.hammer = 'player';
-      m.scores.player = [2, 0];
-      m.scores.rival = [0, 1];
-      m.end = 3;
+      m.scores.player = [2, 0, 1];
+      m.scores.rival = [0, 2, 0];
+      m.end = 4;
       for (let i = 0; i < 5; i++) autoThrow(scene, 0.85);
+      m.boss.resolve = 33;
+      m.boss.phase = 3;
+      applyPhase(m);
+      m.energy = { player: 4, rival: 2 };
       m.streak = 2;
       deliver(m, 'player', executeShot(chooseShot(m, 'player', m.rng), 0.97, 1, m.rng));
       let guard = 0;

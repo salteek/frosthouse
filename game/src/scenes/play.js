@@ -12,6 +12,7 @@ import { sfx, setIceSounds } from '../audio.js';
 import { spawnBurst, addFloater, updateParticles } from '../particles.js';
 import { impact, celebrate, sparkle, sweepSpray, updateFx, recordTrails, emitSnowSmoke, addFlash, burstSprites } from '../fx.js';
 import { sx, sy } from '../render/camera.js';
+import { updateBoss, BOSS_PHASES } from '../boss.js';
 import { clamp } from '../geometry.js';
 
 export function createPlayScene(run) {
@@ -70,6 +71,7 @@ export function updatePlay(scene, dt, input) {
   recordTrails(scene, dt);
   emitSnowSmoke(scene, dt);
   if (scene.skillBanner) scene.skillBanner.t += dt;
+  updateBoss(scene.match, dt);
   scene.shake = Math.max(0, scene.shake - dt * 20);
   followStone(scene.cam, m.shot, dt);
 
@@ -224,7 +226,17 @@ function consumeEvents(scene) {
       run.score += Math.round(150 * run.kit.scoreMul);
       sfx.cheer(0.6);
     } else if (e.type === 'energy') {
-      if (e.gain > 0) addFloater(scene.fx, 104, 430, `+${e.gain} ENERGY`, '#6fd3ff', 18);
+      if (e.gain > 0) addFloater(scene.fx, 250, 456, `+${e.gain} ENERGY`, '#6fd3ff', 18);
+    } else if (e.type === 'bossPhase') {
+      const ph = BOSS_PHASES[e.phase - 1];
+      setTimeout(() => sfx.thunder(), 1500);
+      addFloater(scene.fx, 640, 250, `PHASE ${e.phase}: ${ph.name}`, '#b8f0ff', 40, 2.4, 1.5);
+      addFloater(scene.fx, 640, 296, ph.note, '#eaf4ff', 20, 2.4, 1.5);
+    } else if (e.type === 'bossCracked') {
+      sfx.cheer(1.4);
+      addFloater(scene.fx, 640, 250, 'THE GLACIER CRACKS!', PALETTE.gold, 44, 2.4, 1.5);
+      addFloater(scene.fx, 640, 296, 'Her powers are gone', '#eaf4ff', 20, 2.4, 1.5);
+      burstSprites(scene.fx, 'snowflake', 640, 250, { count: 30, speed: [160, 420], size: [12, 24], life: [0.6, 1.1], spin: 3 });
     } else if (e.type === 'combo') {
       const el = e.el;
       const x = sx(scene.cam, e.x ?? SHEET.tee), y = sy(e.y ?? 0);

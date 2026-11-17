@@ -5,6 +5,7 @@
 // same energy rules.
 
 import { SHEET } from './config.js';
+import { rivalPowers } from './boss.js';
 
 export const SKILLS = {
   bolt: {
@@ -106,19 +107,22 @@ export function useSkill(m, slotIndex) {
 // The stronger rinks carry one power of their own. They fire it before a throw when you are counting
 // (or, for Frost Lock, when they are), paying energy like you; never on Casual.
 export function rivalTrySkill(m) {
-  const p = m.rival.power;
-  if (!p || m.difficulty === 'casual' || usedThisEnd(m, p.id, 'rival') || energyOf(m, 'rival') < skillCost(p)) return false;
+  if (m.difficulty === 'casual') return false;
   const all = m.stones.filter((s) => !s.out).sort((a, b) => dist2(a) - dist2(b));
   const shot = all[0];
   if (!shot || dist2(shot) > HOUSE * HOUSE) return false;
-  const want = p.id === 'lock' ? shot.team === 'rival' && !shot.locked : shot.team === 'player';
-  if (!want || !skillTargets(m, p.id, 'rival').length) return false;
-  // Late in the end they are keener to spend it.
-  const left = m.stonesPerTeam - m.thrown.rival;
-  if (!m.rng.chance(left <= 2 ? 0.85 : 0.45)) return false;
-  spend(m, 'rival', p);
-  start(m, 'rival', p);
-  return true;
+  for (const p of rivalPowers(m)) {
+    if (usedThisEnd(m, p.id, 'rival') || energyOf(m, 'rival') < skillCost(p)) continue;
+    const want = p.id === 'lock' ? shot.team === 'rival' && !shot.locked : shot.team === 'player';
+    if (!want || !skillTargets(m, p.id, 'rival').length) continue;
+    // Late in the end they are keener to spend it.
+    const left = m.stonesPerTeam - m.thrown.rival;
+    if (!m.rng.chance(left <= 2 ? 0.85 : 0.45)) return false;
+    spend(m, 'rival', p);
+    start(m, 'rival', p);
+    return true;
+  }
+  return false;
 }
 
 export function applySkillHit(m) {

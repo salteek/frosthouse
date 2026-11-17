@@ -11,6 +11,7 @@ import { panel, text, chip, bar, keycap, roundRect, formatScore, FONT_TITLE, cal
 import { drawSprite, portraitFor, crestFor, drawCover } from './sprites.js';
 import { drawStone, teamColours } from './stones.js';
 import { drawKitIcon, trophy } from './icons.js';
+import { BOSS_PHASES, bossPhase } from '../boss.js';
 
 const BOTTOM = 620;
 
@@ -22,6 +23,7 @@ export function drawMatchHud(ctx, scene, time, best) {
   drawRivalCard(ctx, m);
   drawShotPanel(ctx, scene, time);
   drawSheetMap(ctx, m);
+  if (m.boss) drawBossBar(ctx, m, time);
   // The controls stay on screen between throws, not only while aiming, so the scheme is always in view.
   if ((m.phase === 'aim' || m.phase === 'settle') && scene.intro <= 0) drawHintPills(ctx);
   if (m.lastCall && m.phase === 'settle') drawCall(ctx, m.lastCall, m);
@@ -115,6 +117,50 @@ function drawScoreboard(ctx, m) {
   });
 }
 
+// The final's boss bar, hung under the top panels: The Glacier's RESOLVE, split into her three phases.
+function drawBossBar(ctx, m, time) {
+  const b = m.boss;
+  const x = 392, y = 106, w = 492, h = 62;
+  const col = b.cracked ? '#9fb4d8' : ['#5fb7ea', '#b8f0ff', '#c4a8ff'][b.phase - 1];
+  panel(ctx, x, y, w, h, { radius: 12, glow: b.cracked ? undefined : col, fillTop: 'rgba(16,22,52,0.95)', fill: 'rgba(10,14,36,0.95)' });
+  chip(ctx, 'BOSS', x + 12, y + 17, { fill: '#7a2bd6', size: 10, h: 18 });
+  text(ctx, 'THE GLACIER · RESOLVE', x + 64, y + 22, { size: 13, weight: 900, color: '#eaf4ff' });
+  const tag = b.cracked ? 'CRACKED · powers gone' : `PHASE ${b.phase}/3 · ${bossPhase(b).name}`;
+  text(ctx, tag, x + w - 12, y + 22, { size: 13, weight: 900, align: 'right', color: col });
+  // The bar: three segments, notched at the phase thresholds; it flashes white for a moment when hit.
+  const bx = x + 12, by = y + 30, bw = w - 24, bh = 14;
+  roundRect(ctx, bx, by, bw, bh, 7);
+  ctx.fillStyle = 'rgba(255,255,255,0.08)';
+  ctx.fill();
+  const frac = b.resolve / 100;
+  if (frac > 0) {
+    const g = ctx.createLinearGradient(bx, 0, bx + bw, 0);
+    g.addColorStop(0, '#a98bff');
+    g.addColorStop(0.5, '#b8f0ff');
+    g.addColorStop(1, '#5fb7ea');
+    roundRect(ctx, bx, by, Math.max(bh, bw * frac), bh, 7);
+    ctx.fillStyle = g;
+    ctx.fill();
+    if (b.hitT < 0.35) {
+      ctx.globalAlpha = 1 - b.hitT / 0.35;
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+  }
+  for (const t of [1 / 3, 2 / 3]) {
+    ctx.fillStyle = 'rgba(10,14,36,0.95)';
+    ctx.fillRect(bx + bw * t - 1.5, by - 2, 3, bh + 4);
+  }
+  text(ctx, `${Math.ceil(b.resolve)}`, bx + Math.max(bh, bw * frac) - 6, by + 11, { size: 11, weight: 900, align: 'right', color: '#0a1024' });
+  // The three phases named under their thirds of the bar (the bar drains right to left, so phase 1 is on the right).
+  BOSS_PHASES.forEach((ph, i) => {
+    const cx = bx + bw * (1 - (i + 0.5) / 3);
+    const on = !b.cracked && b.phase === ph.n;
+    text(ctx, `${ph.n} · ${ph.name}`, cx, y + 56, { size: 9, weight: 900, align: 'center', color: on ? col : 'rgba(200,215,240,0.4)' });
+  });
+}
+
 function drawHammer(ctx, x, y) {
   if (drawSprite(ctx, 'hammer_icon', x, y, 24, { ay: 0.5 })) return;
   ctx.save();
@@ -131,9 +177,10 @@ function drawOpenStrip(ctx, run, m) {
   const x = 392;
   const w = 330;
   panel(ctx, x, 10, w, 90);
-  text(ctx, `MATCH ${run.round + 1} OF ${RIVALS.length} · ${m.venue.name.toUpperCase()}`, x + 16, 32, { size: 13, weight: 900, color: PALETTE.accent });
+  const final = !!m.boss;
+  text(ctx, final ? `MATCH ${RIVALS.length} OF ${RIVALS.length} · THE FINAL · ${m.venue.name.toUpperCase()}` : `MATCH ${run.round + 1} OF ${RIVALS.length} · ${m.venue.name.toUpperCase()}`, x + 16, 32, { size: 13, weight: 900, color: final ? PALETTE.gold : PALETTE.accent });
   chip(ctx, 'WIN', x + 16, 55, { fill: PALETTE.good, size: 11, h: 20 });
-  text(ctx, 'beat all 6 rinks and take the Open', x + 64, 60, { size: 13, weight: 700 });
+  text(ctx, final ? 'outscore The Glacier and take the Open' : 'beat all 6 rinks and take the Open', x + 64, 60, { size: 13, weight: 700 });
   chip(ctx, 'LOSE', x + 16, 81, { fill: PALETTE.bad, size: 11, h: 20 });
   text(ctx, `${MATCH.lossesAllowed} match losses`, x + 68, 86, { size: 13, weight: 700 });
   for (let i = 0; i < MATCH.lossesAllowed; i++) {
@@ -380,7 +427,7 @@ function drawCall(ctx, call, m) {
   const colour = call.tone === 'great' ? PALETTE.gold : call.tone === 'good' ? PALETTE.accent : call.tone === 'bad' ? PALETTE.bad : PALETTE.inkSoft;
   ctx.save();
   ctx.globalAlpha = a;
-  ctx.translate(640, 200);
+  ctx.translate(640, m.boss ? 226 : 200);
   ctx.scale(scale, scale);
   ctx.rotate(tilt);
   const who = call.team === 'player' ? '' : `${m.rival.short}: `;
@@ -461,7 +508,7 @@ function drawIntro(ctx, scene) {
   drawSprite(ctx, portraitFor(m.rival), 1080, 420, 200, { flip: true });
   text(ctx, `MATCH ${scene.run.round + 1}${m.rival.champion ? ' · THE FINAL' : ''}`, VIEW.w / 2, 272, { size: 18, weight: 900, align: 'center', color: PALETTE.accent });
   callout(ctx, `vs ${m.rival.name}`, VIEW.w / 2, 326, 46, { tone: 'ice', sparkle: false });
-  text(ctx, `${m.venue.name} · ${m.venue.note}`, VIEW.w / 2, 358, { size: 17, weight: 700, align: 'center', color: PALETTE.inkSoft });
+  text(ctx, m.boss ? 'BOSS MATCH · score points to break her Resolve: three phases, then she cracks' : `${m.venue.name} · ${m.venue.note}`, VIEW.w / 2, 358, { size: 17, weight: 700, align: 'center', color: PALETTE.inkSoft });
   text(ctx, m.hammer === 'player' ? 'You have the hammer: last stone of the end' : `${m.rival.short} have the hammer. You throw first.`, VIEW.w / 2, 392, { size: 15, weight: 800, align: 'center', color: m.hammer === 'player' ? PALETTE.good : PALETTE.player });
   ctx.restore();
 }

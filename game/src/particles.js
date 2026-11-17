@@ -37,8 +37,8 @@ export function spawnSpray(world, x, y, angle, count = 8) {
   }
 }
 
-export function addFloater(world, x, y, text, color = '#f4ead5', size = 18) {
-  world.floaters.push({ x, y, text, color, size, life: 1.1, max: 1.1 });
+export function addFloater(world, x, y, text, color = '#f4ead5', size = 18, life = 1.1, delay = 0) {
+  world.floaters.push({ x, y, text, color, size, life, max: life, delay });
 }
 
 // A painted sprite that pops in, swells a little and fades: sparks, rings, confetti.
@@ -69,6 +69,7 @@ export function updateParticles(world, dt) {
   const fs = world.floaters;
   for (let i = fs.length - 1; i >= 0; i--) {
     const f = fs[i];
+    if (f.delay > 0) { f.delay -= dt; continue; }
     f.life -= dt;
     f.y -= 34 * dt;
     if (f.life <= 0) fs.splice(i, 1);

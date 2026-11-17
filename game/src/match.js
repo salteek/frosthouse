@@ -7,6 +7,7 @@ import { callShot } from './callouts.js';
 import { chooseShot, executeShot, rivalWantsSweep } from './ai.js';
 import { applySkillHit, gainEnergy } from './skills.js';
 import { chargeFor, comboOnHit } from './combos.js';
+import { createBoss, hurtBoss, RESOLVE_PER_POINT, RESOLVE_PER_CALL, bossSkillMod } from './boss.js';
 
 const R = SHEET.stoneR;
 
@@ -48,6 +49,7 @@ export function createMatch({ rival, venue, kit, difficulty, rng, ends = MATCH.e
     streak: 0,             // the player's run of good shots in a row; it multiplies shot-call points
     winner: null,
     clock: 0,
+    boss: createBoss(rival, venue), // the final's boss state (boss.js), or null
   };
   return m;
 }
@@ -104,7 +106,7 @@ export function playerThrow(m, { aimY, weight, turn, releaseError }) {
 
 export function rivalThrow(m) {
   const shot = chooseShot(m, 'rival', m.rng);
-  const skill = m.rival.skill + (m.difficulty === 'casual' ? -0.14 : m.difficulty === 'champion' ? 0.05 : 0);
+  const skill = m.rival.skill + bossSkillMod(m) + (m.difficulty === 'casual' ? -0.14 : m.difficulty === 'champion' ? 0.05 : 0);
   const exec = executeShot(shot, Math.min(0.97, skill), m.kit.rivalNerves, m.rng);
   m.rivalShot = shot;
   return deliver(m, 'rival', exec);
@@ -188,6 +190,7 @@ function finishThrow(m) {
     if (call.text.includes('TAKEOUT') || call.text.includes('HIT')) m.stats.takeouts++;
     if (call.text === 'ON THE BUTTON!') m.stats.buttons++;
     if (s.hogged) m.stats.hogged++;
+    hurtBoss(m, RESOLVE_PER_CALL[call.tone] ?? 0);
     m.events.push({ type: 'call', call, mult, points: Math.round((call.points + (m.perfect ? SCORE.perfectRelease : 0)) * m.kit.scoreMul * mult), x: s.x, y: s.y });
   } else {
     gainEnergy(m, 'rival', call, false);
@@ -218,6 +221,7 @@ function scoreEnd(m) {
   if (res.team) m.hammer = res.team === 'player' ? 'rival' : 'player';
   m.endResult = { ...res, tea, stolen, t: 0 };
   m.events.push({ type: 'endScored', result: m.endResult });
+  if (res.team === 'player') hurtBoss(m, res.points * RESOLVE_PER_POINT);
   if (res.team === 'player') m.events.push({ type: 'points', points: Math.round(res.points * SCORE.pointPerStone * m.kit.scoreMul) });
 }
 

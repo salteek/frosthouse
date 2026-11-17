@@ -33,7 +33,7 @@ export const RIVALS = [
   },
   {
     id: 'glacier', name: 'The Glacier', short: 'GLACIER', skip: 'Champion Halla Vik',
-    skill: 0.78, style: 'mixed', colour: '#5fb7ea', dark: '#2b78a8', venue: 'aurora', champion: true,
+    skill: 0.78, style: 'mixed', colour: '#5fb7ea', dark: '#2b78a8', venue: 'aurora', champion: true, boss: true,
     motto: 'Undefeated in eleven Opens. Cold as the lake bed.',
     power: { id: 'thunder', level: 3 },
   },

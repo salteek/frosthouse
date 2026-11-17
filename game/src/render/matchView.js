@@ -82,6 +82,7 @@ function drawFx(ctx, fx) {
     ctx.fillRect(0, 0, 1280, 720);
   }
   for (const f of fx.floaters) {
+    if (f.delay > 0) continue;
     ctx.save();
     ctx.globalAlpha = Math.min(1, (f.life / f.max) * 1.6);
     callout(ctx, f.text, f.x, f.y, f.size * 1.15, { tone: f.size > 30 ? 'fire' : 'gold', sparkle: f.size > 30 });
