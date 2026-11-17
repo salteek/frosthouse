@@ -359,9 +359,9 @@ function drawPatches(ctx, cam, venue, time) {
 }
 
 function drawWind(ctx, venue, time) {
-  // Painted gusts (four frames) that come and go like real wind: each is born at a random spot, size,
-  // flip and strength, drifts slowly downwind while it plays through its frames, and is gone again in
-  // a couple of seconds; then its slot rests for a random while before the next one.
+  // Painted gusts that come and go like real wind: each is one of four painted shapes, born at a random
+  // spot, size, flip and strength; it stretches out downwind from its tail, drifts a little, and is gone
+  // again in a couple of seconds; then its slot rests for a random while before the next one.
   const frames = [0, 1, 2, 3].map((i) => featheredSprite(`wind_${i}`));
   if (!frames[0]) return drawWindLines(ctx, venue, time);
   const dir = Math.sign(venue.wind) || 1;
@@ -378,24 +378,23 @@ function drawWind(ctx, venue, time) {
     if (age < 0 || age > life) continue;
     const p = age / life;
     const w = 180 + rnd(n, 3) * 240, h = w * (frames[0].height / frames[0].width);
-    const speed = 35 + rnd(n, 4) * 45;
+    const speed = 15 + rnd(n, 4) * 25;
     const x = 80 + rnd(n, 5) * (VIEW.w - 160) + age * speed;
     const y = top + rnd(n, 6) * span + dir * age * 6;
     const peak = 0.22 + rnd(n, 7) * 0.38;
     // Quick to appear, a varied fade away.
     const fadeIn = Math.min(1, p / 0.18), fadeOut = Math.min(1, (1 - p) / (0.3 + rnd(n, 8) * 0.4));
     const alpha = peak * fadeIn * fadeOut;
-    // The frames play through the gust's life, and it unfurls a little as it goes.
-    const f = Math.min(2.999, p * 3);
-    const k = Math.floor(f), mix = f - k;
+    // Each gust is one of the four painted shapes. It is anchored at its tail and stretches out
+    // downwind as it blows (thinning a touch as it lengthens), then keeps stretching as it fades.
+    const img = frames[Math.floor(rnd(n, 11) * 4) % 4];
+    const ease = 1 - (1 - p) ** 2;
+    const sxk = 0.25 + 0.95 * ease;
     ctx.save();
-    ctx.translate(x, y);
-    ctx.scale(0.85 + 0.25 * p, (rnd(n, 10) < 0.5 ? -1 : 1) * (dir < 0 ? -1 : 1));
-    for (const [fi, a] of [[k, 1 - mix], [k + 1, mix]]) {
-      if (a <= 0.01) continue;
-      ctx.globalAlpha = alpha * a;
-      ctx.drawImage(frames[fi], -w / 2, -h / 2, w, h);
-    }
+    ctx.translate(x - w / 2, y);
+    ctx.scale(sxk, (1 - 0.18 * ease) * (rnd(n, 10) < 0.5 ? -1 : 1) * (dir < 0 ? -1 : 1));
+    ctx.globalAlpha = alpha;
+    ctx.drawImage(img, 0, -h / 2, w, h);
     ctx.restore();
   }
   ctx.restore();
