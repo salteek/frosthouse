@@ -456,8 +456,8 @@ function drawEndSummary(ctx, m, time) {
   ctx.globalAlpha = a;
   const w = 460;
   const x = (VIEW.w - w) / 2;
-  const y = 168;
-  panel(ctx, x, y, w, 120, { glow: r.team ? teamColours(r.team, m.rival)[0] : undefined });
+  const y = m.boss ? 200 : 168;
+  panel(ctx, x, y, w, 120, { glow: r.team ? teamColours(r.team, m.rival)[0] : undefined, fillTop: 'rgba(30,44,84,0.97)', fill: 'rgba(16,24,50,0.97)' });
   text(ctx, `END ${m.end} OF ${m.ends}`, VIEW.w / 2, y + 26, { size: 13, weight: 900, align: 'center', color: PALETTE.inkSoft });
   let head;
   if (r.tea) head = 'THERMOS OF TEA: END BLANKED';

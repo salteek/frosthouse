@@ -72,6 +72,15 @@ export function updatePlay(scene, dt, input) {
   emitSnowSmoke(scene, dt);
   if (scene.skillBanner) scene.skillBanner.t += dt;
   updateBoss(scene.match, dt);
+  // Boss banners wait while the end's score is up, and are dropped if the match is over.
+  const fls = scene.fx.floaters;
+  for (let i = fls.length - 1; i >= 0; i--) {
+    const f = fls[i];
+    if (!f.waitEnd) continue;
+    if (scene.match.phase === 'over') fls.splice(i, 1);
+    else if (scene.match.phase === 'endScore') f.delay = Math.max(f.delay, 0.35);
+  }
+  for (const f of fls) if (f.onShow && !(f.delay > 0)) { f.onShow(); f.onShow = null; }
   scene.shake = Math.max(0, scene.shake - dt * 20);
   followStone(scene.cam, m.shot, dt);
 
@@ -189,6 +198,12 @@ function handleAim(scene, dt, input) {
   previewPath(scene);
 }
 
+// Mark the last `n` floaters as boss banners that wait for the end-score popup to close.
+function holdForEnd(scene, n) {
+  const fl = scene.fx.floaters;
+  for (let i = Math.max(0, fl.length - n); i < fl.length; i++) fl[i].waitEnd = true;
+}
+
 function consumeEvents(scene) {
   const m = scene.match;
   const run = scene.run;
@@ -234,16 +249,20 @@ function consumeEvents(scene) {
       burstSprites(scene.fx, 'snowflake', x, y, { count: 8, speed: [80, 220], size: [10, 18], life: [0.4, 0.7], spin: 3 });
       scene.shake = Math.max(scene.shake, Math.min(5, e.impulse * 3));
     } else if (e.type === 'bossObstacles') {
-      addFloater(scene.fx, 640, 330, `THE GLACIER RAISES ${e.names.join(' + ')}`, '#b8f0ff', 30, 2.2, 0.4);
+      addFloater(scene.fx, 640, 376, `THE GLACIER RAISES ${e.names.join(' + ')}`, '#b8f0ff', 26, 2.2, 1.1);
     } else if (e.type === 'bossPhase') {
       const ph = BOSS_PHASES[e.phase - 1];
-      setTimeout(() => sfx.thunder(), 1500);
-      addFloater(scene.fx, 640, 250, `PHASE ${e.phase}: ${ph.name}`, '#b8f0ff', 40, 2.4, 1.5);
-      addFloater(scene.fx, 640, 296, ph.note, '#eaf4ff', 20, 2.4, 1.5);
+      // Mid-end it waits for the shot call to clear; at the start of an end it comes straight in.
+      const wait = m.thrown.player + m.thrown.rival === 0 && m.phase === 'aim' ? 0.3 : 1.5;
+      addFloater(scene.fx, 640, 250, `PHASE ${e.phase}: ${ph.name}`, '#b8f0ff', 40, 2.4, wait);
+      scene.fx.floaters[scene.fx.floaters.length - 1].onShow = () => sfx.thunder();
+      addFloater(scene.fx, 640, 296, ph.note, '#eaf4ff', 20, 2.4, wait);
+      holdForEnd(scene, 2);
     } else if (e.type === 'bossCracked') {
       sfx.cheer(1.4);
       addFloater(scene.fx, 640, 250, 'THE GLACIER CRACKS!', PALETTE.gold, 44, 2.4, 1.5);
       addFloater(scene.fx, 640, 296, 'Her powers are gone', '#eaf4ff', 20, 2.4, 1.5);
+      holdForEnd(scene, 2);
       burstSprites(scene.fx, 'snowflake', 640, 250, { count: 30, speed: [160, 420], size: [12, 24], life: [0.6, 1.1], spin: 3 });
     } else if (e.type === 'combo') {
       const el = e.el;

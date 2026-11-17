@@ -117,6 +117,28 @@ export function stageShot(game, shot, seed) {
     game.save = { best: 18240, trophies: 1, runs: 6, lastRuns: [] };
     return;
   }
+  if (shot === 'endscore') {
+    // The end-score popup in the boss final: the last stone of an end played live, then held ?at= seconds
+    // (default 2.2) into the score, so the phase banners that land with it are in view.
+    winMatches(run, 5);
+    const scene = createPlayScene(run);
+    scene.intro = 0;
+    const m = scene.match;
+    m.hammer = 'player';
+    for (let i = 0; i < 7; i++) autoThrow(scene, 0.85);
+    m.boss.resolve = 70;
+    deliver(m, 'player', executeShot(chooseShot(m, 'player', m.rng), 0.97, 1, m.rng));
+    const at = Number(new URLSearchParams(globalThis.location?.search ?? '').get('at') ?? 2.2);
+    let guard = 0, t = 0;
+    while (guard++ < 9000 && (m.phase !== 'endScore' || t < at)) {
+      updatePlay(scene, 1 / 60, quietInput);
+      if (m.phase === 'endScore') t += 1 / 60;
+    }
+    game.play = scene;
+    game.mode = 'play';
+    game.save = { best: 18240, trophies: 1, runs: 6, lastRuns: [] };
+    return;
+  }
   if (shot === 'run') {
     // A throw in flight: the player's stone swept down the sheet, sweepers and frost trail in view.
     // ?seed=0..5 picks the rival, and so the lake (Mirror, Pine, Windy, Thaw, Pine, Aurora).
