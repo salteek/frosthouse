@@ -369,19 +369,19 @@ function drawWind(ctx, venue, time) {
   const rnd = (n, k) => { const h = Math.sin(n * 12.9898 + k * 78.233) * 43758.5453; return h - Math.floor(h); };
   ctx.save();
   ctx.globalCompositeOperation = 'lighter';
-  for (let i = 0; i < 5; i++) {
-    const cycle = 3.2 + i * 0.37;
-    const t = time + i * 1.9;
+  for (let i = 0; i < 11; i++) {
+    const cycle = 2.6 + (i % 6) * 0.29;
+    const t = time + i * 1.37;
     const n = Math.floor(t / cycle) * 7 + i, at = t % cycle;
     const start = rnd(n, 1) * 1.0, life = 1.5 + rnd(n, 2) * 1.2;
     const age = at - start;
     if (age < 0 || age > life) continue;
     const p = age / life;
     const w = 180 + rnd(n, 3) * 240, h = w * (frames[0].height / frames[0].width);
-    const speed = 120 + rnd(n, 4) * 90;
+    const speed = 170 + rnd(n, 4) * 110;
     const x = 80 + rnd(n, 5) * (VIEW.w - 160) + age * speed;
     const y = top + rnd(n, 6) * span + dir * age * 6;
-    const peak = 0.08 + rnd(n, 7) * 0.12;
+    const peak = 0.06 + rnd(n, 7) * 0.09;
     // Quick to appear, a varied fade away.
     const fadeIn = Math.min(1, p / 0.18), fadeOut = Math.min(1, (1 - p) / (0.3 + rnd(n, 8) * 0.4));
     const alpha = peak * fadeIn * fadeOut;
