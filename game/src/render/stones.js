@@ -6,8 +6,13 @@ import { sx, sy, px } from './camera.js';
 import { drawSprite, hasSprite } from './sprites.js';
 
 // The player's stone colours follow the stone set chosen for the run.
-let mine = null;
-export function setPlayerStone(stone) { mine = stone ? [stone.colour, stone.dark] : null; }
+let mine = null, mineSprite = null;
+export function setPlayerStone(stone) {
+  mine = stone ? [stone.colour, stone.dark] : null;
+  mineSprite = stone ? `stone_${stone.id}` : null;
+}
+// The painted top-down sprite for a team's stones, when its set has one.
+export const teamSprite = (team) => (team === 'player' && mineSprite && hasSprite(mineSprite) ? mineSprite : null);
 export function teamColours(team, rival) {
   return team === 'player' ? mine ?? [PALETTE.player, PALETTE.playerDark] : [rival.colour, rival.dark];
 }
@@ -16,6 +21,28 @@ export function teamColours(team, rival) {
 // glance on white ice) and a candy-coloured handle whose angle shows the spin.
 export function drawStone(ctx, x, y, spin, colours, opts = {}) {
   const r = opts.radius ?? px(SHEET.stoneR);
+  if (opts.sprite && hasSprite(opts.sprite)) {
+    // A painted stone: a soft glow in its colour (brighter while it runs), a shadow, then the
+    // sprite turned by the spin so the handle shows it.
+    ctx.save();
+    ctx.translate(x, y);
+    if (opts.alpha != null) ctx.globalAlpha = opts.alpha;
+    const boost = opts.boost ?? 1;
+    const glow = ctx.createRadialGradient(0, 0, r * 0.6, 0, 0, r * (1.5 + 0.25 * boost));
+    glow.addColorStop(0, `${colours[0]}${Math.round(Math.min(1, 0.35 * boost) * 255).toString(16).padStart(2, '0')}`);
+    glow.addColorStop(1, `${colours[0]}00`);
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(0, 0, r * (1.5 + 0.25 * boost), 0, TAU);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(10,20,40,0.35)';
+    ctx.beginPath();
+    ctx.ellipse(2, 4, r * 1.05, r, 0, 0, TAU);
+    ctx.fill();
+    drawSprite(ctx, opts.sprite, 0, 0, r * 2.12, { ay: 0.5, rot: spin });
+    ctx.restore();
+    return;
+  }
   ctx.save();
   ctx.translate(x, y);
   if (opts.alpha != null) ctx.globalAlpha = opts.alpha;
@@ -92,7 +119,7 @@ export function drawStones(ctx, cam, match, time) {
     const y = sy(s.y);
     if (x < -30 || x > 1310) continue;
     // Behind a running stone: the frost ribbon and snow smoke (fx.js), drawn under the stones.
-    drawStone(ctx, x, y, s.spin, teamColours(s.team, match.rival), { boost: s.moving ? 1.8 + Math.sin(time * 18) * 0.4 : 1 });
+    drawStone(ctx, x, y, s.spin, teamColours(s.team, match.rival), { boost: s.moving ? 1.8 + Math.sin(time * 18) * 0.4 : 1, sprite: teamSprite(s.team) });
     if (s === match.shot && s.swept) drawSweepers(ctx, x, y, s, match, time);
   }
 }

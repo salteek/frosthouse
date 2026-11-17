@@ -440,7 +440,10 @@ export function drawStoneSelect(ctx, state, time, save) {
     glow.addColorStop(1, `${st.colour}00`);
     ctx.fillStyle = glow;
     ctx.fillRect(x, y + 6, w, 180);
-    drawStone(ctx, x + w / 2, y + 96, on ? time * 1.2 : 0.6, [st.colour, st.dark], { radius: 58, boost: on ? 1.6 : 1 });
+    // The painted hero stone (bobbing gently when picked); the top-down stone if it hasn't loaded.
+    const bob = on ? Math.sin(time * 2.4) * 5 : 0;
+    if (!drawSprite(ctx, `hero_${st.id}`, x + w / 2, y + 100 + bob, on ? 150 : 138, { ay: 0.5 }))
+      drawStone(ctx, x + w / 2, y + 96, on ? time * 1.2 : 0.6, [st.colour, st.dark], { radius: 58, boost: on ? 1.6 : 1, sprite: `stone_${st.id}` });
     text(ctx, st.name, x + w / 2, y + 196, { size: 22, weight: 900, align: 'center', font: FONT_TITLE });
     wrap(ctx, st.blurb, x + w / 2, y + 220, w - 40, 18, { size: 13, weight: 700, align: 'center', color: PALETTE.inkSoft });
     // How it plays.

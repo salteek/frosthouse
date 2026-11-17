@@ -1102,5 +1102,101 @@
   ],
   "mode": "glow",
   "scale": 0.35
+ },
+ {
+  "name": "stone_ruby",
+  "sheet": "game design/18-nov/Curling_stones_sprite_sheet_top.jpg",
+  "box": [
+   62,
+   460,
+   620,
+   620
+  ],
+  "mode": "solid",
+  "scale": 0.26
+ },
+ {
+  "name": "stone_amber",
+  "sheet": "game design/18-nov/Curling_stones_sprite_sheet_top.jpg",
+  "box": [
+   733,
+   460,
+   620,
+   620
+  ],
+  "mode": "solid",
+  "scale": 0.26
+ },
+ {
+  "name": "stone_coral",
+  "sheet": "game design/18-nov/Curling_stones_sprite_sheet_top.jpg",
+  "box": [
+   1401,
+   460,
+   620,
+   620
+  ],
+  "mode": "solid",
+  "scale": 0.26
+ },
+ {
+  "name": "stone_ivory",
+  "sheet": "game design/18-nov/Curling_stones_sprite_sheet_top.jpg",
+  "box": [
+   2071,
+   460,
+   620,
+   620
+  ],
+  "mode": "solid",
+  "scale": 0.26
+ },
+ {
+  "name": "hero_ruby",
+  "sheet": "game design/18-nov/Curling_stones_sprite_sheet_hero.jpg",
+  "box": [
+   300,
+   40,
+   1100,
+   730
+  ],
+  "mode": "solid",
+  "scale": 0.3
+ },
+ {
+  "name": "hero_amber",
+  "sheet": "game design/18-nov/Curling_stones_sprite_sheet_hero.jpg",
+  "box": [
+   1480,
+   40,
+   1050,
+   730
+  ],
+  "mode": "solid",
+  "scale": 0.3
+ },
+ {
+  "name": "hero_coral",
+  "sheet": "game design/18-nov/Curling_stones_sprite_sheet_hero.jpg",
+  "box": [
+   300,
+   790,
+   1100,
+   700
+  ],
+  "mode": "solid",
+  "scale": 0.3
+ },
+ {
+  "name": "hero_ivory",
+  "sheet": "game design/18-nov/Curling_stones_sprite_sheet_hero.jpg",
+  "box": [
+   1500,
+   790,
+   1000,
+   700
+  ],
+  "mode": "solid",
+  "scale": 0.3
  }
 ]

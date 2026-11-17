@@ -8,6 +8,8 @@ import { chooseShot, executeShot } from './ai.js';
 import { KIT } from './kit.js';
 import { RIVALS } from './rivals.js';
 import { useSkill, skillOffer } from './skills.js';
+import { stoneById } from './stones.js';
+import { setPlayerStone } from './render/stones.js';
 import { createStone } from './physics.js';
 import { SHEET } from './config.js';
 
@@ -52,6 +54,8 @@ function winMatches(run, n) {
 }
 
 export function stageShot(game, shot, seed) {
+  // The screenshots show the Ruby Classic set's painted stones.
+  setPlayerStone(stoneById('ruby'));
   game.time = 7.3;
   if (shot === 'stones') {
     game.mode = 'stones';
