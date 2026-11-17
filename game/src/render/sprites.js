@@ -16,6 +16,7 @@ const NAMES = [
   'hazard_drift_a', 'hazard_drift_b', 'hazard_drift_c', 'hazard_slush', 'hazard_wind',
   'skill_bolt', 'skill_thunder', 'skill_gale', 'skill_lock', 'el_fire', 'el_lightning', 'el_hail',
   'fx_lightning', 'fx_spear', 'fx_fireburst', 'fx_hailstone', 'fx_frostring',
+  'wind_0', 'wind_1', 'wind_2', 'wind_3',
   'bd_mirror.jpg', 'bd_pine.jpg', 'bd_windy.jpg', 'bd_thaw.jpg', 'bd_aurora.jpg',
 ];
 
@@ -133,4 +134,29 @@ export function drawStripFaded(ctx, name, cx, cy, w, h, fade = 0.15, alpha = 1) 
   ctx.drawImage(c, cx - w / 2, cy - h / 2, w, h);
   ctx.restore();
   return true;
+}
+
+// A sprite with all four edges feathered to nothing (for painted frames cropped tight to the cell),
+// rendered once and cached. Returns a canvas, or null before the image has loaded.
+const feathered = {};
+export function featheredSprite(name, fx = 0.18, fy = 0.22) {
+  const key = `${name}@${fx}@${fy}`;
+  if (feathered[key]) return feathered[key];
+  const im = cache[name];
+  if (!im || typeof document === 'undefined') return null;
+  const c = document.createElement('canvas');
+  c.width = im.width; c.height = im.height;
+  const g = c.getContext('2d');
+  g.drawImage(im, 0, 0);
+  g.globalCompositeOperation = 'destination-in';
+  for (const [x1, y1, f] of [[c.width, 0, fx], [0, c.height, fy]]) {
+    const m = g.createLinearGradient(0, 0, x1, y1);
+    m.addColorStop(0, 'rgba(0,0,0,0)');
+    m.addColorStop(f, 'rgba(0,0,0,1)');
+    m.addColorStop(1 - f, 'rgba(0,0,0,1)');
+    m.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = m;
+    g.fillRect(0, 0, c.width, c.height);
+  }
+  return (feathered[key] = c);
 }

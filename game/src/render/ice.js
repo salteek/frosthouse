@@ -4,7 +4,7 @@ import { SHEET, VIEW, PALETTE, CAMERA } from '../config.js';
 import { createRng } from '../rng.js';
 import { TAU } from '../geometry.js';
 import { sx, sy, px, SHEET_BOTTOM } from './camera.js';
-import { spriteCanvas, drawSprite, drawSpriteBox, drawCover, drawStripFaded } from './sprites.js';
+import { spriteCanvas, drawSprite, drawSpriteBox, drawCover, drawStripFaded, featheredSprite } from './sprites.js';
 
 // The fans in the stands: the painted curlers, calm until a great shot sets them jumping.
 const FANS = ['idle_blue', 'idle_yellow', 'thumbs_blue', 'idle_goggles', 'idle_red', 'idle_pink', 'idle_teal', 'idle_green', 'thumbs_navy', 'fist_green'];
@@ -359,39 +359,54 @@ function drawPatches(ctx, cam, venue, time) {
 }
 
 function drawWind(ctx, venue, time) {
-  // Painted gusts sweeping horizontally across the sheet. Each one is born small, stretches out as it
-  // races along, ripples, and thins away, then a new one starts elsewhere; they drift slowly toward
-  // the bank the wind pushes the stones to.
+  // Painted gusts (four frames) sweeping across the sheet: each one gathers from the first frame,
+  // swells through the others as it races along, and fades out, then another starts in a new lane.
+  // The frames cross-fade, and their cropped edges are feathered away.
   const dir = Math.sign(venue.wind) || 1;
-  const top = sy(-SHEET.width / 2) + 30, span = sy(SHEET.width / 2) - 30 - top;
-  for (let i = 0; i < 8; i++) {
-    const period = 2.6 + (i % 4) * 0.45;
-    const t = time / period + i * 0.37;
+  const frames = [0, 1, 2, 3].map((i) => featheredSprite(`wind_${i}`));
+  const top = sy(-SHEET.width / 2) + 40, span = sy(SHEET.width / 2) - 40 - top;
+  if (!frames[0]) return drawWindLines(ctx, venue, time);
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < 4; i++) {
+    const period = 3.4 + (i % 2) * 0.7;
+    const t = time / period + i * 0.27;
     const n = Math.floor(t), p = t - n;
-    // A fresh random lane and start for every life of this gust.
     const h1 = Math.sin((n + 1) * 12.9898 + i * 78.233) * 43758.5453, r1 = h1 - Math.floor(h1);
     const h2 = Math.sin((n + 1) * 39.346 + i * 11.135) * 24634.6345, r2 = h2 - Math.floor(h2);
-    const x = -160 + r1 * 500 + p * (VIEW.w + 200);
-    const lane = top + r2 * span;
-    const y = lane + dir * p * 40 + Math.sin(time * 3 + i * 1.7) * 6;
-    const life = Math.sin(Math.PI * p);
-    const stretch = 0.55 + 0.75 * life + Math.sin(time * 9 + i) * 0.06;
-    const hgt = 30 + (i % 3) * 9;
+    const w = 300 + (i % 2) * 60, h = w * (frames[0].height / frames[0].width);
+    const x = -w * 0.6 + r1 * 300 + p * (VIEW.w + w * 0.6);
+    const y = top + r2 * span + dir * p * 30;
+    const life = Math.sin(Math.PI * p) ** 0.8;
+    const f = Math.min(2.999, p * 3.4);
+    const k = Math.floor(f), mix = f - k;
     ctx.save();
     ctx.translate(x, y);
-    ctx.scale(stretch, (1 - 0.25 * life) * (dir < 0 ? -1 : 1));
-    ctx.rotate(Math.sin(time * 4 + i) * 0.04);
-    if (!drawSprite(ctx, 'hazard_wind', 0, 0, hgt, { ay: 0.5, alpha: 0.65 * life, blend: 'lighter' })) {
-      ctx.globalAlpha = 0.4 * life;
-      ctx.strokeStyle = 'rgb(190,230,255)';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(-30, 0);
-      ctx.quadraticCurveTo(0, -8, 30, 0);
-      ctx.stroke();
+    if (dir < 0) ctx.scale(1, -1);
+    for (const [fi, a] of [[k, 1 - mix], [k + 1, mix]]) {
+      if (a <= 0.01) continue;
+      ctx.globalAlpha = 0.55 * life * a;
+      ctx.drawImage(frames[fi], -w / 2, -h / 2, w, h);
     }
     ctx.restore();
   }
+  ctx.restore();
+}
+
+function drawWindLines(ctx, venue, time) {
+  const dir = Math.sign(venue.wind) || 1;
+  ctx.save();
+  ctx.strokeStyle = 'rgba(190,230,255,0.35)';
+  ctx.lineWidth = 2;
+  for (let i = 0; i < 7; i++) {
+    const x = ((i * 211 + time * 90) % (VIEW.w + 200)) - 100;
+    const y = sy(0) + dir * (((time * 30 + i * 67) % 420) - 210);
+    ctx.beginPath();
+    ctx.moveTo(x - 30, y);
+    ctx.quadraticCurveTo(x, y - 8, x + 30, y);
+    ctx.stroke();
+  }
+  ctx.restore();
 }
 
 export function drawSnowfall(ctx, time) {

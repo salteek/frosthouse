@@ -1054,5 +1054,53 @@
   ],
   "mode": "glow",
   "scale": 0.4
+ },
+ {
+  "name": "wind_0",
+  "sheet": "game design/18-nov/Wind_gust_sprite_animation_loop.jpg",
+  "box": [
+   4,
+   4,
+   1368,
+   760
+  ],
+  "mode": "glow",
+  "scale": 0.35
+ },
+ {
+  "name": "wind_1",
+  "sheet": "game design/18-nov/Wind_gust_sprite_animation_loop.jpg",
+  "box": [
+   1380,
+   4,
+   1368,
+   760
+  ],
+  "mode": "glow",
+  "scale": 0.35
+ },
+ {
+  "name": "wind_2",
+  "sheet": "game design/18-nov/Wind_gust_sprite_animation_loop.jpg",
+  "box": [
+   4,
+   772,
+   1368,
+   760
+  ],
+  "mode": "glow",
+  "scale": 0.35
+ },
+ {
+  "name": "wind_3",
+  "sheet": "game design/18-nov/Wind_gust_sprite_animation_loop.jpg",
+  "box": [
+   1380,
+   772,
+   1368,
+   760
+  ],
+  "mode": "glow",
+  "scale": 0.35
  }
 ]
