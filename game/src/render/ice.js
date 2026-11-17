@@ -359,33 +359,41 @@ function drawPatches(ctx, cam, venue, time) {
 }
 
 function drawWind(ctx, venue, time) {
-  // Painted gusts (four frames) sweeping across the sheet: each one gathers from the first frame,
-  // swells through the others as it races along, and fades out, then another starts in a new lane.
-  // The frames cross-fade, and their cropped edges are feathered away.
-  const dir = Math.sign(venue.wind) || 1;
+  // Painted gusts (four frames) that come and go like real wind: each is born at a random spot, size,
+  // flip and strength, drifts slowly downwind while it plays through its frames, and is gone again in
+  // a couple of seconds; then its slot rests for a random while before the next one.
   const frames = [0, 1, 2, 3].map((i) => featheredSprite(`wind_${i}`));
-  const top = sy(-SHEET.width / 2) + 40, span = sy(SHEET.width / 2) - 40 - top;
   if (!frames[0]) return drawWindLines(ctx, venue, time);
+  const dir = Math.sign(venue.wind) || 1;
+  const top = sy(-SHEET.width / 2) + 30, span = sy(SHEET.width / 2) - 30 - top;
+  const rnd = (n, k) => { const h = Math.sin(n * 12.9898 + k * 78.233) * 43758.5453; return h - Math.floor(h); };
   ctx.save();
   ctx.globalCompositeOperation = 'lighter';
-  for (let i = 0; i < 4; i++) {
-    const period = 3.4 + (i % 2) * 0.7;
-    const t = time / period + i * 0.27;
-    const n = Math.floor(t), p = t - n;
-    const h1 = Math.sin((n + 1) * 12.9898 + i * 78.233) * 43758.5453, r1 = h1 - Math.floor(h1);
-    const h2 = Math.sin((n + 1) * 39.346 + i * 11.135) * 24634.6345, r2 = h2 - Math.floor(h2);
-    const w = 300 + (i % 2) * 60, h = w * (frames[0].height / frames[0].width);
-    const x = -w * 0.6 + r1 * 300 + p * (VIEW.w + w * 0.6);
-    const y = top + r2 * span + dir * p * 30;
-    const life = Math.sin(Math.PI * p) ** 0.8;
-    const f = Math.min(2.999, p * 3.4);
+  for (let i = 0; i < 5; i++) {
+    const cycle = 3.2 + i * 0.37;
+    const t = time + i * 1.9;
+    const n = Math.floor(t / cycle) * 7 + i, at = t % cycle;
+    const start = rnd(n, 1) * 1.0, life = 1.5 + rnd(n, 2) * 1.2;
+    const age = at - start;
+    if (age < 0 || age > life) continue;
+    const p = age / life;
+    const w = 180 + rnd(n, 3) * 240, h = w * (frames[0].height / frames[0].width);
+    const speed = 35 + rnd(n, 4) * 45;
+    const x = 80 + rnd(n, 5) * (VIEW.w - 160) + age * speed;
+    const y = top + rnd(n, 6) * span + dir * age * 6;
+    const peak = 0.22 + rnd(n, 7) * 0.38;
+    // Quick to appear, a varied fade away.
+    const fadeIn = Math.min(1, p / 0.18), fadeOut = Math.min(1, (1 - p) / (0.3 + rnd(n, 8) * 0.4));
+    const alpha = peak * fadeIn * fadeOut;
+    // The frames play through the gust's life, and it unfurls a little as it goes.
+    const f = Math.min(2.999, p * 3);
     const k = Math.floor(f), mix = f - k;
     ctx.save();
     ctx.translate(x, y);
-    if (dir < 0) ctx.scale(1, -1);
+    ctx.scale(0.85 + 0.25 * p, (rnd(n, 10) < 0.5 ? -1 : 1) * (dir < 0 ? -1 : 1));
     for (const [fi, a] of [[k, 1 - mix], [k + 1, mix]]) {
       if (a <= 0.01) continue;
-      ctx.globalAlpha = 0.55 * life * a;
+      ctx.globalAlpha = alpha * a;
       ctx.drawImage(frames[fi], -w / 2, -h / 2, w, h);
     }
     ctx.restore();
