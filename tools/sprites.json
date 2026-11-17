@@ -1,1202 +1,1298 @@
 [
- {
-  "name": "spark_a",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
-  "box": [
-   1286,
-   960,
-   223,
-   223
-  ],
-  "mode": "glow",
-  "scale": 0.5
- },
- {
-  "name": "spark_b",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
-  "box": [
-   2091,
-   960,
-   223,
-   223
-  ],
-  "mode": "glow",
-  "scale": 0.5
- },
- {
-  "name": "spark_star",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
-  "box": [
-   1551,
-   1226,
-   223,
-   223
-  ],
-  "mode": "glow",
-  "scale": 0.5
- },
- {
-  "name": "ring_a",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
-  "box": [
-   1826,
-   1226,
-   223,
-   223
-  ],
-  "mode": "glow",
-  "scale": 0.5
- },
- {
-  "name": "ring_b",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
-  "box": [
-   1551,
-   1483,
-   223,
-   223
-  ],
-  "mode": "glow",
-  "scale": 0.5
- },
- {
-  "name": "confetti",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
-  "box": [
-   2091,
-   1483,
-   223,
-   223
-  ],
-  "mode": "glow",
-  "scale": 0.5
- },
- {
-  "name": "snowflake",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
-  "box": [
-   1303,
-   386,
-   206,
-   197
-  ],
-  "mode": "glow",
-  "scale": 0.5
- },
- {
-  "name": "star",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
-  "box": [
-   1834,
-   137,
-   206,
-   206
-  ],
-  "mode": "glow",
-  "scale": 0.5
- },
- {
-  "name": "sparkles",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
-  "box": [
-   1834,
-   386,
-   206,
-   197
-  ],
-  "mode": "glow",
-  "scale": 0.5
- },
- {
-  "name": "shards",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
-  "box": [
-   2091,
-   137,
-   223,
-   206
-  ],
-  "mode": "glow",
-  "scale": 0.5
- },
- {
-  "name": "trail_ice",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
-  "box": [
-   626,
-   1431,
-   595,
-   257
-  ],
-  "mode": "glow",
-  "scale": 0.5
- },
- {
-  "name": "trail_cyan",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
-  "box": [
-   351,
-   934,
-   266,
-   266
-  ],
-  "mode": "glow",
-  "scale": 0.5
- },
- {
-  "name": "trail_gold",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
-  "box": [
-   51,
-   934,
-   309,
-   266
-  ],
-  "mode": "glow",
-  "scale": 0.5
- },
- {
-  "name": "trail_violet",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
-  "box": [
-   351,
-   1209,
-   274,
-   240
-  ],
-  "mode": "glow",
-  "scale": 0.5
- },
- {
-  "name": "idle_blue",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
-  "box": [
-   118,
-   48,
-   304,
-   454
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "idle_yellow",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
-  "box": [
-   448,
-   48,
-   314,
-   454
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "thumbs_blue",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
-  "box": [
-   768,
-   58,
-   284,
-   444
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "idle_goggles",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
-  "box": [
-   1058,
-   48,
-   344,
-   454
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "idle_red",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
-  "box": [
-   1368,
-   68,
-   344,
-   434
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "cheer_blue",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
-  "box": [
-   1678,
-   8,
-   364,
-   494
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "cheer_green",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
-  "box": [
-   2018,
-   8,
-   364,
-   494
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "sweep_blue",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
-  "box": [
-   68,
-   488,
-   434,
-   404
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "sweep_red",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
-  "box": [
-   1398,
-   508,
-   364,
-   404
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "sweep_blue2",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
-  "box": [
-   48,
-   878,
-   424,
-   414
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "sweep_red2",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
-  "box": [
-   788,
-   878,
-   354,
-   434
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "skip_blue",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
-  "box": [
-   1308,
-   858,
-   464,
-   454
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "cheer_pink",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
-  "box": [
-   1738,
-   828,
-   274,
-   474
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "cheer_green2",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
-  "box": [
-   2028,
-   748,
-   374,
-   524
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "idle_pink",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
-  "box": [
-   108,
-   1298,
-   334,
-   464
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "skip_red",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
-  "box": [
-   428,
-   1308,
-   354,
-   454
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "fist_green",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
-  "box": [
-   768,
-   1328,
-   294,
-   424
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "crouch_yellow",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
-  "box": [
-   1058,
-   1358,
-   274,
-   394
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "idle_teal",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
-  "box": [
-   1438,
-   1298,
-   334,
-   454
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "thumbs_navy",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
-  "box": [
-   1768,
-   1288,
-   294,
-   464
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "idle_green",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
-  "box": [
-   2058,
-   1288,
-   244,
-   464
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "logo",
-  "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (2).jpeg",
-  "box": [
-   70,
-   100,
-   1130,
-   215
-  ],
-  "mode": "solid",
-  "scale": 0.62
- },
- {
-  "name": "kit_broom",
-  "sheet": "game design/17-nov/kit_upgrades.jpeg",
-  "box": [
-   104,
-   40,
-   496,
-   480
-  ],
-  "mode": "solid",
-  "scale": 0.5
- },
- {
-  "name": "kit_lungs",
-  "sheet": "game design/17-nov/kit_upgrades.jpeg",
-  "box": [
-   616,
-   40,
-   496,
-   480
-  ],
-  "mode": "solid",
-  "scale": 0.5
- },
- {
-  "name": "kit_hand",
-  "sheet": "game design/17-nov/kit_upgrades.jpeg",
-  "box": [
-   1144,
-   40,
-   496,
-   480
-  ],
-  "mode": "solid",
-  "scale": 0.5
- },
- {
-  "name": "kit_eye",
-  "sheet": "game design/17-nov/kit_upgrades.jpeg",
-  "box": [
-   1656,
-   40,
-   496,
-   480
-  ],
-  "mode": "solid",
-  "scale": 0.5
- },
- {
-  "name": "kit_granite",
-  "sheet": "game design/17-nov/kit_upgrades.jpeg",
-  "box": [
-   2184,
-   40,
-   496,
-   480
-  ],
-  "mode": "solid",
-  "scale": 0.5
- },
- {
-  "name": "kit_grip",
-  "sheet": "game design/17-nov/kit_upgrades.jpeg",
-  "box": [
-   616,
-   536,
-   496,
-   480
-  ],
-  "mode": "solid",
-  "scale": 0.5
- },
- {
-  "name": "kit_silk",
-  "sheet": "game design/17-nov/kit_upgrades.jpeg",
-  "box": [
-   1144,
-   536,
-   496,
-   480
-  ],
-  "mode": "solid",
-  "scale": 0.5
- },
- {
-  "name": "kit_mitten",
-  "sheet": "game design/17-nov/kit_upgrades.jpeg",
-  "box": [
-   1656,
-   536,
-   496,
-   480
-  ],
-  "mode": "solid",
-  "scale": 0.5
- },
- {
-  "name": "kit_hammer",
-  "sheet": "game design/17-nov/kit_upgrades.jpeg",
-  "box": [
-   2184,
-   536,
-   496,
-   480
-  ],
-  "mode": "solid",
-  "scale": 0.5
- },
- {
-  "name": "kit_crowd",
-  "sheet": "game design/17-nov/kit_upgrades.jpeg",
-  "box": [
-   104,
-   1016,
-   496,
-   480
-  ],
-  "mode": "solid",
-  "scale": 0.5
- },
- {
-  "name": "kit_nerves",
-  "sheet": "game design/17-nov/kit_upgrades.jpeg",
-  "box": [
-   616,
-   1016,
-   496,
-   480
-  ],
-  "mode": "solid",
-  "scale": 0.5
- },
- {
-  "name": "kit_boots",
-  "sheet": "game design/17-nov/kit_upgrades.jpeg",
-  "box": [
-   1144,
-   1016,
-   496,
-   480
-  ],
-  "mode": "solid",
-  "scale": 0.5
- },
- {
-  "name": "kit_gloves",
-  "sheet": "game design/17-nov/kit_upgrades.jpeg",
-  "box": [
-   1656,
-   1016,
-   496,
-   480
-  ],
-  "mode": "solid",
-  "scale": 0.5
- },
- {
-  "name": "kit_tea",
-  "sheet": "game design/17-nov/kit_upgrades.jpeg",
-  "box": [
-   2184,
-   1016,
-   496,
-   480
-  ],
-  "mode": "solid",
-  "scale": 0.5
- },
- {
-  "name": "grade_S",
-  "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
-  "box": [
-   1097,
-   120,
-   351,
-   309
-  ],
-  "mode": "solid",
-  "scale": 0.5
- },
- {
-  "name": "grade_A",
-  "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
-  "box": [
-   1577,
-   117,
-   274,
-   281
-  ],
-  "mode": "solid",
-  "scale": 0.5
- },
- {
-  "name": "grade_B",
-  "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
-  "box": [
-   2019,
-   117,
-   278,
-   281
-  ],
-  "mode": "solid",
-  "scale": 0.5
- },
- {
-  "name": "grade_C",
-  "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
-  "box": [
-   1577,
-   497,
-   274,
-   237
-  ],
-  "mode": "solid",
-  "scale": 0.5
- },
- {
-  "name": "grade_D",
-  "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
-  "box": [
-   2019,
-   497,
-   278,
-   237
-  ],
-  "mode": "solid",
-  "scale": 0.5
- },
- {
-  "name": "trophy_open",
-  "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
-  "box": [
-   96,
-   150,
-   432,
-   530
-  ],
-  "mode": "solid",
-  "scale": 0.55
- },
- {
-  "name": "hammer_icon",
-  "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
-  "box": [
-   630,
-   370,
-   292,
-   310
-  ],
-  "mode": "solid",
-  "scale": 0.35
- },
- {
-  "name": "crest_player",
-  "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
-  "box": [
-   129,
-   883,
-   346,
-   348
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "crest_puffin",
-  "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
-  "box": [
-   780,
-   883,
-   346,
-   348
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "crest_ironwool",
-  "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
-  "box": [
-   1315,
-   883,
-   348,
-   348
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "crest_ravens",
-  "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
-  "box": [
-   1915,
-   883,
-   350,
-   348
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "crest_sleet",
-  "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
-  "box": [
-   129,
-   1327,
-   346,
-   346
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "crest_pines",
-  "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
-  "box": [
-   780,
-   1327,
-   346,
-   346
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "crest_glacier",
-  "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
-  "box": [
-   1315,
-   1327,
-   348,
-   346
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "icon_eye",
-  "sheet": "game design/17-nov/Ice_hazards_HUD.jpeg",
-  "box": [
-   70,
-   1366,
-   420,
-   212
-  ],
-  "mode": "solid",
-  "scale": 0.3
- },
- {
-  "name": "icon_broom",
-  "sheet": "game design/17-nov/Ice_hazards_HUD.jpeg",
-  "box": [
-   582,
-   1286,
-   308,
-   388
-  ],
-  "mode": "solid",
-  "scale": 0.3
- },
- {
-  "name": "icon_turn_cw",
-  "sheet": "game design/17-nov/Ice_hazards_HUD.jpeg",
-  "box": [
-   1030,
-   1302,
-   340,
-   356
-  ],
-  "mode": "solid",
-  "scale": 0.3
- },
- {
-  "name": "icon_turn_ccw",
-  "sheet": "game design/17-nov/Ice_hazards_HUD.jpeg",
-  "box": [
-   1494,
-   1302,
-   340,
-   356
-  ],
-  "mode": "solid",
-  "scale": 0.3
- },
- {
-  "name": "aim_target",
-  "sheet": "game design/17-nov/Ice_hazards_HUD.jpeg",
-  "box": [
-   1910,
-   1254,
-   420,
-   436
-  ],
-  "mode": "glow",
-  "scale": 0.4
- },
- {
-  "name": "hazard_slush",
-  "sheet": "game design/17-nov/Ice_hazards_HUD.jpeg",
-  "box": [
-   80,
-   736,
-   1584,
-   322
-  ],
-  "mode": "solid",
-  "scale": 0.8
- },
- {
-  "name": "hazard_wind",
-  "sheet": "game design/17-nov/Ice_hazards_HUD.jpeg",
-  "box": [
-   1720,
-   712,
-   624,
-   336
-  ],
-  "mode": "glow",
-  "scale": 0.4
- },
- {
-  "name": "banner_open",
-  "sheet": "game design/17-nov/sheet_dressing.jpeg",
-  "box": [
-   70,
-   56,
-   468,
-   1600
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "hack",
-  "sheet": "game design/17-nov/sheet_dressing.jpeg",
-  "box": [
-   584,
-   488,
-   464,
-   320
-  ],
-  "mode": "solid",
-  "scale": 0.25
- },
- {
-  "name": "hazard_drift_a",
-  "sheet": "game design/17-nov/Snow_drifts_a.jpg",
-  "box": [
-   74,
-   62,
-   1208,
-   308
-  ],
-  "mode": "glow",
-  "scale": 0.6
- },
- {
-  "name": "hazard_drift_b",
-  "sheet": "game design/17-nov/Snow_drifts_a.jpg",
-  "box": [
-   74,
-   434,
-   764,
-   272
-  ],
-  "mode": "glow",
-  "scale": 0.6
- },
- {
-  "name": "hazard_drift_c",
-  "sheet": "game design/17-nov/Snow_drifts_a.jpg",
-  "box": [
-   902,
-   446,
-   392,
-   248
-  ],
-  "mode": "glow",
-  "scale": 0.6
- },
- {
-  "name": "skill_bolt",
-  "sheet": "game design/18-nov/skill_badges_b.jpg",
-  "box": [
-   109,
-   445,
-   580,
-   570
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "skill_thunder",
-  "sheet": "game design/18-nov/skill_badges_b.jpg",
-  "box": [
-   763,
-   445,
-   580,
-   570
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "skill_gale",
-  "sheet": "game design/18-nov/skill_badges_b.jpg",
-  "box": [
-   1410,
-   445,
-   580,
-   570
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "skill_lock",
-  "sheet": "game design/18-nov/skill_badges_b.jpg",
-  "box": [
-   2063,
-   445,
-   580,
-   570
-  ],
-  "mode": "solid",
-  "scale": 0.45
- },
- {
-  "name": "el_fire",
-  "sheet": "game design/18-nov/element_icons_a.jpg",
-  "box": [
-   89,
-   364,
-   800,
-   800
-  ],
-  "mode": "solid",
-  "scale": 0.3
- },
- {
-  "name": "el_lightning",
-  "sheet": "game design/18-nov/element_icons_a.jpg",
-  "box": [
-   976,
-   364,
-   800,
-   800
-  ],
-  "mode": "solid",
-  "scale": 0.3
- },
- {
-  "name": "el_hail",
-  "sheet": "game design/18-nov/element_icons_a.jpg",
-  "box": [
-   1857,
-   364,
-   800,
-   800
-  ],
-  "mode": "solid",
-  "scale": 0.3
- },
- {
-  "name": "fx_lightning",
-  "sheet": "game design/18-nov/vfx_sprite_b.jpg",
-  "box": [
-   230,
-   0,
-   420,
-   1536
-  ],
-  "mode": "glow",
-  "scale": 0.5
- },
- {
-  "name": "fx_spear",
-  "sheet": "game design/18-nov/vfx_sprite_b.jpg",
-  "box": [
-   1030,
-   240,
-   1430,
-   320
-  ],
-  "mode": "glow",
-  "scale": 0.35
- },
- {
-  "name": "fx_fireburst",
-  "sheet": "game design/18-nov/vfx_sprite_b.jpg",
-  "box": [
-   940,
-   670,
-   800,
-   730
-  ],
-  "mode": "glow",
-  "scale": 0.45
- },
- {
-  "name": "fx_hailstone",
-  "sheet": "game design/18-nov/vfx_sprite_b.jpg",
-  "box": [
-   1990,
-   900,
-   320,
-   320
-  ],
-  "mode": "glow",
-  "scale": 0.4
- },
- {
-  "name": "fx_frostring",
-  "sheet": "game design/18-nov/Purple_ice_crystal_ring_b.jpg",
-  "box": [
-   50,
-   50,
-   924,
-   924
-  ],
-  "mode": "glow",
-  "scale": 0.4
- },
- {
-  "name": "wind_0",
-  "sheet": "game design/18-nov/Wind_gust_sprite_animation_loop.jpg",
-  "box": [
-   4,
-   4,
-   1368,
-   760
-  ],
-  "mode": "glow",
-  "scale": 0.35
- },
- {
-  "name": "wind_1",
-  "sheet": "game design/18-nov/Wind_gust_sprite_animation_loop.jpg",
-  "box": [
-   1380,
-   4,
-   1368,
-   760
-  ],
-  "mode": "glow",
-  "scale": 0.35
- },
- {
-  "name": "wind_2",
-  "sheet": "game design/18-nov/Wind_gust_sprite_animation_loop.jpg",
-  "box": [
-   4,
-   772,
-   1368,
-   760
-  ],
-  "mode": "glow",
-  "scale": 0.35
- },
- {
-  "name": "wind_3",
-  "sheet": "game design/18-nov/Wind_gust_sprite_animation_loop.jpg",
-  "box": [
-   1380,
-   772,
-   1368,
-   760
-  ],
-  "mode": "glow",
-  "scale": 0.35
- },
- {
-  "name": "stone_ruby",
-  "sheet": "game design/18-nov/Curling_stones_sprite_sheet_top.jpg",
-  "box": [
-   62,
-   460,
-   620,
-   620
-  ],
-  "mode": "solid",
-  "scale": 0.26
- },
- {
-  "name": "stone_amber",
-  "sheet": "game design/18-nov/Curling_stones_sprite_sheet_top.jpg",
-  "box": [
-   733,
-   460,
-   620,
-   620
-  ],
-  "mode": "solid",
-  "scale": 0.26
- },
- {
-  "name": "stone_coral",
-  "sheet": "game design/18-nov/Curling_stones_sprite_sheet_top.jpg",
-  "box": [
-   1401,
-   460,
-   620,
-   620
-  ],
-  "mode": "solid",
-  "scale": 0.26
- },
- {
-  "name": "stone_ivory",
-  "sheet": "game design/18-nov/Curling_stones_sprite_sheet_top.jpg",
-  "box": [
-   2071,
-   460,
-   620,
-   620
-  ],
-  "mode": "solid",
-  "scale": 0.26
- },
- {
-  "name": "hero_ruby",
-  "sheet": "game design/18-nov/Curling_stones_sprite_sheet_hero.jpg",
-  "box": [
-   300,
-   40,
-   1100,
-   730
-  ],
-  "mode": "solid",
-  "scale": 0.3
- },
- {
-  "name": "hero_amber",
-  "sheet": "game design/18-nov/Curling_stones_sprite_sheet_hero.jpg",
-  "box": [
-   1480,
-   40,
-   1050,
-   730
-  ],
-  "mode": "solid",
-  "scale": 0.3
- },
- {
-  "name": "hero_coral",
-  "sheet": "game design/18-nov/Curling_stones_sprite_sheet_hero.jpg",
-  "box": [
-   300,
-   790,
-   1100,
-   700
-  ],
-  "mode": "solid",
-  "scale": 0.3
- },
- {
-  "name": "hero_ivory",
-  "sheet": "game design/18-nov/Curling_stones_sprite_sheet_hero.jpg",
-  "box": [
-   1500,
-   790,
-   1000,
-   700
-  ],
-  "mode": "solid",
-  "scale": 0.3
- }
+  {
+    "name": "spark_a",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
+    "box": [
+      1286,
+      960,
+      223,
+      223
+    ],
+    "mode": "glow",
+    "scale": 0.5
+  },
+  {
+    "name": "spark_b",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
+    "box": [
+      2091,
+      960,
+      223,
+      223
+    ],
+    "mode": "glow",
+    "scale": 0.5
+  },
+  {
+    "name": "spark_star",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
+    "box": [
+      1551,
+      1226,
+      223,
+      223
+    ],
+    "mode": "glow",
+    "scale": 0.5
+  },
+  {
+    "name": "ring_a",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
+    "box": [
+      1826,
+      1226,
+      223,
+      223
+    ],
+    "mode": "glow",
+    "scale": 0.5
+  },
+  {
+    "name": "ring_b",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
+    "box": [
+      1551,
+      1483,
+      223,
+      223
+    ],
+    "mode": "glow",
+    "scale": 0.5
+  },
+  {
+    "name": "confetti",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
+    "box": [
+      2091,
+      1483,
+      223,
+      223
+    ],
+    "mode": "glow",
+    "scale": 0.5
+  },
+  {
+    "name": "snowflake",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
+    "box": [
+      1303,
+      386,
+      206,
+      197
+    ],
+    "mode": "glow",
+    "scale": 0.5
+  },
+  {
+    "name": "star",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
+    "box": [
+      1834,
+      137,
+      206,
+      206
+    ],
+    "mode": "glow",
+    "scale": 0.5
+  },
+  {
+    "name": "sparkles",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
+    "box": [
+      1834,
+      386,
+      206,
+      197
+    ],
+    "mode": "glow",
+    "scale": 0.5
+  },
+  {
+    "name": "shards",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
+    "box": [
+      2091,
+      137,
+      223,
+      206
+    ],
+    "mode": "glow",
+    "scale": 0.5
+  },
+  {
+    "name": "trail_ice",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
+    "box": [
+      626,
+      1431,
+      595,
+      257
+    ],
+    "mode": "glow",
+    "scale": 0.5
+  },
+  {
+    "name": "trail_cyan",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
+    "box": [
+      351,
+      934,
+      266,
+      266
+    ],
+    "mode": "glow",
+    "scale": 0.5
+  },
+  {
+    "name": "trail_gold",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
+    "box": [
+      51,
+      934,
+      309,
+      266
+    ],
+    "mode": "glow",
+    "scale": 0.5
+  },
+  {
+    "name": "trail_violet",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl.jpeg",
+    "box": [
+      351,
+      1209,
+      274,
+      240
+    ],
+    "mode": "glow",
+    "scale": 0.5
+  },
+  {
+    "name": "idle_blue",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+    "box": [
+      118,
+      48,
+      304,
+      454
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "idle_yellow",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+    "box": [
+      448,
+      48,
+      314,
+      454
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "thumbs_blue",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+    "box": [
+      768,
+      58,
+      284,
+      444
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "idle_goggles",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+    "box": [
+      1058,
+      48,
+      344,
+      454
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "idle_red",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+    "box": [
+      1368,
+      68,
+      344,
+      434
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "cheer_blue",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+    "box": [
+      1678,
+      8,
+      364,
+      494
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "cheer_green",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+    "box": [
+      2018,
+      8,
+      364,
+      494
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "sweep_blue",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+    "box": [
+      68,
+      488,
+      434,
+      404
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "sweep_red",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+    "box": [
+      1398,
+      508,
+      364,
+      404
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "sweep_blue2",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+    "box": [
+      48,
+      878,
+      424,
+      414
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "sweep_red2",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+    "box": [
+      788,
+      878,
+      354,
+      434
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "skip_blue",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+    "box": [
+      1308,
+      858,
+      464,
+      454
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "cheer_pink",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+    "box": [
+      1738,
+      828,
+      274,
+      474
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "cheer_green2",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+    "box": [
+      2028,
+      748,
+      374,
+      524
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "idle_pink",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+    "box": [
+      108,
+      1298,
+      334,
+      464
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "skip_red",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+    "box": [
+      428,
+      1308,
+      354,
+      454
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "fist_green",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+    "box": [
+      768,
+      1328,
+      294,
+      424
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "crouch_yellow",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+    "box": [
+      1058,
+      1358,
+      274,
+      394
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "idle_teal",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+    "box": [
+      1438,
+      1298,
+      334,
+      454
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "thumbs_navy",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+    "box": [
+      1768,
+      1288,
+      294,
+      464
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "idle_green",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (1).jpeg",
+    "box": [
+      2058,
+      1288,
+      244,
+      464
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "logo",
+    "sheet": "game design/Gemini_Generated_Image_45sllp45sllp45sl (2).jpeg",
+    "box": [
+      70,
+      100,
+      1130,
+      215
+    ],
+    "mode": "solid",
+    "scale": 0.62
+  },
+  {
+    "name": "kit_broom",
+    "sheet": "game design/17-nov/kit_upgrades.jpeg",
+    "box": [
+      104,
+      40,
+      496,
+      480
+    ],
+    "mode": "solid",
+    "scale": 0.5
+  },
+  {
+    "name": "kit_lungs",
+    "sheet": "game design/17-nov/kit_upgrades.jpeg",
+    "box": [
+      616,
+      40,
+      496,
+      480
+    ],
+    "mode": "solid",
+    "scale": 0.5
+  },
+  {
+    "name": "kit_hand",
+    "sheet": "game design/17-nov/kit_upgrades.jpeg",
+    "box": [
+      1144,
+      40,
+      496,
+      480
+    ],
+    "mode": "solid",
+    "scale": 0.5
+  },
+  {
+    "name": "kit_eye",
+    "sheet": "game design/17-nov/kit_upgrades.jpeg",
+    "box": [
+      1656,
+      40,
+      496,
+      480
+    ],
+    "mode": "solid",
+    "scale": 0.5
+  },
+  {
+    "name": "kit_granite",
+    "sheet": "game design/17-nov/kit_upgrades.jpeg",
+    "box": [
+      2184,
+      40,
+      496,
+      480
+    ],
+    "mode": "solid",
+    "scale": 0.5
+  },
+  {
+    "name": "kit_grip",
+    "sheet": "game design/17-nov/kit_upgrades.jpeg",
+    "box": [
+      616,
+      536,
+      496,
+      480
+    ],
+    "mode": "solid",
+    "scale": 0.5
+  },
+  {
+    "name": "kit_silk",
+    "sheet": "game design/17-nov/kit_upgrades.jpeg",
+    "box": [
+      1144,
+      536,
+      496,
+      480
+    ],
+    "mode": "solid",
+    "scale": 0.5
+  },
+  {
+    "name": "kit_mitten",
+    "sheet": "game design/17-nov/kit_upgrades.jpeg",
+    "box": [
+      1656,
+      536,
+      496,
+      480
+    ],
+    "mode": "solid",
+    "scale": 0.5
+  },
+  {
+    "name": "kit_hammer",
+    "sheet": "game design/17-nov/kit_upgrades.jpeg",
+    "box": [
+      2184,
+      536,
+      496,
+      480
+    ],
+    "mode": "solid",
+    "scale": 0.5
+  },
+  {
+    "name": "kit_crowd",
+    "sheet": "game design/17-nov/kit_upgrades.jpeg",
+    "box": [
+      104,
+      1016,
+      496,
+      480
+    ],
+    "mode": "solid",
+    "scale": 0.5
+  },
+  {
+    "name": "kit_nerves",
+    "sheet": "game design/17-nov/kit_upgrades.jpeg",
+    "box": [
+      616,
+      1016,
+      496,
+      480
+    ],
+    "mode": "solid",
+    "scale": 0.5
+  },
+  {
+    "name": "kit_boots",
+    "sheet": "game design/17-nov/kit_upgrades.jpeg",
+    "box": [
+      1144,
+      1016,
+      496,
+      480
+    ],
+    "mode": "solid",
+    "scale": 0.5
+  },
+  {
+    "name": "kit_gloves",
+    "sheet": "game design/17-nov/kit_upgrades.jpeg",
+    "box": [
+      1656,
+      1016,
+      496,
+      480
+    ],
+    "mode": "solid",
+    "scale": 0.5
+  },
+  {
+    "name": "kit_tea",
+    "sheet": "game design/17-nov/kit_upgrades.jpeg",
+    "box": [
+      2184,
+      1016,
+      496,
+      480
+    ],
+    "mode": "solid",
+    "scale": 0.5
+  },
+  {
+    "name": "grade_S",
+    "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
+    "box": [
+      1097,
+      120,
+      351,
+      309
+    ],
+    "mode": "solid",
+    "scale": 0.5
+  },
+  {
+    "name": "grade_A",
+    "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
+    "box": [
+      1577,
+      117,
+      274,
+      281
+    ],
+    "mode": "solid",
+    "scale": 0.5
+  },
+  {
+    "name": "grade_B",
+    "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
+    "box": [
+      2019,
+      117,
+      278,
+      281
+    ],
+    "mode": "solid",
+    "scale": 0.5
+  },
+  {
+    "name": "grade_C",
+    "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
+    "box": [
+      1577,
+      497,
+      274,
+      237
+    ],
+    "mode": "solid",
+    "scale": 0.5
+  },
+  {
+    "name": "grade_D",
+    "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
+    "box": [
+      2019,
+      497,
+      278,
+      237
+    ],
+    "mode": "solid",
+    "scale": 0.5
+  },
+  {
+    "name": "trophy_open",
+    "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
+    "box": [
+      96,
+      150,
+      432,
+      530
+    ],
+    "mode": "solid",
+    "scale": 0.55
+  },
+  {
+    "name": "hammer_icon",
+    "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
+    "box": [
+      630,
+      370,
+      292,
+      310
+    ],
+    "mode": "solid",
+    "scale": 0.35
+  },
+  {
+    "name": "crest_player",
+    "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
+    "box": [
+      129,
+      883,
+      346,
+      348
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "crest_puffin",
+    "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
+    "box": [
+      780,
+      883,
+      346,
+      348
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "crest_ironwool",
+    "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
+    "box": [
+      1315,
+      883,
+      348,
+      348
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "crest_ravens",
+    "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
+    "box": [
+      1915,
+      883,
+      350,
+      348
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "crest_sleet",
+    "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
+    "box": [
+      129,
+      1327,
+      346,
+      346
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "crest_pines",
+    "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
+    "box": [
+      780,
+      1327,
+      346,
+      346
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "crest_glacier",
+    "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
+    "box": [
+      1315,
+      1327,
+      348,
+      346
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "icon_eye",
+    "sheet": "game design/17-nov/Ice_hazards_HUD.jpeg",
+    "box": [
+      70,
+      1366,
+      420,
+      212
+    ],
+    "mode": "solid",
+    "scale": 0.3
+  },
+  {
+    "name": "icon_broom",
+    "sheet": "game design/17-nov/Ice_hazards_HUD.jpeg",
+    "box": [
+      582,
+      1286,
+      308,
+      388
+    ],
+    "mode": "solid",
+    "scale": 0.3
+  },
+  {
+    "name": "icon_turn_cw",
+    "sheet": "game design/17-nov/Ice_hazards_HUD.jpeg",
+    "box": [
+      1030,
+      1302,
+      340,
+      356
+    ],
+    "mode": "solid",
+    "scale": 0.3
+  },
+  {
+    "name": "icon_turn_ccw",
+    "sheet": "game design/17-nov/Ice_hazards_HUD.jpeg",
+    "box": [
+      1494,
+      1302,
+      340,
+      356
+    ],
+    "mode": "solid",
+    "scale": 0.3
+  },
+  {
+    "name": "aim_target",
+    "sheet": "game design/17-nov/Ice_hazards_HUD.jpeg",
+    "box": [
+      1910,
+      1254,
+      420,
+      436
+    ],
+    "mode": "glow",
+    "scale": 0.4
+  },
+  {
+    "name": "hazard_slush",
+    "sheet": "game design/17-nov/Ice_hazards_HUD.jpeg",
+    "box": [
+      80,
+      736,
+      1584,
+      322
+    ],
+    "mode": "solid",
+    "scale": 0.8
+  },
+  {
+    "name": "hazard_wind",
+    "sheet": "game design/17-nov/Ice_hazards_HUD.jpeg",
+    "box": [
+      1720,
+      712,
+      624,
+      336
+    ],
+    "mode": "glow",
+    "scale": 0.4
+  },
+  {
+    "name": "banner_open",
+    "sheet": "game design/17-nov/sheet_dressing.jpeg",
+    "box": [
+      70,
+      56,
+      468,
+      1600
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "hack",
+    "sheet": "game design/17-nov/sheet_dressing.jpeg",
+    "box": [
+      584,
+      488,
+      464,
+      320
+    ],
+    "mode": "solid",
+    "scale": 0.25
+  },
+  {
+    "name": "hazard_drift_a",
+    "sheet": "game design/17-nov/Snow_drifts_a.jpg",
+    "box": [
+      74,
+      62,
+      1208,
+      308
+    ],
+    "mode": "glow",
+    "scale": 0.6
+  },
+  {
+    "name": "hazard_drift_b",
+    "sheet": "game design/17-nov/Snow_drifts_a.jpg",
+    "box": [
+      74,
+      434,
+      764,
+      272
+    ],
+    "mode": "glow",
+    "scale": 0.6
+  },
+  {
+    "name": "hazard_drift_c",
+    "sheet": "game design/17-nov/Snow_drifts_a.jpg",
+    "box": [
+      902,
+      446,
+      392,
+      248
+    ],
+    "mode": "glow",
+    "scale": 0.6
+  },
+  {
+    "name": "skill_bolt",
+    "sheet": "game design/18-nov/skill_badges_b.jpg",
+    "box": [
+      109,
+      445,
+      580,
+      570
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "skill_thunder",
+    "sheet": "game design/18-nov/skill_badges_b.jpg",
+    "box": [
+      763,
+      445,
+      580,
+      570
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "skill_gale",
+    "sheet": "game design/18-nov/skill_badges_b.jpg",
+    "box": [
+      1410,
+      445,
+      580,
+      570
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "skill_lock",
+    "sheet": "game design/18-nov/skill_badges_b.jpg",
+    "box": [
+      2063,
+      445,
+      580,
+      570
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "el_fire",
+    "sheet": "game design/18-nov/element_icons_a.jpg",
+    "box": [
+      89,
+      364,
+      800,
+      800
+    ],
+    "mode": "solid",
+    "scale": 0.3
+  },
+  {
+    "name": "el_lightning",
+    "sheet": "game design/18-nov/element_icons_a.jpg",
+    "box": [
+      976,
+      364,
+      800,
+      800
+    ],
+    "mode": "solid",
+    "scale": 0.3
+  },
+  {
+    "name": "el_hail",
+    "sheet": "game design/18-nov/element_icons_a.jpg",
+    "box": [
+      1857,
+      364,
+      800,
+      800
+    ],
+    "mode": "solid",
+    "scale": 0.3
+  },
+  {
+    "name": "fx_lightning",
+    "sheet": "game design/18-nov/vfx_sprite_b.jpg",
+    "box": [
+      230,
+      0,
+      420,
+      1536
+    ],
+    "mode": "glow",
+    "scale": 0.5
+  },
+  {
+    "name": "fx_spear",
+    "sheet": "game design/18-nov/vfx_sprite_b.jpg",
+    "box": [
+      1030,
+      240,
+      1430,
+      320
+    ],
+    "mode": "glow",
+    "scale": 0.35
+  },
+  {
+    "name": "fx_fireburst",
+    "sheet": "game design/18-nov/vfx_sprite_b.jpg",
+    "box": [
+      940,
+      670,
+      800,
+      730
+    ],
+    "mode": "glow",
+    "scale": 0.45
+  },
+  {
+    "name": "fx_hailstone",
+    "sheet": "game design/18-nov/vfx_sprite_b.jpg",
+    "box": [
+      1990,
+      900,
+      320,
+      320
+    ],
+    "mode": "glow",
+    "scale": 0.4
+  },
+  {
+    "name": "fx_frostring",
+    "sheet": "game design/18-nov/Purple_ice_crystal_ring_b.jpg",
+    "box": [
+      50,
+      50,
+      924,
+      924
+    ],
+    "mode": "glow",
+    "scale": 0.4
+  },
+  {
+    "name": "wind_0",
+    "sheet": "game design/18-nov/Wind_gust_sprite_animation_loop.jpg",
+    "box": [
+      4,
+      4,
+      1368,
+      760
+    ],
+    "mode": "glow",
+    "scale": 0.35
+  },
+  {
+    "name": "wind_1",
+    "sheet": "game design/18-nov/Wind_gust_sprite_animation_loop.jpg",
+    "box": [
+      1380,
+      4,
+      1368,
+      760
+    ],
+    "mode": "glow",
+    "scale": 0.35
+  },
+  {
+    "name": "wind_2",
+    "sheet": "game design/18-nov/Wind_gust_sprite_animation_loop.jpg",
+    "box": [
+      4,
+      772,
+      1368,
+      760
+    ],
+    "mode": "glow",
+    "scale": 0.35
+  },
+  {
+    "name": "wind_3",
+    "sheet": "game design/18-nov/Wind_gust_sprite_animation_loop.jpg",
+    "box": [
+      1380,
+      772,
+      1368,
+      760
+    ],
+    "mode": "glow",
+    "scale": 0.35
+  },
+  {
+    "name": "stone_ruby",
+    "sheet": "game design/18-nov/Curling_stones_sprite_sheet_top.jpg",
+    "box": [
+      62,
+      460,
+      620,
+      620
+    ],
+    "mode": "solid",
+    "scale": 0.26
+  },
+  {
+    "name": "stone_amber",
+    "sheet": "game design/18-nov/Curling_stones_sprite_sheet_top.jpg",
+    "box": [
+      733,
+      460,
+      620,
+      620
+    ],
+    "mode": "solid",
+    "scale": 0.26
+  },
+  {
+    "name": "stone_coral",
+    "sheet": "game design/18-nov/Curling_stones_sprite_sheet_top.jpg",
+    "box": [
+      1401,
+      460,
+      620,
+      620
+    ],
+    "mode": "solid",
+    "scale": 0.26
+  },
+  {
+    "name": "stone_ivory",
+    "sheet": "game design/18-nov/Curling_stones_sprite_sheet_top.jpg",
+    "box": [
+      2071,
+      460,
+      620,
+      620
+    ],
+    "mode": "solid",
+    "scale": 0.26
+  },
+  {
+    "name": "hero_ruby",
+    "sheet": "game design/18-nov/Curling_stones_sprite_sheet_hero.jpg",
+    "box": [
+      300,
+      40,
+      1100,
+      730
+    ],
+    "mode": "solid",
+    "scale": 0.3
+  },
+  {
+    "name": "hero_amber",
+    "sheet": "game design/18-nov/Curling_stones_sprite_sheet_hero.jpg",
+    "box": [
+      1480,
+      40,
+      1050,
+      730
+    ],
+    "mode": "solid",
+    "scale": 0.3
+  },
+  {
+    "name": "hero_coral",
+    "sheet": "game design/18-nov/Curling_stones_sprite_sheet_hero.jpg",
+    "box": [
+      300,
+      790,
+      1100,
+      700
+    ],
+    "mode": "solid",
+    "scale": 0.3
+  },
+  {
+    "name": "hero_ivory",
+    "sheet": "game design/18-nov/Curling_stones_sprite_sheet_hero.jpg",
+    "box": [
+      1500,
+      790,
+      1000,
+      700
+    ],
+    "mode": "solid",
+    "scale": 0.3
+  },
+  {
+    "name": "boss_full",
+    "sheet": "game design/18-nov/Giant_frost_character_sprite_sheet_d90d1d82_2K.jpg",
+    "box": [
+      968,
+      120,
+      880,
+      1310
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "boss_cracked",
+    "sheet": "game design/18-nov/Frost_giant_character_sprite_sheet_c4f1b12a_2K.jpg",
+    "box": [
+      1850,
+      60,
+      890,
+      1420
+    ],
+    "mode": "solid",
+    "scale": 0.45
+  },
+  {
+    "name": "boss_bust",
+    "sheet": "game design/18-nov/Giant_frost_character_sprite_sheet_d90d1d82_2K.jpg",
+    "box": [
+      70,
+      280,
+      916,
+      940
+    ],
+    "mode": "solid",
+    "scale": 0.26
+  },
+  {
+    "name": "spike_a",
+    "sheet": "game design/18-nov/ice_obstacles_sheet_a.jpg",
+    "box": [
+      150,
+      400,
+      580,
+      740
+    ],
+    "mode": "solid",
+    "scale": 0.15
+  },
+  {
+    "name": "spike_b",
+    "sheet": "game design/18-nov/ice_obstacles_sheet_b.jpg",
+    "box": [
+      386,
+      134,
+      752,
+      812
+    ],
+    "mode": "solid",
+    "scale": 0.15
+  },
+  {
+    "name": "ridge_a",
+    "sheet": "game design/18-nov/ice_obstacles_sheet_a.jpg",
+    "box": [
+      2244,
+      156,
+      288,
+      1236
+    ],
+    "mode": "glow",
+    "scale": 0.22
+  },
+  {
+    "name": "crack_radial",
+    "sheet": "game design/18-nov/Glowing_ice_cracks_sprite_sheet_3b8b1173_2K.jpg",
+    "box": [
+      70,
+      310,
+      916,
+      916
+    ],
+    "mode": "glow",
+    "scale": 0.6
+  },
+  {
+    "name": "crack_shards",
+    "sheet": "game design/18-nov/Glowing_ice_cracks_sprite_sheet_3b8b1173_2K.jpg",
+    "box": [
+      2196,
+      500,
+      500,
+      480
+    ],
+    "mode": "glow",
+    "scale": 0.4
+  }
 ]

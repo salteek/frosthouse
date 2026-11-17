@@ -78,8 +78,12 @@ export function updatePlay(scene, dt, input) {
     // Shards burst off the button and off the end of every main crack.
     const cx = sx(scene.cam, SHEET.tee), cy = sy(0);
     burstSprites(scene.fx, 'snowflake', cx, cy, { count: 22, speed: [140, 380], size: [12, 24], life: [0.6, 1.1], spin: 3 });
-    spawnBurst(scene.fx, cx, cy, { count: 40, color: '#dff6ff', speed: 340, life: 0.9, size: 3.5, drag: 2 });
-    addFlash(scene.fx, 'ring_a', cx, cy, 60, 0.7, { grow: 3, blend: 'lighter' });
+    spawnBurst(scene.fx, cx, cy, { count: 24, color: '#dff6ff', speed: 300, life: 0.8, size: 3, drag: 2 });
+    addFlash(scene.fx, 'ring_a', cx, cy, 40, 0.5, { grow: 2.2, blend: 'lighter' });
+    addFlash(scene.fx, 'crack_shards', cx, cy, 150, 0.6, { grow: 1.2, blend: 'lighter' });
+    // Shards fall off the boss as he breaks.
+    const bx = sx(scene.cam, SHEET.end + 0.25) - 55;
+    burstSprites(scene.fx, 'shards', bx, SHEET_BOTTOM - 260, { count: 8, speed: [120, 300], size: [16, 30], life: [0.6, 1.0], spin: 3 });
     for (const p of crackTips(scene)) spawnBurst(scene.fx, p.x, p.y, { count: 10, color: '#9fe6ff', speed: 180, life: 0.6, size: 3, drag: 2 });
   }
   // Boss banners wait while the end's score is up, and are dropped if the match is over.
@@ -279,7 +283,7 @@ function consumeEvents(scene) {
       scene.cinematic = 3.8; // nobody throws until the crack has played out (render/crack.js)
       addFloater(scene.fx, 640, 250, 'THE GLACIER CRACKS!', PALETTE.gold, 44, 2.4, 1.5);
       scene.fx.floaters[scene.fx.floaters.length - 1].onShow = () => { startCrack(scene); sfx.crack(); };
-      addFloater(scene.fx, 640, 296, 'Her powers are gone', '#eaf4ff', 20, 2.4, 1.5);
+      addFloater(scene.fx, 640, 296, 'His powers are gone', '#eaf4ff', 20, 2.4, 1.5);
       holdForEnd(scene, 2);
     } else if (e.type === 'combo') {
       const el = e.el;

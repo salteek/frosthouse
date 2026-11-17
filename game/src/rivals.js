@@ -32,9 +32,9 @@ export const RIVALS = [
     power: { id: 'bolt', level: 2 },
   },
   {
-    id: 'glacier', name: 'The Glacier', short: 'GLACIER', skip: 'Champion Halla Vik',
+    id: 'glacier', name: 'The Glacier', short: 'GLACIER', skip: 'Champion Hrimgar, the frost giant',
     skill: 0.72, style: 'mixed', colour: '#5fb7ea', dark: '#2b78a8', venue: 'aurora', champion: true, boss: true,
-    motto: 'Undefeated in eleven Opens. Cold as the lake bed.',
+    motto: 'Eleven Opens. Never beaten.',
     power: { id: 'thunder', level: 3 },
   },
 ];

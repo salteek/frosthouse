@@ -117,12 +117,13 @@ function drawScoreboard(ctx, m) {
   });
 }
 
-// The final's boss bar, hung under the top panels: The Glacier's RESOLVE, split into her three phases.
+// The final's boss bar, hung under the top panels: The Glacier's RESOLVE, split into his three phases.
 function drawBossBar(ctx, m, time) {
   const b = m.boss;
   const x = 392, y = 106, w = 492, h = 62;
   const col = b.cracked ? '#9fb4d8' : ['#5fb7ea', '#b8f0ff', '#c4a8ff'][b.phase - 1];
   panel(ctx, x, y, w, h, { radius: 12, glow: b.cracked ? undefined : col, fillTop: 'rgba(16,22,52,0.95)', fill: 'rgba(10,14,36,0.95)' });
+  drawSprite(ctx, 'boss_bust', x - 4, y + h + 2, 74, { ax: 1, alpha: b.cracked ? 0.55 : 1 });
   chip(ctx, 'BOSS', x + 12, y + 17, { fill: '#7a2bd6', size: 10, h: 18 });
   text(ctx, 'THE GLACIER · RESOLVE', x + 64, y + 22, { size: 13, weight: 900, color: '#eaf4ff' });
   const tag = b.cracked ? 'CRACKED · powers gone' : `PHASE ${b.phase}/3 · ${bossPhase(b).name}`;
@@ -242,7 +243,8 @@ function drawRivalCard(ctx, m) {
   text(ctx, 'VS', x + 22, 33, { size: 12, weight: 900, color: PALETTE.inkSoft });
   text(ctx, r.name, x + 46, 33, { size: 15, weight: 900, color: PALETTE.ink });
   text(ctx, r.skip, x + 22, 53, { size: 12, weight: 700, color: PALETTE.inkSoft });
-  drawSprite(ctx, portraitFor(r), x + w - 30, 99, 88);
+  if (r.boss) drawSprite(ctx, 'boss_bust', x + w - 44, 99, 84);
+  else drawSprite(ctx, portraitFor(r), x + w - 30, 99, 88);
   chip(ctx, r.style.toUpperCase(), x + w - 62, 49, { align: 'right', fill: r.dark, size: 10, h: 18 });
   text(ctx, `“${r.motto}”`, x + 22, 72, { size: 11, weight: 600, color: PALETTE.inkSoft, font: 'Georgia, serif' });
   // Stones left for each side.
@@ -521,10 +523,10 @@ function drawIntro(ctx, scene) {
     ctx.fillRect(0, 230, VIEW.w, 190);
   }
   drawSprite(ctx, 'idle_red', 200, 420, 200);
-  drawSprite(ctx, portraitFor(m.rival), 1080, 420, 200, { flip: true });
+  drawSprite(ctx, portraitFor(m.rival), 1080, 420, m.boss ? 300 : 200, { flip: true });
   text(ctx, `MATCH ${scene.run.round + 1}${m.rival.champion ? ' · THE FINAL' : ''}`, VIEW.w / 2, 272, { size: 18, weight: 900, align: 'center', color: PALETTE.accent });
   callout(ctx, `vs ${m.rival.name}`, VIEW.w / 2, 326, 46, { tone: 'ice', sparkle: false });
-  text(ctx, m.boss ? 'BOSS MATCH · her Resolve falls each end and with every point you score: three phases, then she cracks' : `${m.venue.name} · ${m.venue.note}`, VIEW.w / 2, 358, { size: 17, weight: 700, align: 'center', color: PALETTE.inkSoft });
+  text(ctx, m.boss ? 'BOSS MATCH · score to break his Resolve · 3 phases, then he cracks' : `${m.venue.name} · ${m.venue.note}`, VIEW.w / 2, 358, { size: 17, weight: 700, align: 'center', color: PALETTE.inkSoft });
   text(ctx, m.hammer === 'player' ? 'You have the hammer: last stone of the end' : `${m.rival.short} have the hammer. You throw first.`, VIEW.w / 2, 392, { size: 15, weight: 800, align: 'center', color: m.hammer === 'player' ? PALETTE.good : PALETTE.player });
   ctx.restore();
 }

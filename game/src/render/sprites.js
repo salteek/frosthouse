@@ -17,6 +17,7 @@ const NAMES = [
   'skill_bolt', 'skill_thunder', 'skill_gale', 'skill_lock', 'el_fire', 'el_lightning', 'el_hail',
   'fx_lightning', 'fx_spear', 'fx_fireburst', 'fx_hailstone', 'fx_frostring',
   'wind_0', 'wind_1', 'wind_2', 'wind_3',
+  'boss_full', 'boss_cracked', 'boss_bust', 'spike_a', 'spike_b', 'ridge_a', 'crack_radial', 'crack_shards',
   'stone_ruby', 'stone_amber', 'stone_coral', 'stone_ivory', 'hero_ruby', 'hero_amber', 'hero_coral', 'hero_ivory',
   'bd_mirror.jpg', 'bd_pine.jpg', 'bd_windy.jpg', 'bd_thaw.jpg', 'bd_aurora.jpg',
 ];
@@ -76,7 +77,7 @@ export function drawSprite(ctx, name, x, y, h, o = {}) {
 }
 
 // Each rink on the ladder has a skip you can see; the player's own is the red jacket.
-export const PORTRAIT = { player: 'idle_red', puffin: 'idle_yellow', ironwool: 'idle_pink', ravens: 'idle_blue', sleet: 'idle_teal', pines: 'idle_green', glacier: 'idle_goggles' };
+export const PORTRAIT = { player: 'idle_red', puffin: 'idle_yellow', ironwool: 'idle_pink', ravens: 'idle_blue', sleet: 'idle_teal', pines: 'idle_green', glacier: 'boss_full' };
 // Each rink's crest, and the colour of each kit icon's painted rim (cards glow to match).
 export const crestFor = (rival) => `crest_${rival ? rival.id : 'player'}`;
 export const KIT_RIM = { broom: '#5fb4ff', lungs: '#ffc23a', hand: '#ff4d6d', eye: '#5fb4ff', granite: '#ff4d6d', grip: '#ff4d6d', silk: '#5fb4ff', mitten: '#ffc23a', hammer: '#ffc23a', crowd: '#5fb4ff', nerves: '#ff4d6d', boots: '#5fb4ff', gloves: '#ffc23a', tea: '#ff4d6d' };

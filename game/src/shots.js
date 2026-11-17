@@ -79,7 +79,7 @@ export function stageShot(game, shot, seed) {
     const rank = (c) => (c.text.startsWith('TRIPLE') || c.text.startsWith('DOUBLE') ? 3 : c.text.startsWith('HIT') ? 2 : c.tone === 'great' ? 1 : 0);
     let best = null;
     for (let k = 0; k < 60; k++) {
-      // The final against the boss: last end, a one-point lead, her Resolve in its last phase.
+      // The final against the boss: last end, a one-point lead, his Resolve in its last phase.
       const r = createRun('club', 4100 + seed * 31 + k);
       winMatches(r, 5);
       giveKit(r, ['birch', 'eye', 'steady', 'granite']);
@@ -139,8 +139,18 @@ export function stageShot(game, shot, seed) {
     game.save = { best: 18240, trophies: 1, runs: 6, lastRuns: [] };
     return;
   }
+  if (shot === 'intro') {
+    // The final's match intro, ?at= seconds before it fades (default 1.6).
+    winMatches(run, 5);
+    const scene = createPlayScene(run);
+    scene.intro = Number(new URLSearchParams(globalThis.location?.search ?? '').get('at') ?? 1.6);
+    game.play = scene;
+    game.mode = 'play';
+    game.save = { best: 18240, trophies: 1, runs: 6, lastRuns: [] };
+    return;
+  }
   if (shot === 'crack') {
-    // The Glacier cracking: a phase-3 end with stones in the house, her last Resolve broken by a shot call;
+    // The Glacier cracking: a phase-3 end with stones in the house, his last Resolve broken by a shot call;
     // held ?at= seconds after the crack starts (default 0.5).
     winMatches(run, 5);
     const scene = createPlayScene(run);

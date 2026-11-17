@@ -153,7 +153,7 @@ export function drawSheet(ctx, cam, venue, time) {
     bg.addColorStop(1, '#2b5285');
     ctx.fillStyle = bg;
     ctx.fillRect(bank, top - 6, VIEW.w - bank, bottom - top + 12);
-    if (!drawSprite(ctx, 'banner_open', bank + 46, (top + bottom) / 2, bottom - top - 30, { ay: 0.5 })) {
+    if (venue.bossFinal) { /* the boss stands on the bank (render/bossView.js) */ } else if (!drawSprite(ctx, 'banner_open', bank + 46, (top + bottom) / 2, bottom - top - 30, { ay: 0.5 })) {
       ctx.fillStyle = PALETTE.player;
       ctx.fillRect(bank + 26, top + 30, 34, bottom - top - 60);
       ctx.save();
@@ -327,6 +327,7 @@ function drawLines(ctx, cam) {
 // The boss final's frost ridge: a raised band of rime across one side of the sheet.
 function drawRidge(ctx, cam, p) {
   const x = sx(cam, p.x), y = sy(p.y), rx = px(p.rx), ry = px(p.ry);
+  if (drawSpriteBox(ctx, 'ridge_a', x, y, rx * 3.4, ry * 2.25)) return;
   ctx.save();
   const g = ctx.createLinearGradient(x - rx, 0, x + rx, 0);
   g.addColorStop(0, 'rgba(160,220,255,0)');
@@ -372,6 +373,7 @@ export function drawSpikes(ctx, cam, venue, time) {
     ctx.beginPath();
     ctx.arc(x, y, r * 2.8, 0, TAU);
     ctx.fill();
+    if (drawSprite(ctx, (venue.spikes.indexOf(p) % 2) ? 'spike_b' : 'spike_a', x, y, r * 3.6, { ay: 0.5 })) { ctx.restore(); continue; }
     // A six-pointed crystal: each point split into a lit and a shaded facet, lit from the top-left.
     const n = 6, rot = p.x * 3.1, ro = r * 1.55, ri = r * 0.78;
     for (let i = 0; i < n; i++) {

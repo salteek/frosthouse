@@ -1,5 +1,5 @@
 // "THE GLACIER CRACKS!": glowing cracks race out through the ice from the button, shards burst off,
-// her obstacles melt away, and a faint scar of the cracks stays in the ice for the rest of the final.
+// his obstacles melt away, and a faint scar of the cracks stays in the ice for the rest of the final.
 // The cracks are built once in sheet metres (so they sit still on the ice as the camera moves) and grow
 // outward from the button. Kept local to the house: no screen shake and no full-screen flash.
 
@@ -7,6 +7,7 @@ import { SHEET } from '../config.js';
 import { TAU } from '../geometry.js';
 import { createRng } from '../rng.js';
 import { sx, sy, px } from './camera.js';
+import { drawSprite } from './sprites.js';
 
 const GROW = 3.4;        // metres of crack per second
 const BURST_AT = 0.75;   // seconds in, when the shards fly
@@ -59,7 +60,16 @@ export function drawCrack(ctx, scene) {
   const front = c.t * GROW;
   const glow = c.t < BRIGHT ? 1 : Math.max(SCAR, 1 - (c.t - BRIGHT) / 1.4);
   const cam = scene.cam;
+  // The painted crack decal, revealed outward from the button as the crack front travels.
+  const bx = sx(cam, SHEET.tee), by = sy(0), size = px(5.2);
   ctx.save();
+  ctx.beginPath();
+  ctx.arc(bx, by, Math.max(1, px(front)), 0, TAU);
+  ctx.clip();
+  const painted = drawSprite(ctx, 'crack_radial', bx, by, size, { ay: 0.5, blend: 'lighter', alpha: Math.max(glow * 0.6, 0.26) });
+  ctx.restore();
+  ctx.save();
+  if (painted) ctx.globalAlpha = 0.22; // the drawn cracks become fine extra branches under the painted ones
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
   // A dark seam first, then the light leaking out of it.
@@ -85,7 +95,7 @@ export function drawCrack(ctx, scene) {
     const k = 1 - c.t / 2.2;
     const x = sx(cam, SHEET.tee), y = sy(0);
     const g = ctx.createRadialGradient(x, y, 0, x, y, px(1.4));
-    g.addColorStop(0, `rgba(200,245,255,${(0.5 * k).toFixed(3)})`);
+    g.addColorStop(0, `rgba(200,245,255,${(0.22 * k).toFixed(3)})`);
     g.addColorStop(1, 'rgba(120,210,255,0)');
     ctx.globalCompositeOperation = 'lighter';
     ctx.fillStyle = g;

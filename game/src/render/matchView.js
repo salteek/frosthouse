@@ -6,6 +6,7 @@ import { currentTeam } from '../match.js';
 import { previewLength } from '../tournament.js';
 import { drawBackdrop, drawSheet, drawSnowfall, drawSpikes, drawObstacleSet } from './ice.js';
 import { drawCrack } from './crack.js';
+import { drawBossFigure } from './bossView.js';
 import { drawStones, drawSkipBroom, drawPathPreview, drawCounting, drawSitting, teamColours } from './stones.js';
 import { countEnd } from '../scoring.js';
 import { drawMatchHud } from './hud.js';
@@ -25,6 +26,7 @@ export function drawMatch(ctx, scene, time, best) {
   if ((m.phase === 'endScore' && m.endResult?.team === 'player') || (m.phase === 'over' && m.winner === 'player')) excite = 1;
   drawBackdrop(ctx, scene.cam, m.venue, time, excite);
   drawSheet(ctx, scene.cam, m.venue, time);
+  drawBossFigure(ctx, scene);
 
   const aiming = m.phase === 'aim' && currentTeam(m) === 'player' && scene.intro <= 0;
   if (aiming) {

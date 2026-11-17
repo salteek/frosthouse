@@ -1,19 +1,19 @@
 // The final is a boss match. The Glacier carries a RESOLVE bar: every point you score and every good
-// shot chips it. As it falls she escalates through three phases, and at zero she cracks.
-//   Phase 1, COLD OPEN    (100–67): her Thunder power; a frost ridge slows stones that cross it.
+// shot chips it. As it falls he escalates through three phases, and at zero he cracks.
+//   Phase 1, COLD OPEN    (100–67): his Thunder power; a frost ridge slows stones that cross it.
 //   Phase 2, WHITEOUT     (66–34): a blizzard wind pushes every stone, hers too; snow drifts blow onto the sheet.
-//   Phase 3, FROZEN HEART (33–1): she also carries Frost Lock, paid with energy like yours; ice spikes guard the house.
-//   CRACKED               (0): her powers are gone, the obstacles melt and her throws go shaky.
-// The obstacles are laid at the start of each end (never mid-throw), stack up phase by phase, hit her stones
+//   Phase 3, FROZEN HEART (33–1): he also carries Frost Lock, paid with energy like yours; ice spikes guard the house.
+//   CRACKED               (0): his powers are gone, the obstacles melt and his throws go shaky.
+// The obstacles are laid at the start of each end (never mid-throw), stack up phase by phase, hit his stones
 // as hard as yours, and never sit on the centre line, so a straight draw to the button is always there.
-// Her Resolve also wears down as the final goes on (at most 66 from end 2, 33 from end 3), so every final
-// reaches all three phases; good play gets there sooner and cracks her.
-// You still win the match on points; breaking her Resolve is how you take her tricks away.
+// His Resolve also wears down as the final goes on (at most 66 from end 2, 33 from end 3), so every final
+// reaches all three phases; good play gets there sooner and cracks him.
+// You still win the match on points; breaking his Resolve is how you take his tricks away.
 
 export const BOSS_PHASES = [
-  { n: 1, name: 'COLD OPEN', note: 'Her Thunder strikes · a frost ridge slows stones', obstacle: 'FROST RIDGE' },
+  { n: 1, name: 'COLD OPEN', note: 'His Thunder strikes · a frost ridge slows stones', obstacle: 'FROST RIDGE' },
   { n: 2, name: 'WHITEOUT', note: 'Blizzard wind · snow drifts blow onto the sheet', obstacle: 'SNOW DRIFTS' },
-  { n: 3, name: 'FROZEN HEART', note: 'She Frost Locks · ice spikes guard the house', obstacle: 'ICE SPIKES' },
+  { n: 3, name: 'FROZEN HEART', note: 'He Frost Locks · ice spikes guard the house', obstacle: 'ICE SPIKES' },
 ];
 
 export const RESOLVE_PER_POINT = 14;
@@ -22,7 +22,7 @@ const WHITEOUT_WIND = -0.0028;
 
 export function createBoss(rival, venue) {
   if (!rival.boss) return null;
-  return { resolve: 100, phase: 1, cracked: false, hitT: 9, baseVenue: venue, obstacles: null, laidPhase: 0 };
+  return { resolve: 100, phase: 1, cracked: false, hitT: 9, baseVenue: { ...venue, bossFinal: true }, obstacles: null, laidPhase: 0 };
 }
 
 export const SPIKE_R = 0.18;
