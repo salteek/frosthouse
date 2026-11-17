@@ -4,6 +4,8 @@
 
 import { drawSprite } from './render/sprites.js';
 import { TAU } from './geometry.js';
+import { patchAt } from './physics.js';
+import { sx as camX, sy as camY } from './render/camera.js';
 
 const rnd = (w, [a, b]) => w.rng.range(a, b);
 
@@ -106,6 +108,7 @@ export function updateFx(w, dt) {
       }
     }
   }
+  if (w.arcs) for (let i = w.arcs.length - 1; i >= 0; i--) if ((w.arcs[i].life -= dt) <= 0) w.arcs.splice(i, 1);
   if (w.flash) w.flash = Math.max(0, w.flash - dt * 1.6);
 }
 
@@ -191,6 +194,108 @@ export function drawTrails(ctx, scene, sx, sy, time) {
     layer(0.1, 9, inner, 0.55);
     layer(0.5, 4, '255,255,255', 0.85);
     void tx; void ty;
+  }
+  ctx.restore();
+}
+
+// ---- Snow smoke: a running stone kicks up soft clouds of ice dust that billow, swirl and drift
+// back along its path. Puffs live in sheet metres, so they stay put on the ice as the camera glides.
+
+const puffTex = {};
+function puffTexture(hot) {
+  const key = hot ? 'hot' : 'ice';
+  if (puffTex[key] || typeof document === 'undefined') return puffTex[key];
+  const c = document.createElement('canvas');
+  c.width = c.height = 64;
+  const g = c.getContext('2d');
+  const r = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  const [a, b, d] = hot ? ['255,240,215', '255,200,130', '255,150,70'] : ['235,248,255', '200,232,255', '150,205,250'];
+  r.addColorStop(0, `rgba(${a},0.9)`);
+  r.addColorStop(0.35, `rgba(${b},0.5)`);
+  r.addColorStop(0.7, `rgba(${d},0.16)`);
+  r.addColorStop(1, `rgba(${d},0)`);
+  g.fillStyle = r;
+  g.fillRect(0, 0, 64, 64);
+  return (puffTex[key] = c);
+}
+
+export function emitSnowSmoke(scene, dt) {
+  const fx = scene.fx, rng = fx.rng, P = (fx.puffs ??= []);
+  for (const s of scene.match.stones) {
+    if (!s.moving || s.out) continue;
+    const speed = Math.hypot(s.vx, s.vy);
+    if (speed < 0.08) continue;
+    const ux = s.vx / speed, uy = s.vy / speed;
+    // Hazards answer back: a drift explodes into powder as the stone ploughs in, slush sprays.
+    const patch = patchAt(scene.match.venue, s.x, s.y);
+    const kind = patch?.kind ?? null;
+    if (kind && kind !== s.inPatch) {
+      const X = scene.cam ? [camX(scene.cam, s.x), camY(s.y)] : null;
+      if (X) {
+        if (kind === 'snow') {
+          burstSprites(fx, 'snowflake', X[0], X[1], { count: 10, speed: [90, 300], size: [12, 24], life: [0.5, 1.0], spin: 4, blend: 'source-over' });
+          addFlash(fx, 'ring_a', X[0], X[1], 40, 0.45, { grow: 2.2, blend: 'lighter' });
+          scene.shake = Math.max(scene.shake ?? 0, 5);
+        } else {
+          burstSprites(fx, 'shards', X[0], X[1], { count: 8, speed: [80, 220], size: [10, 18], life: [0.4, 0.7], spin: 6 });
+        }
+      }
+    }
+    s.inPatch = kind;
+    if (kind === 'snow' && rng.chance(0.5)) {
+      // Ploughing through powder: thick white clouds burst out both sides.
+      for (let j = 0; j < 2; j++) {
+        const side = j ? 1 : -1, life = rng.range(0.7, 1.3);
+        P.push({ x: s.x + ux * 0.1, y: s.y + side * 0.12, vx: -ux * 0.2 + -uy * side * rng.range(0.6, 1.2), vy: -uy * 0.2 + ux * side * rng.range(0.6, 1.2),
+          r: rng.range(14, 22), grow: rng.range(50, 80), life, max: life, swirl: rng.range(0, TAU), spinV: rng.range(-3, 3), hot: false, dense: true });
+      }
+    } else if (kind === 'slush' && rng.chance(0.5)) {
+      const X = scene.cam ? [camX(scene.cam, s.x), camY(s.y)] : null;
+      if (X) burstSprites(fx, 'shards', X[0] - 10, X[1], { count: 1, angle: Math.PI + rng.range(-1.2, 1.2), spread: 0.3, speed: [60, 160], size: [8, 13], life: [0.3, 0.5], spin: 5 });
+    }
+    // More smoke the faster it runs, and a thick plume while it is swept.
+    s.puffAcc = (s.puffAcc ?? 0) + dt * (10 + speed * 14) * (s.swept ? 1.8 : 1);
+    while (s.puffAcc >= 1) {
+      s.puffAcc -= 1;
+      const side = rng.range(-1, 1);
+      const life = rng.range(0.55, 1.1) * (0.7 + Math.min(1, speed / 3) * 0.6);
+      P.push({
+        x: s.x - ux * 0.16 + -uy * side * 0.1, y: s.y - uy * 0.16 + ux * side * 0.1,
+        // Thrown back and out to the side, slowing as it spreads.
+        vx: -ux * rng.range(0.1, 0.5) + -uy * side * rng.range(0.15, 0.55), vy: -uy * rng.range(0.1, 0.5) + ux * side * rng.range(0.15, 0.55),
+        r: rng.range(10, 17) * (s.swept ? 1.3 : 1), grow: rng.range(34, 60), life, max: life,
+        swirl: rng.range(0, TAU), spinV: rng.range(-3, 3), hot: s.team === 'player' && scene.match.streak >= 2,
+      });
+    }
+  }
+  // Smoke leans with the wind, so the crosswind is visible.
+  const wind = (scene.match.venue.wind ?? 0) * 900;
+  for (let i = P.length - 1; i >= 0; i--) {
+    const p = P[i];
+    if ((p.life -= dt) <= 0) { P.splice(i, 1); continue; }
+    const d = Math.exp(-2.4 * dt);
+    p.vx *= d; p.vy *= d;
+    p.swirl += p.spinV * dt;
+    p.vy += wind * dt;
+    p.x += p.vx * dt; p.y += p.vy * dt;
+    p.r += p.grow * dt * (p.life / p.max + 0.2);
+  }
+  if (P.length > 260) P.splice(0, P.length - 260);
+}
+
+export function drawSnowSmoke(ctx, scene, sx, sy) {
+  const P = scene.fx.puffs;
+  if (!P || !P.length || !puffTexture(false)) return;
+  ctx.save();
+  for (const p of P) {
+    const k = p.life / p.max;
+    // Fades in fast, out slow; each puff wobbles as it swirls so the cloud seems to boil.
+    const a = Math.min(1, (1 - k) * 8) * k * (p.dense ? 0.85 : 0.6);
+    if (a <= 0.01) continue;
+    const r = p.r * (1 + Math.sin(p.swirl) * 0.08);
+    const x = sx(p.x) + Math.cos(p.swirl) * 2, y = sy(p.y) + Math.sin(p.swirl * 1.3) * 2;
+    ctx.globalAlpha = a;
+    ctx.drawImage(puffTexture(p.hot), x - r, y - r * 0.8, r * 2, r * 1.6);
   }
   ctx.restore();
 }

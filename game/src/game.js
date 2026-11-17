@@ -24,6 +24,9 @@ export function createGame() {
 
 export function startRun(game, seed = (Date.now() % 100000) | 0) {
   game.run = createRun(game.difficulty, seed);
+  // Dev/test shortcut: ?round=1..6 starts the run at that rival (and lake) instead of the first.
+  const round = Number(new URLSearchParams(globalThis.location?.search ?? '').get('round'));
+  if (round >= 1 && round <= 6) game.run.round = round - 1;
   game.play = createPlayScene(game.run);
   game.mode = 'play';
   game.paused = false;

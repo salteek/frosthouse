@@ -9,9 +9,10 @@ import { drawStones, drawSkipBroom, drawPathPreview, drawCounting, drawSitting, 
 import { countEnd } from '../scoring.js';
 import { drawMatchHud } from './hud.js';
 import { drawSprite } from './sprites.js';
-import { drawFxLayer, drawTrails } from '../fx.js';
+import { drawFxLayer, drawTrails, drawSnowSmoke } from '../fx.js';
 import { sx as toX, sy as toY } from './camera.js';
 import { callout } from './ui.js';
+import { drawSkillButtons, drawSkillStrike, drawLocks, drawComboTrack, drawChargedStone, drawArcs } from './skillsView.js';
 
 export function drawMatch(ctx, scene, time, best) {
   const m = scene.match;
@@ -31,17 +32,38 @@ export function drawMatch(ctx, scene, time, best) {
   } else if (m.phase === 'aim' && currentTeam(m) === 'rival') {
     drawSkipBroom(ctx, scene.cam, Math.sin(time * 1.3) * 0.5, 1, m.rival.colour, time);
   }
+  drawSnowSmoke(ctx, scene, (x) => toX(scene.cam, x), toY);
   drawTrails(ctx, scene, (x) => toX(scene.cam, x), toY, time);
   drawStones(ctx, scene.cam, m, time);
+  drawLocks(ctx, scene, time);
+  drawChargedStone(ctx, scene, time);
   const calling = m.phase === 'settle' && m.lastCall && m.lastCall.t < 1.6;
   if (m.phase === 'aim' || (m.phase === 'settle' && !calling)) drawSitting(ctx, scene.cam, countEnd(m.stones), m.rival);
   if (m.phase === 'endScore' && m.endResult?.team) {
     drawCounting(ctx, scene.cam, m.endResult.counting, teamColours(m.endResult.team, m.rival)[0], m.endResult.t);
   }
   drawFx(ctx, scene.fx);
+  drawSkillStrike(ctx, scene, time);
+  drawArcs(ctx, scene, time);
   if (m.venue.id === 'pine' || m.venue.id === 'aurora') drawSnowfall(ctx, time);
   ctx.restore();
+  if (scene.slowmo > 0.01) {
+    // Slow motion: the edges darken and the moment is named.
+    const v = ctx.createRadialGradient(640, 380, 220, 640, 380, 760);
+    v.addColorStop(0, 'rgba(0,0,0,0)');
+    v.addColorStop(1, `rgba(2,6,20,${(0.6 * scene.slowmo).toFixed(3)})`);
+    ctx.fillStyle = v;
+    ctx.fillRect(0, 0, 1280, 720);
+    ctx.save();
+    ctx.globalAlpha = scene.slowmo;
+    callout(ctx, 'LAST STONE', 640, 186, 34, { tone: 'violet' });
+    ctx.restore();
+  }
   drawMatchHud(ctx, scene, time, best);
+  if (scene.intro <= 0 && m.phase !== 'over') {
+    drawComboTrack(ctx, scene, time);
+    drawSkillButtons(ctx, scene, time);
+  }
 }
 
 function drawFx(ctx, fx) {

@@ -130,6 +130,31 @@ export const sfx = {
   fanfare: () => {
     [523, 659, 784, 1046].forEach((f, i) => tone({ freq: f, type: 'triangle', dur: 0.5, vol: 0.12, delay: i * 0.13 }));
   },
+  // Skills and elemental combos.
+  bolt: () => {
+    tone({ freq: 2400, to: 500, type: 'sawtooth', dur: 0.35, vol: 0.06 });
+    hiss({ dur: 0.4, vol: 0.14, freq: 4200, q: 1.2, attack: 0.02 });
+  },
+  thunder: () => {
+    hiss({ dur: 0.12, vol: 0.3, freq: 5000, q: 0.4 });
+    hiss({ dur: 1.2, vol: 0.22, freq: 180, q: 0.5, attack: 0.04, delay: 0.05 });
+    tone({ freq: 90, to: 40, type: 'sawtooth', dur: 0.8, vol: 0.1, delay: 0.04 });
+  },
+  gale: () => {
+    hiss({ dur: 1.1, vol: 0.2, freq: 700, q: 0.8, attack: 0.3 });
+    tone({ freq: 260, to: 300, type: 'sawtooth', dur: 0.7, vol: 0.05 });
+  },
+  lock: () => {
+    [1568, 2093, 2637].forEach((f, i) => tone({ freq: f, type: 'sine', dur: 0.35, vol: 0.07, delay: i * 0.06 }));
+    hiss({ dur: 0.3, vol: 0.1, freq: 6000, q: 1 });
+  },
+  fire: () => {
+    hiss({ dur: 0.8, vol: 0.2, freq: 300, q: 0.3, attack: 0.02 });
+    tone({ freq: 120, to: 60, type: 'sawtooth', dur: 0.5, vol: 0.08 });
+  },
+  hail: () => {
+    for (let i = 0; i < 8; i++) tone({ freq: 2200 + i * 130, to: 900, type: 'triangle', dur: 0.06, vol: 0.05, delay: i * 0.05 });
+  },
   sad: () => {
     [392, 330, 262].forEach((f, i) => tone({ freq: f, to: f * 0.97, type: 'triangle', dur: 0.6, vol: 0.1, delay: i * 0.22 }));
   },

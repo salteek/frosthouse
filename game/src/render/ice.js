@@ -359,19 +359,38 @@ function drawPatches(ctx, cam, venue, time) {
 }
 
 function drawWind(ctx, venue, time) {
-  // Painted gusts blowing across the sheet toward the far bank, in the wind's direction.
-  const dir = Math.sign(venue.wind);
-  for (let i = 0; i < 7; i++) {
-    const x = ((i * 211 + time * 70) % (VIEW.w + 200)) - 100;
-    const y = sy(0) + dir * ((((time * 45 + i * 67) % 420)) - 210);
-    if (!drawSprite(ctx, 'hazard_wind', x, y, 26 + (i % 3) * 8, { ay: 0.5, alpha: 0.55, rot: dir * 1.35 })) {
-      ctx.strokeStyle = 'rgba(190,230,255,0.35)';
+  // Painted gusts sweeping horizontally across the sheet. Each one is born small, stretches out as it
+  // races along, ripples, and thins away, then a new one starts elsewhere; they drift slowly toward
+  // the bank the wind pushes the stones to.
+  const dir = Math.sign(venue.wind) || 1;
+  const top = sy(-SHEET.width / 2) + 30, span = sy(SHEET.width / 2) - 30 - top;
+  for (let i = 0; i < 8; i++) {
+    const period = 2.6 + (i % 4) * 0.45;
+    const t = time / period + i * 0.37;
+    const n = Math.floor(t), p = t - n;
+    // A fresh random lane and start for every life of this gust.
+    const h1 = Math.sin((n + 1) * 12.9898 + i * 78.233) * 43758.5453, r1 = h1 - Math.floor(h1);
+    const h2 = Math.sin((n + 1) * 39.346 + i * 11.135) * 24634.6345, r2 = h2 - Math.floor(h2);
+    const x = -160 + r1 * 500 + p * (VIEW.w + 200);
+    const lane = top + r2 * span;
+    const y = lane + dir * p * 40 + Math.sin(time * 3 + i * 1.7) * 6;
+    const life = Math.sin(Math.PI * p);
+    const stretch = 0.55 + 0.75 * life + Math.sin(time * 9 + i) * 0.06;
+    const hgt = 30 + (i % 3) * 9;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(stretch, (1 - 0.25 * life) * (dir < 0 ? -1 : 1));
+    ctx.rotate(Math.sin(time * 4 + i) * 0.04);
+    if (!drawSprite(ctx, 'hazard_wind', 0, 0, hgt, { ay: 0.5, alpha: 0.65 * life, blend: 'lighter' })) {
+      ctx.globalAlpha = 0.4 * life;
+      ctx.strokeStyle = 'rgb(190,230,255)';
       ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(x + 6, y + dir * 30);
+      ctx.moveTo(-30, 0);
+      ctx.quadraticCurveTo(0, -8, 30, 0);
       ctx.stroke();
     }
+    ctx.restore();
   }
 }
 

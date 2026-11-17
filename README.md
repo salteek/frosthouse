@@ -6,7 +6,7 @@
 
 **Frosthouse** is a curling tournament on frozen lakes, played in the browser with mouse and keyboard.
 
-Climb the Frost Lake Open: six rival rinks, each with its own style (draw, guard, takeout, freeze, mixed), on five lakes that play differently (snow drifts, crosswind, a slush lane, glassy evening ice). Aim the skip's broom, pick the turn, set the weight, time the release on the needle, then hold to sweep your stone home. Between matches, pick kit upgrades in the clubhouse. **Win** by beating all six rinks; **lose** after two match losses.
+Climb the Frost Lake Open: six rival rinks, each with its own style (draw, guard, takeout, freeze, mixed), on five lakes that play differently (snow drifts, crosswind, a slush lane, glassy evening ice). Aim the skip's broom, pick the turn, set the weight, time the release on the needle, then hold to sweep your stone home. Fire **skills** between throws (Ice Bolt, Thunder, Gale Horn, Frost Lock) on cooldowns; level them up or swap them at the clubhouse, where you also pick kit upgrades. A hot streak **charges** your next stone with elements: Fire (x2) hits harder, Lightning (x3) chains to another stone, Hailstorm (x4) pounds the whole house. The stronger rivals carry a power of their own. **Win** by beating all six rinks; **lose** after two match losses.
 
 - Real stone physics: friction, curl that grows as the stone slows, sweeping, collisions, the hog rule.
 - Rival skips that read the ice: they list candidate shots, simulate each one with the same physics, and play the best for their style.
@@ -22,7 +22,7 @@ python3 -m http.server 8080 --directory game   # then open http://localhost:8080
 mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts   # the make.fun hand-in
 ```
 
-Controls: **mouse** aims the broom · **W/S or wheel** sets weight (1–5 presets) · **Q/E or right click** turns · **hold click or Space** and let go on PERFECT · **hold Space/click** to sweep · **Esc** pause · **M** mute.
+Controls: **mouse** aims the broom · **W/S or wheel** sets weight (1–5 presets) · **Q/E or right click** turns · **hold click or Space** and let go on PERFECT · **hold Space/click** to sweep · **F / G** (or click the buttons on the ice) fire your skills · **Esc** pause · **M** mute. Add `?round=1..6` to the URL to start at any match.
 
 ---
 

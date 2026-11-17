@@ -35,6 +35,8 @@ export function freshKit() {
   return {
     sweepPower: 1, stamina: 1, needle: 1, preview: 1, mass: 1, curl: 1, friction: 1,
     mitten: false, startHammer: false, scoreMul: 1, rivalNerves: 1, perfect: 1, sweepStraighten: 1, tea: false,
+    // Active skills (see skills.js): every run starts with the Ice Bolt in slot F.
+    skills: [{ id: 'bolt', level: 1 }],
   };
 }
 

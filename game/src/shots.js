@@ -7,6 +7,9 @@ import { currentTeam, deliver, rivalThrow, updateRunning, nextEnd } from './matc
 import { chooseShot, executeShot } from './ai.js';
 import { KIT } from './kit.js';
 import { RIVALS } from './rivals.js';
+import { useSkill, skillOffer } from './skills.js';
+import { createStone } from './physics.js';
+import { SHEET } from './config.js';
 
 const quietInput = {
   mouse: { x: 900, y: 380, down: false },
@@ -114,13 +117,45 @@ export function stageShot(game, shot, seed) {
     game.save = { best: 18240, trophies: 1, runs: 6, lastRuns: [] };
     return;
   }
+  if (shot === 'skill') {
+    // A skill mid-strike: ?seed=0 bolt, 1 thunder, 2 gale, 3 frost lock; &at= seconds into it.
+    const id = ['bolt', 'thunder', 'gale', 'lock'][((seed % 4) + 4) % 4];
+    winMatches(run, 2);
+    run.kit.skills = [{ id: 'bolt', level: 2 }, { id: id === 'bolt' ? 'thunder' : id, level: 3 }];
+    const scene = createPlayScene(run);
+    scene.intro = 0;
+    const m = scene.match;
+    m.hammer = 'player';
+    // A crowded house: two rival stones sitting, one of yours biting, a rival guard out front.
+    const put = (team, x, y) => { const st = createStone(team, x, y); st.spin = x * 3; m.stones.push(st); };
+    put('rival', SHEET.tee + 0.15, 0.22);
+    put('rival', SHEET.tee - 0.9, -0.75);
+    put('player', SHEET.tee + 0.75, 0.55);
+    put('rival', SHEET.tee - 4.2, 0.35);
+    put('player', SHEET.tee - 1.4, 1.0);
+    m.thrown = { player: 2, rival: 3 };
+    m.streak = 2;
+    const at = Number(new URLSearchParams(globalThis.location?.search ?? '').get('at') ?? 0.42);
+    m.phase = 'aim';
+    if (useSkill(m, id === 'bolt' ? 0 : 1)) {
+      let t = 0;
+      while (t < at && m.phase === 'skill') { updatePlay(scene, 1 / 60, quietInput); t += 1 / 60; }
+    }
+    scene.skillHover = -1;
+    game.play = scene;
+    game.mode = 'play';
+    game.save = { best: 18240, trophies: 1, runs: 6, lastRuns: [] };
+    return;
+  }
   if (shot === 'clubhouse') {
     winMatches(run, 3);
     giveKit(run, ['birch', 'eye', 'steady']);
     run.losses = 1;
     run.results.splice(2, 0, { rival: RIVALS[2].id, won: false, p: 3, r: 4 });
     run.score = 4210;
-    run.offer = ['granite', 'mitten', 'grip'].map((id) => KIT.find((k) => k.id === id));
+    run.kit.skills = [{ id: 'bolt', level: 2 }];
+    run.offer = ['granite', 'mitten'].map((id) => KIT.find((k) => k.id === id));
+    run.offer.splice(1, 0, skillOffer(run.kit, { pick: (l) => l.find((o) => o.id === 'thunder') ?? l[0] }));
     game.mode = 'clubhouse';
     game.hover = 'kit:1';
     return;

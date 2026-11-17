@@ -63,7 +63,7 @@ function flames(ctx, x, y, w, h, time, heat) {
 
 // Three glass pills over the near end of the sheet: the whole control scheme while you line up a throw.
 function drawHintPills(ctx) {
-  const pills = [['MOUSE', 'aim the broom'], ['W/S', 'set the weight'], ['SPACE', 'hold to sweep']];
+  const pills = [['MOUSE', 'aim the broom'], ['W/S', 'set the weight'], ['F/G', 'fire a skill']];
   let x = 420;
   for (const [key, label] of pills) {
     ctx.font = `800 14px ${'system-ui, sans-serif'}`;
@@ -266,8 +266,38 @@ function drawShotPanel(ctx, scene, time) {
     text(ctx, 'SWEEP', nx, BOTTOM + 22, { size: 12, weight: 900, color: PALETTE.inkSoft });
     keycap(ctx, 'HOLD SPACE', nx + 52, BOTTOM + 23, { size: 10 });
     const max = THROW.sweepStamina * (m.shot?.team === 'player' ? m.kit.stamina : 1.2);
-    bar(ctx, nx, BOTTOM + 42, cw, 20, m.stamina / max, scene.sweeping ? '#2fa86b' : '#6fa8dc');
-    text(ctx, scene.sweeping ? 'SWEEPING! farther and straighter' : m.shot?.team === 'player' ? 'Hold SPACE or the mouse to sweep' : `${m.rival.short} sweepers ready`, nx, BOTTOM + 84, { size: 12, weight: 800, color: scene.sweeping ? PALETTE.good : PALETTE.inkSoft });
+    const frac = m.stamina / max, mine = m.shot?.team === 'player';
+    const low = frac < 0.28, empty = frac <= 0.001;
+    // The bar burns down while sweeping: a shimmer races along it, and it throbs red when nearly spent.
+    const throb = low && !empty ? 0.5 + 0.5 * Math.sin(time * 16) : 0;
+    bar(ctx, nx, BOTTOM + 42, cw, 20, frac, empty ? '#5b6b85' : low ? (throb > 0.5 ? '#ff4d4d' : '#e3a21a') : scene.sweeping ? '#2fa86b' : '#6fa8dc');
+    if (scene.sweeping && frac > 0.02) {
+      ctx.save();
+      roundRect(ctx, nx, BOTTOM + 42, Math.max(20, cw * frac), 20, 10);
+      ctx.clip();
+      const sx0 = nx + ((time * 420) % (cw + 80)) - 40;
+      const g = ctx.createLinearGradient(sx0 - 40, 0, sx0 + 40, 0);
+      g.addColorStop(0, 'rgba(255,255,255,0)');
+      g.addColorStop(0.5, 'rgba(255,255,255,0.55)');
+      g.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(nx, BOTTOM + 42, cw, 20);
+      ctx.restore();
+    }
+    if (low && !empty) {
+      ctx.save();
+      ctx.shadowColor = '#ff4d4d';
+      ctx.shadowBlur = 14 * throb;
+      ctx.strokeStyle = `rgba(255,90,90,${(0.35 + 0.5 * throb).toFixed(2)})`;
+      ctx.lineWidth = 2;
+      roundRect(ctx, nx - 2, BOTTOM + 40, cw + 4, 24, 12);
+      ctx.stroke();
+      ctx.restore();
+    }
+    const msg = empty ? (mine ? 'OUT OF BREATH! the stone runs free' : `${m.rival.short} sweepers are spent`)
+      : scene.sweeping ? (low ? 'ALMOST SPENT! sweep only if it needs it' : 'SWEEPING! farther and straighter')
+      : mine ? 'Hold SPACE or the mouse to sweep' : `${m.rival.short} sweepers ready`;
+    text(ctx, msg, nx, BOTTOM + 84, { size: 12, weight: 800, color: empty || (low && scene.sweeping) ? '#ff8080' : scene.sweeping ? PALETTE.good : PALETTE.inkSoft });
   } else {
     text(ctx, 'RELEASE', nx, BOTTOM + 22, { size: 12, weight: 900, color: PALETTE.inkSoft });
     keycap(ctx, 'HOLD CLICK', nx + 66, BOTTOM + 23, { size: 10 });

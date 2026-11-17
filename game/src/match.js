@@ -5,6 +5,8 @@ import { createStone, launch, stepStones, anyMoving, cloneStones, speedFromWeigh
 import { countEnd } from './scoring.js';
 import { callShot } from './callouts.js';
 import { chooseShot, executeShot, rivalWantsSweep } from './ai.js';
+import { applySkillHit, tickSkills } from './skills.js';
+import { chargeFor, comboOnHit } from './combos.js';
 
 const R = SHEET.stoneR;
 
@@ -40,6 +42,8 @@ export function createMatch({ rival, venue, kit, difficulty, rng, ends = MATCH.e
     perfect: false,
     events: [],
     stats: { perfects: 0, calls: [], bestCall: null, takeouts: 0, buttons: 0, pointsFor: 0, pointsAgainst: 0, hogged: 0, bestStreak: 0 },
+    skillCd: {},           // skill id -> your throws until it is ready again
+    skill: null,           // the skill being played out (phase 'skill')
     streak: 0,             // the player's run of good shots in a row; it multiplies shot-call points
     winner: null,
     clock: 0,
@@ -67,6 +71,8 @@ export function deliver(m, team, { aimY, speed, turn }) {
   if (team === 'player') {
     stone.sweepFriction = 1 - (1 - PHYS.sweepFriction) * m.kit.sweepPower;
     stone.sweepCurl = PHYS.sweepCurl * m.kit.sweepStraighten;
+    // A hot streak charges the stone with elements (combos.js).
+    stone.charge = chargeFor(m.streak);
   }
   m.before = cloneStones(m.stones);
   launch(stone, aimY, speed);
@@ -126,11 +132,37 @@ export function updateRunning(m, dt, sweeping) {
     for (const e of stepStones(m.stones, m.venue, PHYS.dt)) {
       if (e.type === 'out') e.stone.outWhy = e.why;
       m.events.push(e);
+      if (e.type === 'hit') { const c = comboOnHit(m, e); if (c) m.events.push(...c); }
     }
   }
   m.clock += dt;
   if (!anyMoving(m.stones)) finishThrow(m);
   return swept;
+}
+
+// A skill plays out between throws: the strike lands, the shoved stones run to rest, the turn goes on.
+export function updateSkill(m, dt) {
+  const sk = m.skill;
+  sk.t += dt;
+  if (!sk.applied) {
+    if (sk.t >= sk.hitAt) applySkillHit(m);
+    return;
+  }
+  const steps = Math.max(1, Math.round((dt * PHYS.timeScale) / PHYS.dt));
+  for (let i = 0; i < steps; i++) {
+    for (const e of stepStones(m.stones, m.venue, PHYS.dt)) {
+      if (e.type === 'out') { e.stone.outWhy = e.why; e.bySkill = sk.id; }
+      m.events.push(e);
+    }
+  }
+  if (anyMoving(m.stones)) { sk.rest = 0; return; }
+  sk.rest = (sk.rest ?? 0) + dt;
+  if (sk.rest < 0.35) return;
+  const out = m.stones.filter((st) => st.out && st.team !== sk.team).length;
+  m.stones = m.stones.filter((st) => !st.out);
+  m.events.push({ type: 'skillDone', id: sk.id, out });
+  m.skill = null;
+  m.phase = 'aim';
 }
 
 function finishThrow(m) {
@@ -144,6 +176,7 @@ function finishThrow(m) {
   const call = callShot(m.before, m.stones, s.id, s.team);
   m.lastCall = { ...call, team: s.team, t: 0, perfect: s.team === 'player' && m.perfect, streak: 1 };
   if (s.team === 'player') {
+    tickSkills(m);
     // A hot streak: every good shot in a row raises the multiplier, up to x4; a poor one breaks it.
     m.streak = call.tone === 'great' || call.tone === 'good' ? m.streak + 1 : 0;
     const mult = Math.min(SCORE.streakMax, Math.max(1, m.streak));
@@ -156,6 +189,7 @@ function finishThrow(m) {
     if (s.hogged) m.stats.hogged++;
     m.events.push({ type: 'call', call, mult, points: Math.round((call.points + (m.perfect ? SCORE.perfectRelease : 0)) * m.kit.scoreMul * mult), x: s.x, y: s.y });
   } else {
+    tickSkills(m, 'rival');
     m.events.push({ type: 'rivalCall', call });
   }
   m.thrown[s.team]++;

@@ -2,6 +2,8 @@
 // Each screen records its clickable areas in `hits` so the scene can test the mouse against them.
 
 import { VIEW, PALETTE, MATCH, SHEET } from '../config.js';
+import { drawSkillBadge } from './skillsView.js';
+import { SKILLS } from '../skills.js';
 import { TAU } from '../geometry.js';
 import { RIVALS } from '../rivals.js';
 import { VENUES, venueById } from '../venues.js';
@@ -136,7 +138,7 @@ export function drawTitle(ctx, state, time, save) {
   foot.addColorStop(1, 'rgba(6,14,34,0.85)');
   ctx.fillStyle = foot;
   ctx.fillRect(0, 640, VIEW.w, VIEW.h - 640);
-  hints(ctx, [['ENTER', 'play'], ['1-3', 'difficulty'], ['MOUSE', 'aim'], ['Q/E', 'turn'], ['W/S', 'weight'], ['HOLD CLICK', 'throw'], ['SPACE', 'sweep'], ['M', 'mute']], 44, 676, { size: 13 });
+  hints(ctx, [['ENTER', 'play'], ['1-3', 'difficulty'], ['MOUSE', 'aim'], ['Q/E', 'turn'], ['W/S', 'weight'], ['HOLD CLICK', 'throw'], ['SPACE', 'sweep'], ['F/G', 'skills'], ['M', 'mute']], 44, 676, { size: 13 });
   return hits;
 }
 
@@ -210,7 +212,8 @@ export function drawClubhouse(ctx, state, time, run) {
       text(ctx, k.name, x + 116, y + 160, { size: 20, weight: 900, align: 'center', font: FONT_TITLE });
       wrap(ctx, k.text, x + 116, y + 190, 196, 20, { size: 14, weight: 700, align: 'center', color: PALETTE.inkSoft });
       const owned = run.owned.filter((o) => o === k.id).length;
-      chip(ctx, owned ? `LEVEL ${owned + 1} OF ${k.max}` : 'NEW', x + 116, y + 262, { align: 'center', fill: owned ? PALETTE.gold : PALETTE.good, color: owned ? PALETTE.ink : '#ffffff', size: 11 });
+      if (k.skill) chip(ctx, k.chip, x + 116, y + 262, { align: 'center', fill: '#7b5cff', color: '#ffffff', size: 11 });
+      else chip(ctx, owned ? `LEVEL ${owned + 1} OF ${k.max}` : 'NEW', x + 116, y + 262, { align: 'center', fill: owned ? PALETTE.gold : PALETTE.good, color: owned ? PALETTE.ink : '#ffffff', size: 11 });
       text(ctx, String(i + 1), x + 18, y + 30, { size: 18, weight: 900, color: PALETTE.inkSoft });
       ctx.restore();
       hit(hits, `kit:${i}`, x, y, 232, 296);
@@ -228,6 +231,15 @@ export function drawClubhouse(ctx, state, time, run) {
   text(ctx, 'YOUR KIT', 488, 560, { size: 12, weight: 900, color: PALETTE.inkSoft });
   const items = kitItems(run);
   if (!items.length) text(ctx, 'Nothing yet but a borrowed broom.', 488, 600, { size: 15, weight: 700, color: PALETTE.inkSoft });
+  // Skills, at the right of the tray: badge, name and level.
+  const skills = run.kit.skills ?? [];
+  if (skills.length) text(ctx, 'SKILLS', 1000, 560, { size: 12, weight: 900, color: PALETTE.inkSoft });
+  skills.forEach((sk, i) => {
+    const x = 1016 + i * 110;
+    drawSkillBadge(ctx, sk.id, x + 4, 598, 20, { glow: 10 });
+    text(ctx, SKILLS[sk.id].name, x + 30, 594, { size: 13, weight: 900 });
+    text(ctx, `LEVEL ${sk.level}`, x + 30, 612, { size: 10, weight: 800, color: SKILLS[sk.id].color });
+  });
   items.forEach(({ item, count }, i) => {
     const x = 500 + i * 92;
     drawKitIcon(ctx, item.icon, x + 16, 594, 34);

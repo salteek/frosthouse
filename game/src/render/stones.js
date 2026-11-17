@@ -91,8 +91,8 @@ export function drawStones(ctx, cam, match, time) {
     if (s.moving) {
       // A frost trail behind a running stone, longer and brighter the faster it goes.
       const speed = Math.hypot(s.vx, s.vy);
-      const len = Math.min(220, 40 + speed * 60);
-      if (!drawSprite(ctx, s.swept ? 'trail_cyan' : 'trail_ice', x - 6, y, len * 0.42, { ax: 1, ay: 0.5, rot: Math.atan2(s.vy, s.vx), alpha: Math.min(0.95, 0.35 + speed * 0.3) })) {
+      const len = Math.min(220, 40 + speed * 60) * (1 + Math.sin(time * 13 + s.x * 3) * 0.07);
+      if (!drawSprite(ctx, s.swept ? 'trail_cyan' : 'trail_ice', x - 6, y, len * 0.42, { ax: 1, ay: 0.5, rot: Math.atan2(s.vy, s.vx), alpha: Math.min(0.95, 0.35 + speed * 0.3) * (0.85 + Math.sin(time * 21) * 0.15) })) {
         ctx.strokeStyle = 'rgba(160,190,220,0.45)';
         ctx.lineWidth = px(SHEET.stoneR) * 1.2;
         ctx.lineCap = 'round';

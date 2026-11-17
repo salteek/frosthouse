@@ -37,7 +37,7 @@ export function cloneStones(stones) {
   return stones.map((s) => ({ ...s }));
 }
 
-function patchAt(venue, x, y) {
+export function patchAt(venue, x, y) {
   for (const p of venue.patches) {
     const u = (x - p.x) / p.rx;
     const v = (y - p.y) / p.ry;

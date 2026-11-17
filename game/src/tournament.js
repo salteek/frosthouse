@@ -5,6 +5,7 @@ import { RIVALS } from './rivals.js';
 import { venueById } from './venues.js';
 import { freshKit, offerKit, KIT } from './kit.js';
 import { createRng } from './rng.js';
+import { skillOffer } from './skills.js';
 
 export const DIFFICULTIES = [
   { id: 'casual', name: 'CASUAL', note: 'Full preview · 3 ends' },
@@ -61,6 +62,9 @@ export function recordMatch(run, match) {
       run.score += SCORE.champion;
     } else {
       run.offer = offerKit(run.owned, run.rng);
+      // One card is always a skill: a new one, a level up, or a swap.
+      const sk = skillOffer(run.kit, run.rng);
+      if (sk) run.offer[Math.min(2, run.offer.length)] = sk;
     }
   } else {
     run.losses++;
@@ -71,7 +75,7 @@ export function recordMatch(run, match) {
 
 export function takeKit(run, item) {
   item.apply(run.kit);
-  run.owned.push(item.id);
+  if (!item.skill) run.owned.push(item.id);
   run.offer = null;
 }
 
