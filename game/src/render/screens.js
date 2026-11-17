@@ -8,7 +8,7 @@ import { VENUES, venueById } from '../venues.js';
 import { KIT } from '../kit.js';
 import { DIFFICULTIES, kitItems, grade } from '../tournament.js';
 import { panel, text, chip, button, hints, roundRect, inside, formatScore, FONT_TITLE, nightSky, callout, shade } from './ui.js';
-import { drawSprite, hasSprite, portraitFor } from './sprites.js';
+import { drawSprite, hasSprite, portraitFor, crestFor, KIT_RIM, drawCover } from './sprites.js';
 import { drawStone } from './stones.js';
 import { drawKitIcon, trophy, star } from './icons.js';
 import { drawBackdrop, drawSheet, drawSnowfall } from './ice.js';
@@ -50,7 +50,11 @@ export function drawTitle(ctx, state, time, save) {
   const hits = [];
   const cam = { x: 23.2 + Math.sin(time * 0.1) * 0.6 };
   const venue = VENUES[0];
-  nightSky(ctx, VIEW.w, VIEW.h, time);
+  // The title sits over Aurora Basin, the final's lake; a drawn night sky if the painting is missing.
+  if (drawCover(ctx, 'bd_aurora', 0, 0, VIEW.w, VIEW.h, 0.4)) {
+    ctx.fillStyle = 'rgba(6,14,34,0.35)';
+    ctx.fillRect(0, 0, VIEW.w, VIEW.h);
+  } else nightSky(ctx, VIEW.w, VIEW.h, time);
   drawSnowfall(ctx, time);
   // The home rink waits in the wings: a sweeper on the left, the skip calling the line on the right.
   drawSprite(ctx, 'sweep_red', 150, 190, 150);
@@ -113,7 +117,7 @@ export function drawTitle(ctx, state, time, save) {
   RIVALS.forEach((r, i) => {
     const cx = 120 + i * 196;
     if (!drawSprite(ctx, portraitFor(r), cx - 2, 628, 104)) drawStone(ctx, cx, 578, time * 0.5 + i, [r.colour, r.dark], { radius: 15 });
-    drawStone(ctx, cx + 22, 612, time * 0.5 + i, [r.colour, r.dark], { radius: 10 });
+    if (!drawSprite(ctx, crestFor(r), cx + 22, 612, 30, { ay: 0.5 })) drawStone(ctx, cx + 22, 612, time * 0.5 + i, [r.colour, r.dark], { radius: 10 });
     text(ctx, r.name, cx + 36, 572, { size: r.name.length > 16 ? 10.5 : 13, weight: 900 });
     text(ctx, `${venueById(r.venue).name} · ${r.style}`, cx + 36, 590, { size: 11, weight: 700, color: PALETTE.inkSoft });
     if (r.champion) trophy(ctx, cx + 150, 610, 22);
@@ -125,13 +129,25 @@ export function drawTitle(ctx, state, time, save) {
     }
   });
 
+  // A dark band under the key hints so they read over the bright snow of the painting.
+  const foot = ctx.createLinearGradient(0, 640, 0, VIEW.h);
+  foot.addColorStop(0, 'rgba(6,14,34,0)');
+  foot.addColorStop(0.35, 'rgba(6,14,34,0.75)');
+  foot.addColorStop(1, 'rgba(6,14,34,0.85)');
+  ctx.fillStyle = foot;
+  ctx.fillRect(0, 640, VIEW.w, VIEW.h - 640);
   hints(ctx, [['ENTER', 'play'], ['1-3', 'difficulty'], ['MOUSE', 'aim'], ['Q/E', 'turn'], ['W/S', 'weight'], ['HOLD CLICK', 'throw'], ['SPACE', 'sweep'], ['M', 'mute']], 44, 676, { size: 13 });
   return hits;
 }
 
 export function drawClubhouse(ctx, state, time, run) {
   const hits = [];
-  nightSky(ctx, VIEW.w, VIEW.h, time);
+  // The clubhouse window looks out over the next match's lake.
+  const nextLake = RIVALS[Math.min(run.round, RIVALS.length - 1)].venue;
+  if (drawCover(ctx, `bd_${nextLake}`, 0, 0, VIEW.w, VIEW.h, 0.45)) {
+    ctx.fillStyle = 'rgba(6,14,34,0.45)';
+    ctx.fillRect(0, 0, VIEW.w, VIEW.h);
+  } else nightSky(ctx, VIEW.w, VIEW.h, time);
   // Warm lamplight from the clubhouse windows over the cold night.
   const lamp = ctx.createRadialGradient(VIEW.w * 0.5, VIEW.h * 1.1, 40, VIEW.w * 0.5, VIEW.h * 1.1, VIEW.w * 0.75);
   lamp.addColorStop(0, 'rgba(255,170,80,0.22)');
@@ -161,7 +177,7 @@ export function drawClubhouse(ctx, state, time, run) {
     ctx.strokeStyle = next ? '#7cc4ff' : 'rgba(150,205,255,0.18)';
     ctx.lineWidth = next ? 3 : 1;
     if (next) { ctx.save(); ctx.shadowColor = '#4aa8ff'; ctx.shadowBlur = 14; ctx.stroke(); ctx.restore(); } else ctx.stroke();
-    drawStone(ctx, 84, y + 18, i, [r.colour, r.dark], { radius: 15 });
+    if (!drawSprite(ctx, crestFor(r), 84, y + 18, 42, { ay: 0.5 })) drawStone(ctx, 84, y + 18, i, [r.colour, r.dark], { radius: 15 });
     text(ctx, r.name, 110, y + 12, { size: 15, weight: 900 });
     text(ctx, `${venueById(r.venue).name} · ${r.style}`, 110, y + 32, { size: 12, weight: 700, color: PALETTE.inkSoft });
     const tag = beaten ? `WON ${res.find((x) => x.won).p}–${res.find((x) => x.won).r}` : next ? 'NEXT' : 'LOCKED';
@@ -180,15 +196,17 @@ export function drawClubhouse(ctx, state, time, run) {
       const hov = state.hover === `kit:${i}`;
       ctx.save();
       if (hov) ctx.translate(0, -6);
-      const rim = ['#9fd0ff', '#ffc23a', '#ff4d6d'][i];
+      const rim = KIT_RIM[k.icon] ?? ['#9fd0ff', '#ffc23a', '#ff4d6d'][i];
       panel(ctx, x, y, 232, 296, { glow: hov ? rim : shade(rim, -0.25), fillTop: 'rgba(70,90,130,0.92)', fill: 'rgba(30,40,66,0.94)' });
       const disc = ctx.createRadialGradient(x + 106, y + 60, 6, x + 116, y + 74, 52);
       disc.addColorStop(0, 'rgba(255,255,255,0.35)');
       disc.addColorStop(1, 'rgba(255,255,255,0.06)');
-      roundRect(ctx, x + 66, y + 24, 100, 100, 50);
-      ctx.fillStyle = disc;
-      ctx.fill();
-      drawKitIcon(ctx, k.icon, x + 116, y + 74, 64);
+      if (!hasSprite(`kit_${k.icon}`)) {
+        roundRect(ctx, x + 66, y + 24, 100, 100, 50);
+        ctx.fillStyle = disc;
+        ctx.fill();
+      }
+      drawKitIcon(ctx, k.icon, x + 116, y + 74, 84);
       text(ctx, k.name, x + 116, y + 160, { size: 20, weight: 900, align: 'center', font: FONT_TITLE });
       wrap(ctx, k.text, x + 116, y + 190, 196, 20, { size: 14, weight: 700, align: 'center', color: PALETTE.inkSoft });
       const owned = run.owned.filter((o) => o === k.id).length;
@@ -201,7 +219,7 @@ export function drawClubhouse(ctx, state, time, run) {
     const rival = RIVALS[run.round];
     text(ctx, 'REMATCH', 488, 158, { size: 30, weight: 900, font: FONT_TITLE, color: PALETTE.bad });
     wrap(ctx, `The ${rival.name} are waiting on ${venueById(rival.venue).name}. Win it and the ladder opens again. Lose it and the Open is over.`, 488, 196, 700, 22, { size: 17, weight: 700 });
-    drawStone(ctx, 860, 360, time, [rival.colour, rival.dark], { radius: 40 });
+    if (!drawSprite(ctx, crestFor(rival), 860, 350, 120, { ay: 0.5 })) drawStone(ctx, 860, 360, time, [rival.colour, rival.dark], { radius: 40 });
     text(ctx, `“${rival.motto}”`, 852, 420, { size: 16, weight: 600, align: 'center', font: 'Georgia, serif', color: PALETTE.inkSoft });
   }
 
@@ -273,14 +291,14 @@ export function drawResults(ctx, state, time, run, saveInfo) {
   // Right: grade, score, tiles.
   panel(ctx, 370, 138, 886, 500);
   const gr = grade(run);
-  ctx.fillStyle = gr === 'S' || gr === 'A' ? PALETTE.gold : PALETTE.accent;
-  ctx.beginPath();
-  ctx.arc(450, 214, 52, 0, TAU);
-  ctx.fill();
-  ctx.strokeStyle = '#fff4c2';
-  ctx.lineWidth = 4;
-  ctx.save(); ctx.shadowColor = 'rgba(255,200,60,0.8)'; ctx.shadowBlur = 20; ctx.stroke(); ctx.restore();
-  text(ctx, gr, 450, 236, { size: 62, weight: 900, align: 'center', color: '#ffffff', font: FONT_TITLE });
+  // The painted medal for the grade; the drawn disc only if it did not load.
+  if (!drawSprite(ctx, `grade_${gr}`, 450, 214, 124, { ay: 0.5 })) {
+    ctx.fillStyle = gr === 'S' || gr === 'A' ? PALETTE.gold : PALETTE.accent;
+    ctx.beginPath();
+    ctx.arc(450, 214, 52, 0, TAU);
+    ctx.fill();
+    text(ctx, gr, 450, 236, { size: 62, weight: 900, align: 'center', color: '#ffffff', font: FONT_TITLE });
+  }
   text(ctx, 'SCORE', 524, 182, { size: 13, weight: 900, color: PALETTE.inkSoft });
   text(ctx, formatScore(run.score), 522, 246, { size: 64, weight: 900, color: PALETTE.ink, font: FONT_TITLE });
   if (saveInfo.newBest) chip(ctx, 'NEW BEST!', 1232, 196, { align: 'right', fill: PALETTE.good, size: 18, h: 36 });

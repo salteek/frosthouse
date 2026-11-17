@@ -8,7 +8,11 @@ T=$(mktemp -d)
 i=1
 for s in play title clubhouse results; do
   "$C" --headless=new --disable-gpu --hide-scrollbars --user-data-dir="$T/p$s" --window-size=1280,720 --virtual-time-budget=4000 --screenshot="$T/$s.png" "http://127.0.0.1:8081/index.html?shot=$s&nc=$$" >/dev/null 2>&1
-  sips -s format jpeg -s formatOptions "${Q:-88}" "$T/$s.png" --out "$OUT/$i-$s.jpg" >/dev/null
+  # Step the quality down until the JPEG fits the hand-in gate's 256 KiB per screenshot.
+  for q in ${Q:-86} 82 78 74 70 66; do
+    sips -s format jpeg -s formatOptions "$q" "$T/$s.png" --out "$OUT/$i-$s.jpg" >/dev/null
+    [ "$(stat -f%z "$OUT/$i-$s.jpg")" -le 258000 ] && break
+  done
   i=$((i + 1))
 done
 ls -l "$OUT"

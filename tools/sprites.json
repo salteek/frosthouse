@@ -430,5 +430,485 @@
   ],
   "mode": "solid",
   "scale": 0.62
+ },
+ {
+  "name": "kit_broom",
+  "sheet": "game design/17-nov/kit_upgrades.jpeg",
+  "box": [
+   104,
+   40,
+   496,
+   480
+  ],
+  "mode": "solid",
+  "scale": 0.5
+ },
+ {
+  "name": "kit_lungs",
+  "sheet": "game design/17-nov/kit_upgrades.jpeg",
+  "box": [
+   616,
+   40,
+   496,
+   480
+  ],
+  "mode": "solid",
+  "scale": 0.5
+ },
+ {
+  "name": "kit_hand",
+  "sheet": "game design/17-nov/kit_upgrades.jpeg",
+  "box": [
+   1144,
+   40,
+   496,
+   480
+  ],
+  "mode": "solid",
+  "scale": 0.5
+ },
+ {
+  "name": "kit_eye",
+  "sheet": "game design/17-nov/kit_upgrades.jpeg",
+  "box": [
+   1656,
+   40,
+   496,
+   480
+  ],
+  "mode": "solid",
+  "scale": 0.5
+ },
+ {
+  "name": "kit_granite",
+  "sheet": "game design/17-nov/kit_upgrades.jpeg",
+  "box": [
+   2184,
+   40,
+   496,
+   480
+  ],
+  "mode": "solid",
+  "scale": 0.5
+ },
+ {
+  "name": "kit_grip",
+  "sheet": "game design/17-nov/kit_upgrades.jpeg",
+  "box": [
+   616,
+   536,
+   496,
+   480
+  ],
+  "mode": "solid",
+  "scale": 0.5
+ },
+ {
+  "name": "kit_silk",
+  "sheet": "game design/17-nov/kit_upgrades.jpeg",
+  "box": [
+   1144,
+   536,
+   496,
+   480
+  ],
+  "mode": "solid",
+  "scale": 0.5
+ },
+ {
+  "name": "kit_mitten",
+  "sheet": "game design/17-nov/kit_upgrades.jpeg",
+  "box": [
+   1656,
+   536,
+   496,
+   480
+  ],
+  "mode": "solid",
+  "scale": 0.5
+ },
+ {
+  "name": "kit_hammer",
+  "sheet": "game design/17-nov/kit_upgrades.jpeg",
+  "box": [
+   2184,
+   536,
+   496,
+   480
+  ],
+  "mode": "solid",
+  "scale": 0.5
+ },
+ {
+  "name": "kit_crowd",
+  "sheet": "game design/17-nov/kit_upgrades.jpeg",
+  "box": [
+   104,
+   1016,
+   496,
+   480
+  ],
+  "mode": "solid",
+  "scale": 0.5
+ },
+ {
+  "name": "kit_nerves",
+  "sheet": "game design/17-nov/kit_upgrades.jpeg",
+  "box": [
+   616,
+   1016,
+   496,
+   480
+  ],
+  "mode": "solid",
+  "scale": 0.5
+ },
+ {
+  "name": "kit_boots",
+  "sheet": "game design/17-nov/kit_upgrades.jpeg",
+  "box": [
+   1144,
+   1016,
+   496,
+   480
+  ],
+  "mode": "solid",
+  "scale": 0.5
+ },
+ {
+  "name": "kit_gloves",
+  "sheet": "game design/17-nov/kit_upgrades.jpeg",
+  "box": [
+   1656,
+   1016,
+   496,
+   480
+  ],
+  "mode": "solid",
+  "scale": 0.5
+ },
+ {
+  "name": "kit_tea",
+  "sheet": "game design/17-nov/kit_upgrades.jpeg",
+  "box": [
+   2184,
+   1016,
+   496,
+   480
+  ],
+  "mode": "solid",
+  "scale": 0.5
+ },
+ {
+  "name": "grade_S",
+  "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
+  "box": [
+   1097,
+   120,
+   351,
+   309
+  ],
+  "mode": "solid",
+  "scale": 0.5
+ },
+ {
+  "name": "grade_A",
+  "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
+  "box": [
+   1577,
+   117,
+   274,
+   281
+  ],
+  "mode": "solid",
+  "scale": 0.5
+ },
+ {
+  "name": "grade_B",
+  "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
+  "box": [
+   2019,
+   117,
+   278,
+   281
+  ],
+  "mode": "solid",
+  "scale": 0.5
+ },
+ {
+  "name": "grade_C",
+  "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
+  "box": [
+   1577,
+   497,
+   274,
+   237
+  ],
+  "mode": "solid",
+  "scale": 0.5
+ },
+ {
+  "name": "grade_D",
+  "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
+  "box": [
+   2019,
+   497,
+   278,
+   237
+  ],
+  "mode": "solid",
+  "scale": 0.5
+ },
+ {
+  "name": "trophy_open",
+  "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
+  "box": [
+   96,
+   150,
+   432,
+   530
+  ],
+  "mode": "solid",
+  "scale": 0.55
+ },
+ {
+  "name": "hammer_icon",
+  "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
+  "box": [
+   630,
+   370,
+   292,
+   310
+  ],
+  "mode": "solid",
+  "scale": 0.35
+ },
+ {
+  "name": "crest_player",
+  "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
+  "box": [
+   129,
+   883,
+   346,
+   348
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "crest_puffin",
+  "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
+  "box": [
+   780,
+   883,
+   346,
+   348
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "crest_ironwool",
+  "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
+  "box": [
+   1315,
+   883,
+   348,
+   348
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "crest_ravens",
+  "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
+  "box": [
+   1915,
+   883,
+   350,
+   348
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "crest_sleet",
+  "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
+  "box": [
+   129,
+   1327,
+   346,
+   346
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "crest_pines",
+  "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
+  "box": [
+   780,
+   1327,
+   346,
+   346
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "crest_glacier",
+  "sheet": "game design/17-nov/Trophies_team_crests.jpeg",
+  "box": [
+   1315,
+   1327,
+   348,
+   346
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "icon_eye",
+  "sheet": "game design/17-nov/Ice_hazards_HUD.jpeg",
+  "box": [
+   70,
+   1366,
+   420,
+   212
+  ],
+  "mode": "solid",
+  "scale": 0.3
+ },
+ {
+  "name": "icon_broom",
+  "sheet": "game design/17-nov/Ice_hazards_HUD.jpeg",
+  "box": [
+   582,
+   1286,
+   308,
+   388
+  ],
+  "mode": "solid",
+  "scale": 0.3
+ },
+ {
+  "name": "icon_turn_cw",
+  "sheet": "game design/17-nov/Ice_hazards_HUD.jpeg",
+  "box": [
+   1030,
+   1302,
+   340,
+   356
+  ],
+  "mode": "solid",
+  "scale": 0.3
+ },
+ {
+  "name": "icon_turn_ccw",
+  "sheet": "game design/17-nov/Ice_hazards_HUD.jpeg",
+  "box": [
+   1494,
+   1302,
+   340,
+   356
+  ],
+  "mode": "solid",
+  "scale": 0.3
+ },
+ {
+  "name": "aim_target",
+  "sheet": "game design/17-nov/Ice_hazards_HUD.jpeg",
+  "box": [
+   1910,
+   1254,
+   420,
+   436
+  ],
+  "mode": "glow",
+  "scale": 0.4
+ },
+ {
+  "name": "hazard_slush",
+  "sheet": "game design/17-nov/Ice_hazards_HUD.jpeg",
+  "box": [
+   80,
+   736,
+   1584,
+   322
+  ],
+  "mode": "solid",
+  "scale": 0.8
+ },
+ {
+  "name": "hazard_wind",
+  "sheet": "game design/17-nov/Ice_hazards_HUD.jpeg",
+  "box": [
+   1720,
+   712,
+   624,
+   336
+  ],
+  "mode": "glow",
+  "scale": 0.4
+ },
+ {
+  "name": "banner_open",
+  "sheet": "game design/17-nov/sheet_dressing.jpeg",
+  "box": [
+   70,
+   56,
+   468,
+   1600
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "hack",
+  "sheet": "game design/17-nov/sheet_dressing.jpeg",
+  "box": [
+   584,
+   488,
+   464,
+   320
+  ],
+  "mode": "solid",
+  "scale": 0.25
+ },
+ {
+  "name": "hazard_drift_a",
+  "sheet": "game design/17-nov/Snow_drifts_a.jpg",
+  "box": [
+   74,
+   62,
+   1208,
+   308
+  ],
+  "mode": "glow",
+  "scale": 0.6
+ },
+ {
+  "name": "hazard_drift_b",
+  "sheet": "game design/17-nov/Snow_drifts_a.jpg",
+  "box": [
+   74,
+   434,
+   764,
+   272
+  ],
+  "mode": "glow",
+  "scale": 0.6
+ },
+ {
+  "name": "hazard_drift_c",
+  "sheet": "game design/17-nov/Snow_drifts_a.jpg",
+  "box": [
+   902,
+   446,
+   392,
+   248
+  ],
+  "mode": "glow",
+  "scale": 0.6
  }
 ]

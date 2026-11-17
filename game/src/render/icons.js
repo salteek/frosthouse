@@ -1,6 +1,7 @@
 // Small vector icons for kit upgrades, so the game ships no image files.
 
 import { TAU } from '../geometry.js';
+import { drawSprite } from './sprites.js';
 
 const C = {
   wood: '#a8743f', woodDark: '#6b4a2b', red: '#e0383e', blue: '#2f6fd6', gold: '#f2b53a',
@@ -8,6 +9,8 @@ const C = {
 };
 
 export function drawKitIcon(ctx, icon, x, y, size) {
+  // The painted icon (in its own glass disc) when it has loaded; the drawn one otherwise.
+  if (drawSprite(ctx, `kit_${icon}`, x, y, size * 1.3, { ay: 0.5 })) return;
   const s = size / 2;
   ctx.save();
   ctx.translate(x, y);
@@ -172,6 +175,7 @@ export function star(ctx, x, y, r, color) {
 }
 
 export function trophy(ctx, x, y, size, color = C.gold) {
+  if (drawSprite(ctx, 'trophy_open', x, y, size * 1.2, { ay: 0.5 })) return;
   const s = size / 2;
   ctx.save();
   ctx.translate(x, y);

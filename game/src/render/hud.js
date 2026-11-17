@@ -8,7 +8,7 @@ import { currentTeam, stonesLeft, total } from '../match.js';
 import { weightName } from '../scenes/play.js';
 import { kitItems } from '../tournament.js';
 import { panel, text, chip, bar, keycap, roundRect, formatScore, FONT_TITLE, callout, twinkle } from './ui.js';
-import { drawSprite, portraitFor } from './sprites.js';
+import { drawSprite, portraitFor, crestFor, drawCover } from './sprites.js';
 import { drawStone, teamColours } from './stones.js';
 import { drawKitIcon, trophy } from './icons.js';
 
@@ -22,7 +22,8 @@ export function drawMatchHud(ctx, scene, time, best) {
   drawRivalCard(ctx, m);
   drawShotPanel(ctx, scene, time);
   drawSheetMap(ctx, m);
-  if (m.phase === 'aim' && currentTeam(m) === 'player' && scene.intro <= 0) drawHintPills(ctx);
+  // The controls stay on screen between throws, not only while aiming, so the scheme is always in view.
+  if ((m.phase === 'aim' || m.phase === 'settle') && scene.intro <= 0) drawHintPills(ctx);
   if (m.lastCall && m.phase === 'settle') drawCall(ctx, m.lastCall, m);
   if (m.phase === 'endScore' && m.endResult) drawEndSummary(ctx, m, time);
   if (m.phase === 'over') drawMatchOver(ctx, scene, time);
@@ -100,7 +101,7 @@ function drawScoreboard(ctx, m) {
   ['player', 'rival'].forEach((team, row) => {
     const ry = y + 48 + row * 30;
     const [c0, c1] = teamColours(team, m.rival);
-    drawStone(ctx, x + 22, ry - 5, 0.4, [c0, c1], { radius: 11 });
+    if (!drawSprite(ctx, crestFor(team === 'player' ? null : m.rival), x + 22, ry - 5, 28, { ay: 0.5 })) drawStone(ctx, x + 22, ry - 5, 0.4, [c0, c1], { radius: 11 });
     text(ctx, teamName(m, team), x + 40, ry, { size: 15, weight: 900, color: PALETTE.ink });
     if (m.hammer === team && m.phase !== 'over') drawHammer(ctx, x + 146, ry - 6);
     m.scores[team].forEach((pts, i) => {
@@ -115,6 +116,7 @@ function drawScoreboard(ctx, m) {
 }
 
 function drawHammer(ctx, x, y) {
+  if (drawSprite(ctx, 'hammer_icon', x, y, 24, { ay: 0.5 })) return;
   ctx.save();
   ctx.translate(x, y);
   ctx.rotate(-0.5);
@@ -247,11 +249,13 @@ function drawShotPanel(ctx, scene, time) {
   text(ctx, 'TURN', tx, BOTTOM + 22, { size: 12, weight: 900, color: PALETTE.inkSoft });
   keycap(ctx, 'Q/E', tx + 40, BOTTOM + 23, { size: 10 });
   const t = scene.aim.turn;
-  ctx.strokeStyle = PALETTE.accent;
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.arc(tx + 16, BOTTOM + 56, 12, -2.4, 0.9, t < 0);
-  ctx.stroke();
+  if (!drawSprite(ctx, t > 0 ? 'icon_turn_cw' : 'icon_turn_ccw', tx + 16, BOTTOM + 58, 32, { ay: 0.5 })) {
+    ctx.strokeStyle = PALETTE.accent;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(tx + 16, BOTTOM + 56, 12, -2.4, 0.9, t < 0);
+    ctx.stroke();
+  }
   text(ctx, t > 0 ? 'CLOCKWISE' : 'COUNTER', tx + 36, BOTTOM + 54, { size: 12, weight: 900, color: PALETTE.accent });
   text(ctx, t > 0 ? 'curls down' : 'curls up', tx + 36, BOTTOM + 70, { size: 11, weight: 700, color: PALETTE.inkSoft });
 
@@ -418,6 +422,11 @@ function drawIntro(ctx, scene) {
   band.addColorStop(1, 'rgba(22,40,80,0.92)');
   ctx.fillStyle = band;
   ctx.fillRect(0, 230, VIEW.w, 190);
+  // The lake you are about to play, painted behind the matchup.
+  if (drawCover(ctx, `bd_${m.venue.id}`, 0, 230, VIEW.w, 190, 0.55)) {
+    ctx.fillStyle = 'rgba(8,16,38,0.45)';
+    ctx.fillRect(0, 230, VIEW.w, 190);
+  }
   drawSprite(ctx, 'idle_red', 200, 420, 200);
   drawSprite(ctx, portraitFor(m.rival), 1080, 420, 200, { flip: true });
   text(ctx, `MATCH ${scene.run.round + 1}${m.rival.champion ? ' · THE FINAL' : ''}`, VIEW.w / 2, 272, { size: 18, weight: 900, align: 'center', color: PALETTE.accent });

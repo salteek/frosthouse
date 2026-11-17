@@ -1,5 +1,5 @@
 // The painted sprites in game/assets (cut from the design sheets by tools/sprites.mjs): the curlers,
-// the logo and the glow effects. Everything else in Frosthouse is drawn in code.
+// the logo, the glow effects, the kit icons, medals, team crests, HUD icons, ice hazards and lake backdrops.
 
 const NAMES = [
   'logo',
@@ -8,16 +8,24 @@ const NAMES = [
   'sweep_blue', 'sweep_blue2', 'sweep_red', 'sweep_red2', 'skip_red', 'skip_blue',
   'spark_a', 'spark_b', 'spark_star', 'ring_a', 'ring_b', 'confetti', 'snowflake', 'star', 'sparkles', 'shards',
   'trail_ice', 'trail_cyan', 'trail_gold', 'trail_violet',
+  'kit_broom', 'kit_lungs', 'kit_hand', 'kit_eye', 'kit_granite', 'kit_grip', 'kit_silk', 'kit_mitten', 'kit_hammer',
+  'kit_crowd', 'kit_nerves', 'kit_boots', 'kit_gloves', 'kit_tea',
+  'grade_S', 'grade_A', 'grade_B', 'grade_C', 'grade_D', 'trophy_open', 'hammer_icon',
+  'crest_player', 'crest_puffin', 'crest_ironwool', 'crest_ravens', 'crest_sleet', 'crest_pines', 'crest_glacier',
+  'icon_eye', 'icon_broom', 'icon_turn_cw', 'icon_turn_ccw', 'aim_target', 'banner_open', 'hack',
+  'hazard_drift_a', 'hazard_drift_b', 'hazard_drift_c', 'hazard_slush', 'hazard_wind',
+  'bd_mirror.jpg', 'bd_pine.jpg', 'bd_windy.jpg', 'bd_thaw.jpg', 'bd_aurora.jpg',
 ];
 
 const cache = {};
 
 export function loadSprites(base = 'assets/') {
-  return Promise.all(NAMES.map((n) => new Promise((done) => {
+  return Promise.all(NAMES.map((file) => new Promise((done) => {
+    const n = file.replace(/\.jpg$/, '');
     const im = new Image();
     im.onload = () => { cache[n] = im; done(); };
     im.onerror = () => done();
-    im.src = `${base}${n}.png`;
+    im.src = `${base}${file.endsWith('.jpg') ? file : file + '.png'}`;
   })));
 }
 
@@ -65,4 +73,62 @@ export function drawSprite(ctx, name, x, y, h, o = {}) {
 
 // Each rink on the ladder has a skip you can see; the player's own is the red jacket.
 export const PORTRAIT = { player: 'idle_red', puffin: 'idle_yellow', ironwool: 'idle_pink', ravens: 'idle_blue', sleet: 'idle_teal', pines: 'idle_green', glacier: 'idle_goggles' };
+// Each rink's crest, and the colour of each kit icon's painted rim (cards glow to match).
+export const crestFor = (rival) => `crest_${rival ? rival.id : 'player'}`;
+export const KIT_RIM = { broom: '#5fb4ff', lungs: '#ffc23a', hand: '#ff4d6d', eye: '#5fb4ff', granite: '#ff4d6d', grip: '#ff4d6d', silk: '#5fb4ff', mitten: '#ffc23a', hammer: '#ffc23a', crowd: '#5fb4ff', nerves: '#ff4d6d', boots: '#5fb4ff', gloves: '#ffc23a', tea: '#ff4d6d' };
+
 export const portraitFor = (rival) => PORTRAIT[rival?.id] ?? ['idle_yellow', 'idle_pink', 'idle_blue', 'idle_teal', 'idle_green', 'idle_goggles'][(rival?.index ?? 0) % 6];
+
+// Stretch a sprite into a box centred on (cx, cy): ice hazards sized to the patch they mark.
+export function drawSpriteBox(ctx, name, cx, cy, w, h, o = {}) {
+  const im = cache[name];
+  if (!im) return false;
+  ctx.save();
+  if (o.alpha != null) ctx.globalAlpha *= o.alpha;
+  if (o.flip) { ctx.translate(cx, cy); ctx.scale(-1, 1); ctx.translate(-cx, -cy); }
+  ctx.drawImage(im, cx - w / 2, cy - h / 2, w, h);
+  ctx.restore();
+  return true;
+}
+
+// Fill a box with an image cropped to fit (like CSS object-fit: cover); `fy` picks which band of a tall
+// image stays in view (0 = its top, 1 = its bottom). Used for the lakes' painted backdrops.
+export function drawCover(ctx, name, x, y, w, h, fy = 0.5, fx = 0.5) {
+  const im = cache[name];
+  if (!im) return false;
+  const s = Math.max(w / im.width, h / im.height);
+  const sw = w / s, sh = h / s;
+  ctx.drawImage(im, (im.width - sw) * fx, (im.height - sh) * fy, sw, sh, x, y, w, h);
+  return true;
+}
+
+// Like drawSpriteBox, but the left and right ends fade out over `fade` of the width, so a long strip
+// (the slush lane) melts into the ice instead of ending in a hard edge. The faded copy is rendered once,
+// masked by a smooth gradient, and cached by size.
+const faded = {};
+export function drawStripFaded(ctx, name, cx, cy, w, h, fade = 0.15, alpha = 1) {
+  const im = cache[name];
+  if (!im || typeof document === 'undefined') return false;
+  const W = Math.max(1, Math.round(w)), H = Math.max(1, Math.round(h)), key = `${name}@${W}x${H}@${fade}`;
+  let c = faded[key];
+  if (!c) {
+    c = document.createElement('canvas');
+    c.width = W; c.height = H;
+    const g = c.getContext('2d');
+    g.drawImage(im, 0, 0, W, H);
+    const mask = g.createLinearGradient(0, 0, W, 0);
+    mask.addColorStop(0, 'rgba(0,0,0,0)');
+    mask.addColorStop(fade, 'rgba(0,0,0,1)');
+    mask.addColorStop(1 - fade, 'rgba(0,0,0,1)');
+    mask.addColorStop(1, 'rgba(0,0,0,0)');
+    g.globalCompositeOperation = 'destination-in';
+    g.fillStyle = mask;
+    g.fillRect(0, 0, W, H);
+    faded[key] = c;
+  }
+  ctx.save();
+  ctx.globalAlpha *= alpha;
+  ctx.drawImage(c, cx - w / 2, cy - h / 2, w, h);
+  ctx.restore();
+  return true;
+}

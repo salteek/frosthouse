@@ -95,7 +95,9 @@ export function stageShot(game, shot, seed) {
   }
   if (shot === 'run') {
     // A throw in flight: the player's stone swept down the sheet, sweepers and frost trail in view.
+    // ?seed=0..5 picks the rival, and so the lake (Mirror, Pine, Windy, Thaw, Pine, Aurora).
     winMatches(run, 1);
+    run.round = ((seed % 6) + 6) % 6;
     const scene = createPlayScene(run);
     scene.intro = 0;
     const m = scene.match;
@@ -105,7 +107,8 @@ export function stageShot(game, shot, seed) {
     deliver(m, 'player', executeShot(chooseShot(m, 'player', m.rng), 0.97, 1, m.rng));
     const sweep = { ...quietInput, isDown: (k) => k === 'Space' };
     let guard = 0;
-    while (m.phase === 'running' && m.shot && m.shot.x < 24.2 && guard++ < 6000) updatePlay(scene, 1 / 60, m.shot.x > 21 ? sweep : quietInput);
+    const stopAt = Number(new URLSearchParams(globalThis.location?.search ?? '').get('at') ?? 24.2);
+    while (m.phase === 'running' && m.shot && m.shot.x < stopAt && guard++ < 6000) updatePlay(scene, 1 / 60, m.shot.x > 21 ? sweep : quietInput);
     game.play = scene;
     game.mode = 'play';
     game.save = { best: 18240, trophies: 1, runs: 6, lastRuns: [] };

@@ -156,11 +156,14 @@ export function drawSkipBroom(ctx, cam, aimY, turn, colour, time) {
   const pulse = 1 + Math.sin(time * 5) * 0.12;
   ctx.strokeStyle = colour;
   ctx.lineWidth = 2.5;
-  ctx.setLineDash([4, 4]);
-  ctx.beginPath();
-  ctx.arc(x + 1, y, 16 * pulse, 0, TAU);
-  ctx.stroke();
-  ctx.setLineDash([]);
+  // The neon aim target, breathing; a dashed ring if the sprite did not load.
+  if (!drawSprite(ctx, 'aim_target', x + 1, y, 46 * pulse, { ay: 0.5, blend: 'lighter', rot: time * 0.6 })) {
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.arc(x + 1, y, 16 * pulse, 0, TAU);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
   // Curved arrow showing the turn.
   const a0 = turn > 0 ? -2.4 : 2.4;
   const a1 = turn > 0 ? -0.6 : 0.6;

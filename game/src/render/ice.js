@@ -4,7 +4,7 @@ import { SHEET, VIEW, PALETTE, CAMERA } from '../config.js';
 import { createRng } from '../rng.js';
 import { TAU } from '../geometry.js';
 import { sx, sy, px, SHEET_BOTTOM } from './camera.js';
-import { spriteCanvas } from './sprites.js';
+import { spriteCanvas, drawSprite, drawSpriteBox, drawCover, drawStripFaded } from './sprites.js';
 
 // The fans in the stands: the painted curlers, calm until a great shot sets them jumping.
 const FANS = ['idle_blue', 'idle_yellow', 'thumbs_blue', 'idle_goggles', 'idle_red', 'idle_pink', 'idle_teal', 'idle_green', 'thumbs_navy', 'fist_green'];
@@ -45,10 +45,12 @@ export function drawBackdrop(ctx, cam, venue, time, excite = 0) {
   g.addColorStop(1, '#1d3d6e');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, VIEW.w, CAMERA.sheetTop);
-  if (venue.time === 'dusk' || venue.time === 'afternoon') drawAurora(ctx, time);
+  // Each lake's own painted night scene, sliding gently with the camera for depth.
+  const painted = drawCover(ctx, `bd_${venue.id}`, -60 - (cam.x - 20) * 4, 0, VIEW.w + 120, CAMERA.sheetTop - 4, 0.78);
+  if (!painted && (venue.time === 'dusk' || venue.time === 'afternoon')) drawAurora(ctx, time);
 
-  // Pines on the far shore, drifting slowly with the camera for depth.
-  for (const p of scenery.pines) {
+  // Pines on the far shore (only when the lake's painting is missing).
+  for (const p of painted ? [] : scenery.pines) {
     const x = (p.x - cam.x) * CAMERA.scale * 0.45 + VIEW.w / 2;
     if (x < -40 || x > VIEW.w + 40) continue;
     const base = 116;
@@ -73,8 +75,8 @@ export function drawBackdrop(ctx, cam, venue, time, excite = 0) {
 
   // The snowbank and the crowd along it.
   const bank = ctx.createLinearGradient(0, 104, 0, CAMERA.sheetTop);
-  bank.addColorStop(0, '#3a5f93');
-  bank.addColorStop(1, '#22406b');
+  bank.addColorStop(0, painted ? 'rgba(34,64,107,0.35)' : '#3a5f93');
+  bank.addColorStop(1, painted ? 'rgba(20,40,72,0.85)' : '#22406b');
   ctx.fillStyle = bank;
   ctx.fillRect(0, 104, VIEW.w, CAMERA.sheetTop - 104);
   // Floodlight glow spilling over the crowd.
@@ -151,17 +153,19 @@ export function drawSheet(ctx, cam, venue, time) {
     bg.addColorStop(1, '#2b5285');
     ctx.fillStyle = bg;
     ctx.fillRect(bank, top - 6, VIEW.w - bank, bottom - top + 12);
-    ctx.fillStyle = PALETTE.player;
-    ctx.fillRect(bank + 26, top + 30, 34, bottom - top - 60);
-    ctx.save();
-    ctx.translate(bank + 43, (top + bottom) / 2);
-    ctx.rotate(Math.PI / 2);
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '900 18px "Trebuchet MS", sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('★ FROST LAKE OPEN ★', 0, 0);
-    ctx.restore();
+    if (!drawSprite(ctx, 'banner_open', bank + 46, (top + bottom) / 2, bottom - top - 30, { ay: 0.5 })) {
+      ctx.fillStyle = PALETTE.player;
+      ctx.fillRect(bank + 26, top + 30, 34, bottom - top - 60);
+      ctx.save();
+      ctx.translate(bank + 43, (top + bottom) / 2);
+      ctx.rotate(Math.PI / 2);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 18px "Trebuchet MS", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('★ FROST LAKE OPEN ★', 0, 0);
+      ctx.restore();
+    }
   }
 
   // Night ice: deep blue at the boards, lit along the centre line, the venue's tint washed over it.
@@ -305,9 +309,12 @@ function drawLines(ctx, cam) {
   ctx.fillStyle = 'rgba(230,245,255,0.35)';
   ctx.fillRect(sx(cam, SHEET.hogNear), sy(0) - 1, sx(cam, SHEET.back) - sx(cam, SHEET.hogNear), 2);
   // The hack at the far end.
-  ctx.fillStyle = '#1d2a3a';
-  ctx.fillRect(sx(cam, SHEET.end - 0.55), sy(-0.18), px(0.2), px(0.12));
-  ctx.fillRect(sx(cam, SHEET.end - 0.55), sy(0.06), px(0.2), px(0.12));
+  for (const hy of [-0.12, 0.12]) {
+    if (!drawSprite(ctx, 'hack', sx(cam, SHEET.end - 0.45), sy(hy), 22, { ay: 0.5 })) {
+      ctx.fillStyle = '#1d2a3a';
+      ctx.fillRect(sx(cam, SHEET.end - 0.55), sy(hy - 0.06), px(0.2), px(0.12));
+    }
+  }
   ctx.font = '700 11px system-ui, sans-serif';
   ctx.textAlign = 'center';
   ctx.fillStyle = 'rgba(255,120,140,0.95)';
@@ -321,55 +328,51 @@ function drawPatches(ctx, cam, venue, time) {
   for (const p of venue.patches) {
     const x = sx(cam, p.x);
     const y = sy(p.y);
+    const w = px(p.rx) * 2, h = px(p.ry) * 2;
     if (p.kind === 'snow') {
-      ctx.fillStyle = 'rgba(6,16,36,0.35)';
-      ctx.beginPath();
-      ctx.ellipse(x + 4, y + 5, px(p.rx), px(p.ry), 0, 0, TAU);
-      ctx.fill();
+      // Wind-blown powder lying on the ice; the drift's shape is picked by how long it is.
+      const r = p.rx / p.ry;
+      const name = r > 3.3 ? 'hazard_drift_a' : r > 2 ? 'hazard_drift_b' : 'hazard_drift_c';
+      if (drawSpriteBox(ctx, name, x, y, w * 1.25, h * 1.15)) continue;
       ctx.fillStyle = 'rgba(214,232,250,0.92)';
-      for (let i = 0; i < 7; i++) {
-        const a = (i / 7) * TAU;
-        ctx.beginPath();
-        ctx.ellipse(x + Math.cos(a) * px(p.rx) * 0.45, y + Math.sin(a) * px(p.ry) * 0.4, px(p.rx) * 0.55, px(p.ry) * 0.6, 0, 0, TAU);
-        ctx.fill();
-      }
-      ctx.fillStyle = '#5d7fa6';
-      ctx.font = '800 12px system-ui, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('SNOW DRIFT', x, y + 4);
+      ctx.beginPath();
+      ctx.ellipse(x, y, px(p.rx), px(p.ry), 0, 0, TAU);
+      ctx.fill();
     } else {
+      // The slush lane: painted wet slush, with a slow shimmer running along it.
+      if (drawStripFaded(ctx, 'hazard_slush', x, y, w, h * 1.1, 0.18, 0.72)) {
+        const sh = ((time * 120) % (w + 200)) - 100;
+        const g = ctx.createLinearGradient(x - w / 2 + sh - 80, 0, x - w / 2 + sh + 80, 0);
+        g.addColorStop(0, 'rgba(255,255,255,0)');
+        g.addColorStop(0.5, 'rgba(220,245,255,0.18)');
+        g.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = g;
+        ctx.fillRect(x - w / 2, y - h * 0.6, w, h * 1.2);
+        continue;
+      }
       ctx.fillStyle = 'rgba(110,200,220,0.22)';
       ctx.beginPath();
       ctx.ellipse(x, y, px(p.rx), px(p.ry), 0, 0, TAU);
       ctx.fill();
-      ctx.strokeStyle = 'rgba(150,230,255,0.45)';
-      ctx.setLineDash([8, 10]);
-      ctx.lineDashOffset = -time * 6;
-      ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.fillStyle = 'rgba(190,240,255,0.85)';
-      ctx.font = '800 12px system-ui, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('SLUSH LANE', x, y + 4);
     }
   }
 }
 
 function drawWind(ctx, venue, time) {
+  // Painted gusts blowing across the sheet toward the far bank, in the wind's direction.
   const dir = Math.sign(venue.wind);
-  ctx.save();
-  ctx.strokeStyle = 'rgba(190,230,255,0.35)';
-  ctx.lineWidth = 2;
-  ctx.lineCap = 'round';
-  for (let i = 0; i < 9; i++) {
-    const x = ((i * 157 + time * 40) % (VIEW.w + 100)) - 50;
-    const yBase = sy(0) + dir * (((time * 60 + i * 53) % 380) - 190);
-    ctx.beginPath();
-    ctx.moveTo(x, yBase);
-    ctx.lineTo(x + 6, yBase + dir * 30);
-    ctx.stroke();
+  for (let i = 0; i < 7; i++) {
+    const x = ((i * 211 + time * 70) % (VIEW.w + 200)) - 100;
+    const y = sy(0) + dir * ((((time * 45 + i * 67) % 420)) - 210);
+    if (!drawSprite(ctx, 'hazard_wind', x, y, 26 + (i % 3) * 8, { ay: 0.5, alpha: 0.55, rot: dir * 1.35 })) {
+      ctx.strokeStyle = 'rgba(190,230,255,0.35)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + 6, y + dir * 30);
+      ctx.stroke();
+    }
   }
-  ctx.restore();
 }
 
 export function drawSnowfall(ctx, time) {
