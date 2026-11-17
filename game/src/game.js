@@ -3,8 +3,10 @@
 import { createRun, recordMatch, takeKit, DIFFICULTIES } from './tournament.js';
 import { createPlayScene, updatePlay } from './scenes/play.js';
 import { drawMatch } from './render/matchView.js';
-import { drawTitle, drawClubhouse, drawResults, drawPause, hovered } from './render/screens.js';
-import { loadSave, recordRun } from './save.js';
+import { drawTitle, drawClubhouse, drawResults, drawPause, drawStoneSelect, hovered } from './render/screens.js';
+import { loadSave, recordRun, savePicked } from './save.js';
+import { STONES, stoneById, stoneLevel } from './stones.js';
+import { setPlayerStone } from './render/stones.js';
 import { unlockAudio, toggleMute, sfx, setIceSounds } from './audio.js';
 
 export function createGame() {
@@ -23,7 +25,10 @@ export function createGame() {
 }
 
 export function startRun(game, seed = (Date.now() % 100000) | 0) {
-  game.run = createRun(game.difficulty, seed);
+  const base = stoneById(game.stoneId ?? game.save.picked);
+  const stone = { ...base, level: stoneLevel(game.save.stones?.[base.id]) };
+  setPlayerStone(stone);
+  game.run = createRun(game.difficulty, seed, stone);
   // Dev/test shortcut: ?round=1..6 starts the run at that rival (and lake) instead of the first.
   const round = Number(new URLSearchParams(globalThis.location?.search ?? '').get('round'));
   if (round >= 1 && round <= 6) game.run.round = round - 1;
@@ -66,8 +71,24 @@ export function updateGame(game, dt, input) {
     });
     if (click === 'play' || input.wasPressed('Enter')) {
       sfx.click();
+      game.stoneId = game.stoneId ?? game.save.picked;
+      game.mode = 'stones';
+    }
+  } else if (game.mode === 'stones') {
+    // Choose the stone set for this run.
+    STONES.forEach((s, i) => {
+      if (input.wasPressed(`Digit${i + 1}`) || click === `stone:${s.id}`) {
+        game.stoneId = s.id;
+        sfx.toggle();
+      }
+    });
+    if (click === 'start' || input.wasPressed('Enter') || input.wasPressed('Space')) {
+      sfx.click();
+      savePicked(game.stoneId);
+      game.save = loadSave();
       startRun(game);
     }
+    if (input.wasPressed('Escape') || click === 'back') game.mode = 'title';
   } else if (game.mode === 'play') {
     if (input.wasPressed('Escape') || input.wasPressed('KeyP')) game.paused = !game.paused;
     if (game.paused) {
@@ -110,6 +131,7 @@ export function updateGame(game, dt, input) {
 export function drawGame(ctx, game) {
   const t = game.time;
   if (game.mode === 'title') game.hits = drawTitle(ctx, game, t, game.save);
+  else if (game.mode === 'stones') game.hits = drawStoneSelect(ctx, game, t, game.save);
   else if (game.mode === 'play') {
     drawMatch(ctx, game.play, t, game.save.best);
     game.hits = game.paused ? drawPause(ctx, game) : [];

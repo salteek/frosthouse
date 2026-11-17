@@ -3,7 +3,8 @@
 
 import { VIEW, PALETTE, MATCH, SHEET } from '../config.js';
 import { drawSkillBadge } from './skillsView.js';
-import { SKILLS } from '../skills.js';
+import { SKILLS, skillCost } from '../skills.js';
+import { STONES, stoneLevel, LEVEL_XP } from '../stones.js';
 import { TAU } from '../geometry.js';
 import { RIVALS } from '../rivals.js';
 import { VENUES, venueById } from '../venues.js';
@@ -64,7 +65,7 @@ export function drawTitle(ctx, state, time, save) {
 
   if (!drawSprite(ctx, 'logo', VIEW.w / 2, 18, 112, { ay: 0 })) logo(ctx, VIEW.w / 2, 112, 92);
   text(ctx, 'A CURLING TOURNAMENT ON THE FROZEN LAKES', VIEW.w / 2, 154, { size: 17, weight: 900, align: 'center', color: '#8fd3ff' });
-  text(ctx, '6 rival rinks · 5 frozen lakes · 14 kit upgrades · hot streaks to x4 · 3 difficulties', VIEW.w / 2, 178, { size: 15, weight: 700, align: 'center', color: PALETTE.inkSoft });
+  text(ctx, '6 rival rinks · 5 frozen lakes · 4 stone sets · 4 skills · 14 kit upgrades · elemental combos', VIEW.w / 2, 178, { size: 15, weight: 700, align: 'center', color: PALETTE.inkSoft });
 
   // How the game works, as labelled rules.
   const rx = 40;
@@ -343,6 +344,12 @@ export function drawResults(ctx, state, time, run, saveInfo) {
   hit(hits, 'title', 834, 484, 200, 76);
   const goal = champ ? (run.difficulty === 'champion' ? 'NEXT GOAL: an S grade on CHAMPION' : 'NEXT GOAL: win on CHAMPION difficulty') : `NEXT GOAL: get past ${RIVALS[Math.min(run.round, RIVALS.length - 1)].name}`;
   text(ctx, goal, 1232, 600, { size: 13, weight: 900, color: '#ffb35c', align: 'right' });
+  const sx = saveInfo.stoneXp;
+  if (sx && run.stone) {
+    // The stone set's experience from this run, and a level-up if it earned one.
+    const up = stoneLevel(sx.before + sx.gained) > stoneLevel(sx.before);
+    chip(ctx, up ? `${run.stone.name.toUpperCase()} +${sx.gained} XP · LEVEL ${stoneLevel(sx.before + sx.gained)}!` : `${run.stone.name.toUpperCase()} +${sx.gained} XP`, 1232, 568, { align: 'right', fill: up ? PALETTE.gold : '#2a3a6c', color: up ? PALETTE.ink : '#ffffff', size: 12, h: 24 });
+  }
   text(ctx, `${run.difficulty.toUpperCase()} · seed ${run.seed}`, 1232, 622, { size: 11, weight: 700, color: PALETTE.inkSoft, align: 'right' });
   text(ctx, 'M · MUTE', 1146, 528, { size: 13, weight: 900, color: PALETTE.inkSoft, align: 'center' });
   const lr = saveInfo.lastRuns ?? [];
@@ -405,3 +412,71 @@ function wrap(ctx, str, x, y, maxW, lineH, opts) {
 }
 
 export { KIT };
+
+// ---- Choose your stones: four sets with their own look, handling and signature skill, levelled across runs.
+
+export function drawStoneSelect(ctx, state, time, save) {
+  const hits = [];
+  if (drawCover(ctx, 'bd_aurora', 0, 0, VIEW.w, VIEW.h, 0.4)) {
+    ctx.fillStyle = 'rgba(6,14,34,0.55)';
+    ctx.fillRect(0, 0, VIEW.w, VIEW.h);
+  } else nightSky(ctx, VIEW.w, VIEW.h, time);
+  drawSnowfall(ctx, time);
+  callout(ctx, 'CHOOSE YOUR STONES', VIEW.w / 2, 74, 46, { tone: 'ice' });
+  text(ctx, 'Each set plays differently and brings its own signature skill. Win matches to level it up: higher levels make the skill stronger and cheaper.', VIEW.w / 2, 112, { size: 15, weight: 700, align: 'center', color: PALETTE.inkSoft });
+  const sel = state.stoneId ?? save.picked;
+  STONES.forEach((st, i) => {
+    const w = 282, h = 452, x = 40 + i * 302, y = 140;
+    const on = st.id === sel, hov = state.hover === `stone:${st.id}`;
+    const xp = save.stones?.[st.id] ?? 0, lvl = stoneLevel(xp);
+    ctx.save();
+    if (on || hov) ctx.translate(0, -6);
+    panel(ctx, x, y, w, h, { glow: on ? st.colour : hov ? shade(st.colour, -0.2) : null, fillTop: 'rgba(60,80,120,0.92)', fill: 'rgba(24,32,58,0.95)' });
+    text(ctx, String(i + 1), x + 18, y + 30, { size: 18, weight: 900, color: PALETTE.inkSoft });
+    if (on) chip(ctx, 'SELECTED', x + w - 16, y + 18, { align: 'right', fill: PALETTE.good, size: 10, h: 20 });
+    // The stone itself, turning slowly when picked.
+    const glow = ctx.createRadialGradient(x + w / 2, y + 96, 10, x + w / 2, y + 96, 90);
+    glow.addColorStop(0, `${st.colour}55`);
+    glow.addColorStop(1, `${st.colour}00`);
+    ctx.fillStyle = glow;
+    ctx.fillRect(x, y + 6, w, 180);
+    drawStone(ctx, x + w / 2, y + 96, on ? time * 1.2 : 0.6, [st.colour, st.dark], { radius: 58, boost: on ? 1.6 : 1 });
+    text(ctx, st.name, x + w / 2, y + 196, { size: 22, weight: 900, align: 'center', font: FONT_TITLE });
+    wrap(ctx, st.blurb, x + w / 2, y + 220, w - 40, 18, { size: 13, weight: 700, align: 'center', color: PALETTE.inkSoft });
+    // How it plays.
+    const stats = [['WEIGHT', st.mods.mass, 0.85, 1.25], ['GLIDE', 1 / st.mods.friction, 0.9, 1.12], ['CURL', st.mods.curl, 0.8, 1.3]];
+    stats.forEach(([label, v, lo, hi], k) => {
+      const by = y + 268 + k * 24;
+      text(ctx, label, x + 22, by + 10, { size: 11, weight: 900, color: PALETTE.inkSoft });
+      roundRect(ctx, x + 92, by, w - 116, 12, 6);
+      ctx.fillStyle = 'rgba(255,255,255,0.1)';
+      ctx.fill();
+      roundRect(ctx, x + 92, by, (w - 116) * Math.max(0.08, Math.min(1, (v - lo) / (hi - lo))), 12, 6);
+      ctx.fillStyle = st.colour;
+      ctx.fill();
+    });
+    // Signature skill and level.
+    const sk = SKILLS[st.skill];
+    drawSkillBadge(ctx, st.skill, x + 46, y + 372, 26, { glow: on ? 12 : 0 });
+    text(ctx, sk.name, x + 82, y + 366, { size: 16, weight: 900 });
+    text(ctx, `SIGNATURE SKILL · LEVEL ${lvl} · COSTS ${skillCost({ id: st.skill, level: lvl })}`, x + 82, y + 384, { size: 9, weight: 900, color: sk.color });
+    const next = LEVEL_XP[lvl];
+    text(ctx, lvl >= 3 ? 'MAX LEVEL' : `${xp} / ${next} XP to level ${lvl + 1}`, x + 22, y + 420, { size: 11, weight: 800, color: PALETTE.inkSoft });
+    roundRect(ctx, x + 22, y + 428, w - 44, 8, 4);
+    ctx.fillStyle = 'rgba(255,255,255,0.1)';
+    ctx.fill();
+    const prev = LEVEL_XP[lvl - 1];
+    const f = lvl >= 3 ? 1 : (xp - prev) / (next - prev);
+    if (f > 0) {
+      roundRect(ctx, x + 22, y + 428, Math.max(8, (w - 44) * f), 8, 4);
+      ctx.fillStyle = PALETTE.gold;
+      ctx.fill();
+    }
+    ctx.restore();
+    hit(hits, `stone:${st.id}`, x, y, w, h);
+  });
+  button(ctx, 'START THE OPEN', VIEW.w / 2 - 190, 618, 380, 64, { size: 28, hover: state.hover === 'start', fill: PALETTE.player });
+  hit(hits, 'start', VIEW.w / 2 - 190, 618, 380, 64);
+  hints(ctx, [['1-4', 'pick stones'], ['ENTER', 'start'], ['ESC', 'back']], 44, 690, { size: 13 });
+  return hits;
+}

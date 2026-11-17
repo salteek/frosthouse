@@ -223,23 +223,27 @@ function consumeEvents(scene) {
       addFloater(scene.fx, x, clamp(sy(e.stone.y) - 50, 170, 560), 'BLASTED OUT!', PALETTE.gold, 30);
       run.score += Math.round(150 * run.kit.scoreMul);
       sfx.cheer(0.6);
+    } else if (e.type === 'energy') {
+      if (e.gain > 0) addFloater(scene.fx, 104, 430, `+${e.gain} ENERGY`, '#6fd3ff', 18);
     } else if (e.type === 'combo') {
       const el = e.el;
       const x = sx(scene.cam, e.x ?? SHEET.tee), y = sy(e.y ?? 0);
-      const pts = { fire: 100, lightning: 150, hail: 200 }[el];
+      const mine = e.team === 'player';
+      const pts = mine ? { fire: 100, lightning: 150, hail: 200 }[el] : 0;
       run.score += Math.round(pts * run.kit.scoreMul);
+      const tag = (txt) => (mine ? `${txt}! +${pts}` : `${m.rival.short}: ${txt}!`);
       if (el === 'fire') {
         sfx.fire();
         addFlash(scene.fx, 'fx_fireburst', x, y, 170, 0.6, { spin: 1.2, grow: 0.9, blend: 'lighter' });
         spawnBurst(scene.fx, x, y, { count: 40, color: '#ff8a3d', speed: 420, life: 0.8, size: 4.5, drag: 2 });
         spawnBurst(scene.fx, x, y, { count: 24, color: '#ffd23f', speed: 300, life: 0.6, size: 3, drag: 2 });
-        addFloater(scene.fx, clamp(x, 140, 1140), clamp(y - 70, 170, 540), `FIRE COMBO! +${pts}`, '#ff8a3d', 32);
+        addFloater(scene.fx, clamp(x, 140, 1140), clamp(y - 70, 170, 540), tag('FIRE COMBO'), '#ff8a3d', 32);
       } else if (el === 'lightning') {
         sfx.thunder();
         (scene.fx.arcs ??= []).push({ x0: e.x, y0: e.y, x1: e.tx, y1: e.ty, life: 0.5, max: 0.5 });
         burstSprites(scene.fx, 'spark_star', sx(scene.cam, e.tx), sy(e.ty), { count: 10, speed: [200, 460], size: [14, 24], life: [0.25, 0.5], spin: 0, grow: -0.5 });
         scene.fx.flash = Math.max(scene.fx.flash ?? 0, 0.3);
-        addFloater(scene.fx, clamp(x, 140, 1140), clamp(y - 110, 170, 540), `CHAIN LIGHTNING! +${pts}`, '#ffe05a', 32);
+        addFloater(scene.fx, clamp(x, 140, 1140), clamp(y - 110, 170, 540), tag('CHAIN LIGHTNING'), '#ffe05a', 32);
       } else {
         sfx.hail();
         for (const st of e.stones) {
@@ -247,7 +251,7 @@ function consumeEvents(scene) {
           for (let i = 0; i < 6; i++) burstSprites(scene.fx, i % 3 ? 'fx_hailstone' : 'snowflake', hx + scene.fx.rng.range(-40, 40), hy - scene.fx.rng.range(260, 380), { count: 1, angle: Math.PI / 2, spread: 0.15, speed: [900, 1100], size: [16, 26], life: [0.3, 0.38], spin: 4, drag: 0, blend: 'lighter' });
           addFlash(scene.fx, 'ring_a', hx, hy, 30, 0.5, { grow: 2, blend: 'lighter', delay: 0.3 });
         }
-        addFloater(scene.fx, 640, 230, `HAILSTORM! +${pts}`, '#9fe6ff', 38);
+        addFloater(scene.fx, 640, 230, tag('HAILSTORM'), '#9fe6ff', 38);
       }
       scene.shake = Math.max(scene.shake, el === 'fire' ? 9 : 12);
     } else if (e.type === 'release') {

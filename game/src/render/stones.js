@@ -5,8 +5,11 @@ import { TAU } from '../geometry.js';
 import { sx, sy, px } from './camera.js';
 import { drawSprite, hasSprite } from './sprites.js';
 
+// The player's stone colours follow the stone set chosen for the run.
+let mine = null;
+export function setPlayerStone(stone) { mine = stone ? [stone.colour, stone.dark] : null; }
 export function teamColours(team, rival) {
-  return team === 'player' ? [PALETTE.player, PALETTE.playerDark] : [rival.colour, rival.dark];
+  return team === 'player' ? mine ?? [PALETTE.player, PALETTE.playerDark] : [rival.colour, rival.dark];
 }
 
 // A polished granite stone seen from above, with a neon band in its team's colour (the glow reads at a
@@ -129,8 +132,8 @@ export function drawSkipBroom(ctx, cam, aimY, turn, colour, time) {
   const y = sy(aimY);
   ctx.save();
   // The skip stands behind the broom, facing back down the sheet at the thrower.
-  const mine = colour === PALETTE.player;
-  if (!drawSprite(ctx, mine ? 'skip_red' : 'skip_blue', x + 58, y + 34, 82, { flip: true })) {
+  const ours = colour === PALETTE.player;
+  if (!drawSprite(ctx, ours ? 'skip_red' : 'skip_blue', x + 58, y + 34, 82, { flip: true })) {
     ctx.globalAlpha = 0.55;
     ctx.fillStyle = colour;
     ctx.beginPath();

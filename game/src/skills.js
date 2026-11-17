@@ -1,6 +1,8 @@
 // Skills: two slots of active powers the player fires between throws (F and G, or the buttons on the ice).
-// Each has a cooldown counted in your own throws, levels up to 3 at the clubhouse, and can be swapped
-// for another. They shove rival stones out of the house, or lock one of yours in place.
+// They run on FROST ENERGY: every match starts empty, and good shots fill it (a good call +1, a great one
+// +2, a perfect release +1, up to 6). A skill costs energy and can be fired once per end. Skills level up
+// to 3 (cheaper, stronger) and can be swapped at the clubhouse. The rivals that carry a power play by the
+// same energy rules.
 
 import { SHEET } from './config.js';
 
@@ -8,25 +10,25 @@ export const SKILLS = {
   bolt: {
     id: 'bolt', name: 'Ice Bolt', color: '#6fd3ff', glow: '111,211,255',
     text: 'A frost bolt from the hack slams the rival stone nearest the button back out of the house.',
-    cd: [3, 3, 2], power: [0.6, 0.75, 0.9],
+    cost: [3, 3, 2], power: [0.6, 0.75, 0.9],
     short: 'A frost bolt knocks the rival stone nearest the button out of the house.',
   },
   thunder: {
     id: 'thunder', name: 'Thunder', color: '#ffe05a', glow: '255,224,90',
     text: 'Lightning strikes the rival stone nearest the button and blasts it away. Level 3 chains to a second stone.',
-    cd: [4, 4, 3], power: [0.7, 0.85, 1.0], chain: [0, 0, 1],
+    cost: [5, 4, 4], power: [0.7, 0.85, 1.0], chain: [0, 0, 1],
     short: 'Lightning blasts the rival stone nearest the button. Level 3 chains to a second.',
   },
   gale: {
     id: 'gale', name: 'Gale Horn', color: '#b8f0ff', glow: '184,240,255',
     text: 'A blast of wind pushes every rival stone in the house outward.',
-    cd: [4, 4, 3], power: [0.38, 0.48, 0.58],
+    cost: [4, 4, 3], power: [0.38, 0.48, 0.58],
     short: 'A blast of wind shoves every rival stone in the house outward.',
   },
   lock: {
     id: 'lock', name: 'Frost Lock', color: '#a98bff', glow: '169,139,255',
     text: 'Freeze your stone nearest the button to the ice: it shrugs off hits for the rest of the end.',
-    cd: [4, 3, 3], power: [5, 7, 9],
+    cost: [3, 2, 2], power: [5, 7, 9],
     short: 'Freeze your stone nearest the button: it shrugs off hits for the end.',
   },
 };
@@ -37,7 +39,23 @@ export const MAX_SKILL_LEVEL = 3;
 // The two skill buttons, bottom-left of the ice (the end you throw from, clear of the house).
 export const SKILL_BUTTONS = [{ x: 62, y: 532, r: 30 }, { x: 138, y: 532, r: 30 }];
 
-export const skillCd = (slot) => SKILLS[slot.id].cd[slot.level - 1];
+export const skillCost = (slot) => SKILLS[slot.id].cost[slot.level - 1];
+export const MAX_ENERGY = 6;
+export const energyOf = (m, team = 'player') => m.energy?.[team] ?? 0;
+export const usedThisEnd = (m, id, team = 'player') => !!m.skillUsed?.[team]?.[id];
+
+// Energy from a finished throw's call.
+export function gainEnergy(m, team, call, perfect) {
+  const e = (call.tone === 'great' ? 2 : call.tone === 'good' ? 1 : 0) + (perfect ? 1 : 0);
+  if (!e) return 0;
+  (m.energy ??= { player: 0, rival: 0 })[team] = Math.min(MAX_ENERGY, energyOf(m, team) + e);
+  return e;
+}
+
+function spend(m, team, slot) {
+  (m.energy ??= { player: 0, rival: 0 })[team] = energyOf(m, team) - skillCost(slot);
+  ((m.skillUsed ??= {})[team] ??= {})[slot.id] = true;
+}
 
 const dist2 = (s) => (s.x - SHEET.tee) ** 2 + s.y ** 2;
 const HOUSE = SHEET.rings[0];
@@ -55,12 +73,16 @@ export function skillTargets(m, id, team = 'player') {
   return foes;
 }
 
-export function canUseSkill(m, slotIndex) {
+// Why a skill can't fire right now ('' when it can).
+export function skillBlock(m, slotIndex) {
   const slot = m.kit.skills?.[slotIndex];
-  if (!slot) return false;
-  if ((m.skillCd?.[slot.id] ?? 0) > 0) return false;
-  return skillTargets(m, slot.id).length > 0;
+  if (!slot) return 'empty';
+  if (usedThisEnd(m, slot.id)) return 'used';
+  if (energyOf(m) < skillCost(slot)) return 'energy';
+  if (!skillTargets(m, slot.id).length) return 'target';
+  return '';
 }
+export const canUseSkill = (m, slotIndex) => skillBlock(m, slotIndex) === '';
 
 function start(m, team, slot) {
   const def = SKILLS[slot.id];
@@ -76,16 +98,16 @@ function start(m, team, slot) {
 export function useSkill(m, slotIndex) {
   if (!canUseSkill(m, slotIndex)) return false;
   const slot = m.kit.skills[slotIndex];
-  (m.skillCd ??= {})[slot.id] = SKILLS[slot.id].cd[slot.level - 1];
+  spend(m, 'player', slot);
   start(m, 'player', slot);
   return true;
 }
 
 // The stronger rinks carry one power of their own. They fire it before a throw when you are counting
-// (or, for Frost Lock, when they are), at most once every few of their throws; never on Casual.
+// (or, for Frost Lock, when they are), paying energy like you; never on Casual.
 export function rivalTrySkill(m) {
   const p = m.rival.power;
-  if (!p || m.difficulty === 'casual' || (m.rivalSkillCd ?? 0) > 0) return false;
+  if (!p || m.difficulty === 'casual' || usedThisEnd(m, p.id, 'rival') || energyOf(m, 'rival') < skillCost(p)) return false;
   const all = m.stones.filter((s) => !s.out).sort((a, b) => dist2(a) - dist2(b));
   const shot = all[0];
   if (!shot || dist2(shot) > HOUSE * HOUSE) return false;
@@ -94,7 +116,7 @@ export function rivalTrySkill(m) {
   // Late in the end they are keener to spend it.
   const left = m.stonesPerTeam - m.thrown.rival;
   if (!m.rng.chance(left <= 2 ? 0.85 : 0.45)) return false;
-  m.rivalSkillCd = SKILLS[p.id].cd[p.level - 1] + 1;
+  spend(m, 'rival', p);
   start(m, 'rival', p);
   return true;
 }
@@ -125,13 +147,6 @@ export function applySkillHit(m) {
   m.events.push({ type: 'skillHit', id: sk.id, targets: sk.targets, team: sk.team });
 }
 
-// After each of your throws, every cooldown ticks down by one.
-export function tickSkills(m, team = 'player') {
-  if (team === 'rival') { m.rivalSkillCd = Math.max(0, (m.rivalSkillCd ?? 0) - 1); return; }
-  if (!m.skillCd) return;
-  for (const k of Object.keys(m.skillCd)) m.skillCd[k] = Math.max(0, m.skillCd[k] - 1);
-}
-
 // ---- The clubhouse: a skill card among the kit offers.
 
 export function skillOffer(kit, rng) {
@@ -146,7 +161,7 @@ export function skillOffer(kit, rng) {
   const replaced = pick.kind === 'new' && slots.length >= 2 ? slots.slice().sort((a, b) => a.level - b.level)[0] : null;
   return {
     id: `skill:${pick.id}`, skill: pick.id, icon: `skill_${pick.id}`, name: def.name, max: MAX_SKILL_LEVEL,
-    text: pick.kind === 'up' ? `Level ${pick.level}: more power${def.cd[pick.level - 1] < def.cd[pick.level - 2] ? ' and a shorter cooldown' : ''}${pick.id === 'thunder' && pick.level === 3 ? ', and it chains to a second stone' : ''}.` : def.short,
+    text: pick.kind === 'up' ? `Level ${pick.level}: more power${def.cost[pick.level - 1] < def.cost[pick.level - 2] ? ' and it costs less energy' : ''}${pick.id === 'thunder' && pick.level === 3 ? ', and it chains to a second stone' : ''}.` : def.short,
     chip: pick.kind === 'up' ? `SKILL LEVEL ${pick.level} OF 3` : replaced ? `NEW SKILL · REPLACES ${SKILLS[replaced.id].name.toUpperCase()}` : 'NEW SKILL',
     apply: (k) => {
       const list = (k.skills ??= []);

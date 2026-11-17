@@ -3,7 +3,7 @@
 // target reticle on whatever the hovered skill would hit.
 
 import { TAU } from '../geometry.js';
-import { SKILLS, SKILL_BUTTONS, SKILL_KEY_NAMES, skillTargets, canUseSkill, skillCd } from '../skills.js';
+import { SKILLS, SKILL_BUTTONS, SKILL_KEY_NAMES, skillTargets, skillBlock, skillCost, energyOf, MAX_ENERGY } from '../skills.js';
 import { currentTeam } from '../match.js';
 import { sx, sy, px } from './camera.js';
 import { SHEET } from '../config.js';
@@ -130,9 +130,9 @@ export function drawSkillButtons(ctx, scene, time) {
       ctx.restore();
       return;
     }
-    const cd = m.skillCd?.[slot.id] ?? 0;
-    const max = skillCd(slot);
-    const ready = canUseSkill(m, i);
+    const block = skillBlock(m, i);
+    const cost = skillCost(slot), have = energyOf(m);
+    const ready = block === '';
     const live = ready && myTurn;
     const hov = scene.skillHover === i;
     const pulse = 0.5 + 0.5 * Math.sin(time * 5 + i);
@@ -148,19 +148,34 @@ export function drawSkillButtons(ctx, scene, time) {
       ctx.restore();
     }
     const r = b.r * (hov && live ? 1.08 : 1);
-    ctx.globalAlpha = live ? 1 : cd > 0 ? 0.75 : 0.6;
+    ctx.globalAlpha = live ? 1 : 0.8;
     drawSkillBadge(ctx, slot.id, b.x, b.y, r, { glow: live ? 14 + pulse * 10 : 0 });
-    if (cd > 0) {
-      // The cooldown: a dark sweep that clears a slice for each of your throws.
-      ctx.globalAlpha = 1;
+    ctx.globalAlpha = 1;
+    if (block === 'energy' || block === 'used') {
+      // Not charged yet: the badge is shaded, and a ring fills with energy toward its cost.
       ctx.beginPath();
-      ctx.moveTo(b.x, b.y);
-      ctx.arc(b.x, b.y, r, -Math.PI / 2, -Math.PI / 2 + TAU * (cd / max));
-      ctx.closePath();
-      ctx.fillStyle = 'rgba(6,10,26,0.68)';
+      ctx.arc(b.x, b.y, r, 0, TAU);
+      ctx.fillStyle = 'rgba(6,10,26,0.62)';
       ctx.fill();
-      callout(ctx, String(cd), b.x, b.y + 9, 26, { tone: 'ice' });
+      if (block === 'energy') {
+        ctx.strokeStyle = SKILLS[slot.id].color;
+        ctx.lineWidth = 4;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, r + 3, -Math.PI / 2, -Math.PI / 2 + TAU * Math.min(1, have / cost));
+        ctx.stroke();
+      } else text(ctx, 'USED', b.x, b.y + 4, { size: 11, weight: 900, align: 'center', color: '#cfe4ff' });
     }
+    // The energy cost, on a little crystal at the badge's corner.
+    const cx = b.x + r * 0.78, cy = b.y + r * 0.62;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - 10); ctx.lineTo(cx + 8, cy); ctx.lineTo(cx, cy + 10); ctx.lineTo(cx - 8, cy); ctx.closePath();
+    ctx.fillStyle = have >= cost ? '#6fd3ff' : '#3a4a6a';
+    ctx.fill();
+    ctx.strokeStyle = '#0b1330';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    text(ctx, String(cost), cx, cy + 4, { size: 11, weight: 900, align: 'center', color: have >= cost ? '#0b1330' : '#cfe4ff', raw: true });
     ctx.globalAlpha = 1;
     keycap(ctx, SKILL_KEY_NAMES[i], b.x - 9, b.y - b.r - 4, { size: 10 });
     // Level pips.
@@ -182,7 +197,7 @@ export function drawSkillButtons(ctx, scene, time) {
   if (slot && myTurn) {
     const def = SKILLS[slot.id];
     const b = SKILL_BUTTONS[hi];
-    const cd = m.skillCd?.[slot.id] ?? 0;
+    const block = skillBlock(m, hi), cost = skillCost(slot);
     const tx = 24, ty = b.y - b.r - 112, tw = 300;
     ctx.save();
     ctx.fillStyle = 'rgba(10,16,38,0.92)';
@@ -194,9 +209,10 @@ export function drawSkillButtons(ctx, scene, time) {
     ctx.stroke();
     text(ctx, `${def.name.toUpperCase()}  ·  LEVEL ${slot.level}`, tx + 14, ty + 22, { size: 13, weight: 900, color: def.color });
     wrapSmall(ctx, def.text, tx + 14, ty + 42, tw - 28);
-    text(ctx, cd > 0 ? `Ready in ${cd} of your throws` : skillTargets(m, slot.id).length ? `Press ${SKILL_KEY_NAMES[hi]} or click · cooldown ${skillCd(slot)} throws` : 'No target in play', tx + 14, ty + 76, { size: 11, weight: 800, color: cd > 0 ? '#ffb070' : '#bfe6ff' });
+    const why = { energy: `Needs ${cost} energy (you have ${energyOf(m)}): make good shots`, used: 'Already used this end', target: 'No target in play', '': `Press ${SKILL_KEY_NAMES[hi]} or click · costs ${cost} energy` }[block];
+    text(ctx, why, tx + 14, ty + 76, { size: 11, weight: 800, color: block ? '#ffb070' : '#bfe6ff' });
     ctx.restore();
-    if (cd === 0) for (const s of skillTargets(m, slot.id).slice(0, slot.id === 'gale' ? 8 : slot.id === 'thunder' ? 1 + def.chain[slot.level - 1] : 1)) reticle(ctx, sx(scene.cam, s.x), sy(s.y), def, time);
+    if (block === '') for (const s of skillTargets(m, slot.id).slice(0, slot.id === 'gale' ? 8 : slot.id === 'thunder' ? 1 + def.chain[slot.level - 1] : 1)) reticle(ctx, sx(scene.cam, s.x), sy(s.y), def, time);
   }
 }
 
@@ -455,8 +471,9 @@ export function drawElementGlyph(ctx, id, x, y, r, alpha = 1) {
 // The combo track: which elements your next stone carries, lit as the hot streak climbs.
 export function drawComboTrack(ctx, scene, time) {
   const m = scene.match;
-  const live = m.shot && m.shot.team === 'player' ? m.shot.charge ?? [] : chargeFor(m.streak);
-  const x0 = 26, y0 = 420;
+  const spent = !!m.comboUsed?.player && !(m.shot?.team === 'player' && m.shot.charge?.length && !m.shot.comboDone);
+  const live = m.shot && m.shot.team === 'player' ? m.shot.charge ?? [] : spent ? [] : chargeFor(m.streak);
+  const x0 = 26, y0 = 380;
   ctx.save();
   ctx.fillStyle = 'rgba(8,14,34,0.62)';
   ctx.strokeStyle = live.length ? 'rgba(255,170,80,0.7)' : 'rgba(150,200,255,0.25)';
@@ -465,7 +482,7 @@ export function drawComboTrack(ctx, scene, time) {
   ctx.roundRect(x0, y0, 150, 54, 12);
   ctx.fill();
   ctx.stroke();
-  text(ctx, live.length ? 'STONE CHARGED' : 'STREAK COMBO', x0 + 10, y0 + 14, { size: 9, weight: 900, color: live.length ? '#ffc070' : '#9fb4d8' });
+  text(ctx, spent ? 'COMBO USED THIS END' : live.length ? 'STONE CHARGED' : 'STREAK COMBO', x0 + 10, y0 + 14, { size: 9, weight: 900, color: live.length ? '#ffc070' : '#9fb4d8' });
   ELEMENTS.forEach((el, i) => {
     const on = live.includes(el.id);
     const cx = x0 + 28 + i * 47, cy = y0 + 35;
@@ -478,6 +495,23 @@ export function drawComboTrack(ctx, scene, time) {
     drawElementGlyph(ctx, el.id, cx, cy, 13 * pulse, on ? 1 : 0.28);
     text(ctx, `x${el.streak}`, cx + 10, cy + 15, { size: 8, weight: 900, color: on ? '#ffffff' : 'rgba(255,255,255,0.35)' });
   });
+  // Frost energy: six crystals, filled by good shots, spent on skills.
+  const e = energyOf(m), ey = y0 + 62;
+  ctx.fillStyle = 'rgba(8,14,34,0.62)';
+  ctx.beginPath();
+  ctx.roundRect(x0, ey, 150, 26, 10);
+  ctx.fill();
+  text(ctx, 'ENERGY', x0 + 10, ey + 17, { size: 9, weight: 900, color: '#9fd8ff' });
+  for (let i = 0; i < MAX_ENERGY; i++) {
+    const cx = x0 + 64 + i * 14, cy = ey + 13, on = i < e;
+    const g = on ? 1 + Math.sin(time * 6 + i) * 0.08 : 1;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - 8 * g); ctx.lineTo(cx + 5 * g, cy); ctx.lineTo(cx, cy + 8 * g); ctx.lineTo(cx - 5 * g, cy); ctx.closePath();
+    ctx.fillStyle = on ? '#6fd3ff' : 'rgba(255,255,255,0.1)';
+    if (on) { ctx.shadowColor = '#6fd3ff'; ctx.shadowBlur = 8; }
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  }
   ctx.restore();
 }
 

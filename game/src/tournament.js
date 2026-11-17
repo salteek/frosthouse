@@ -13,15 +13,16 @@ export const DIFFICULTIES = [
   { id: 'champion', name: 'CHAMPION', note: 'Short preview · sharp rivals' },
 ];
 
-export function createRun(difficulty, seed) {
+export function createRun(difficulty, seed, stone = null) {
   return {
+    stone,
     difficulty,
     seed,
     rng: createRng(seed),
     round: 0,
     losses: 0,
     results: [],
-    kit: freshKit(),
+    kit: freshKit(stone),
     owned: [],
     score: 0,
     offer: null,

@@ -53,6 +53,13 @@ function winMatches(run, n) {
 
 export function stageShot(game, shot, seed) {
   game.time = 7.3;
+  if (shot === 'stones') {
+    game.mode = 'stones';
+    game.stoneId = 'amber';
+    game.save = { best: 18240, trophies: 1, runs: 6, lastRuns: [], stones: { ruby: 9, amber: 4, coral: 1 }, picked: 'amber' };
+    game.hover = null;
+    return;
+  }
   if (shot === 'title') {
     game.mode = 'title';
     game.save = { best: 0, trophies: 0, runs: 0, lastRuns: [] };
@@ -137,6 +144,7 @@ export function stageShot(game, shot, seed) {
     m.streak = 2;
     const at = Number(new URLSearchParams(globalThis.location?.search ?? '').get('at') ?? 0.42);
     m.phase = 'aim';
+    m.energy = { player: 6, rival: 0 };
     if (useSkill(m, id === 'bolt' ? 0 : 1)) {
       let t = 0;
       while (t < at && (m.phase === 'skill' || m.phase === 'aim')) { updatePlay(scene, 1 / 60, quietInput); t += 1 / 60; }

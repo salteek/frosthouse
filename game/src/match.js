@@ -5,7 +5,7 @@ import { createStone, launch, stepStones, anyMoving, cloneStones, speedFromWeigh
 import { countEnd } from './scoring.js';
 import { callShot } from './callouts.js';
 import { chooseShot, executeShot, rivalWantsSweep } from './ai.js';
-import { applySkillHit, tickSkills } from './skills.js';
+import { applySkillHit, gainEnergy } from './skills.js';
 import { chargeFor, comboOnHit } from './combos.js';
 
 const R = SHEET.stoneR;
@@ -42,7 +42,8 @@ export function createMatch({ rival, venue, kit, difficulty, rng, ends = MATCH.e
     perfect: false,
     events: [],
     stats: { perfects: 0, calls: [], bestCall: null, takeouts: 0, buttons: 0, pointsFor: 0, pointsAgainst: 0, hogged: 0, bestStreak: 0 },
-    skillCd: {},           // skill id -> your throws until it is ready again
+    energy: { player: 0, rival: 0 }, // frost energy for skills (skills.js)
+    skillUsed: {},         // team -> skill id -> fired this end
     skill: null,           // the skill being played out (phase 'skill')
     streak: 0,             // the player's run of good shots in a row; it multiplies shot-call points
     winner: null,
@@ -71,9 +72,9 @@ export function deliver(m, team, { aimY, speed, turn }) {
   if (team === 'player') {
     stone.sweepFriction = 1 - (1 - PHYS.sweepFriction) * m.kit.sweepPower;
     stone.sweepCurl = PHYS.sweepCurl * m.kit.sweepStraighten;
-    // A hot streak charges the stone with elements (combos.js).
-    stone.charge = chargeFor(m.streak);
   }
+  // A hot streak charges the stone with an element (combos.js), once per end per side.
+  if (!m.comboUsed?.[team] && (team === 'player' || m.difficulty !== 'casual')) stone.charge = chargeFor(team === 'player' ? m.streak : m.rivalStreak ?? 0);
   m.before = cloneStones(m.stones);
   launch(stone, aimY, speed);
   m.stones.push(stone);
@@ -176,7 +177,7 @@ function finishThrow(m) {
   const call = callShot(m.before, m.stones, s.id, s.team);
   m.lastCall = { ...call, team: s.team, t: 0, perfect: s.team === 'player' && m.perfect, streak: 1 };
   if (s.team === 'player') {
-    tickSkills(m);
+    m.events.push({ type: 'energy', team: 'player', gain: gainEnergy(m, 'player', call, m.perfect) });
     // A hot streak: every good shot in a row raises the multiplier, up to x4; a poor one breaks it.
     m.streak = call.tone === 'great' || call.tone === 'good' ? m.streak + 1 : 0;
     const mult = Math.min(SCORE.streakMax, Math.max(1, m.streak));
@@ -189,7 +190,8 @@ function finishThrow(m) {
     if (s.hogged) m.stats.hogged++;
     m.events.push({ type: 'call', call, mult, points: Math.round((call.points + (m.perfect ? SCORE.perfectRelease : 0)) * m.kit.scoreMul * mult), x: s.x, y: s.y });
   } else {
-    tickSkills(m, 'rival');
+    gainEnergy(m, 'rival', call, false);
+    m.rivalStreak = call.tone === 'great' || call.tone === 'good' ? (m.rivalStreak ?? 0) + 1 : 0;
     m.events.push({ type: 'rivalCall', call });
   }
   m.thrown[s.team]++;
@@ -232,6 +234,8 @@ export function nextEnd(m) {
   m.stones = [];
   m.thrown = { player: 0, rival: 0 };
   m.mittenReady = m.kit.mitten;
+  m.comboUsed = {};
+  m.skillUsed = {};
   m.phase = 'aim';
   m.endResult = null;
   return true;

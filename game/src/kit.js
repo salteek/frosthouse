@@ -31,12 +31,13 @@ export const KIT = [
     apply: (k) => { k.tea = true; } },
 ];
 
-export function freshKit() {
+export function freshKit(stone) {
+  const s = stone?.mods ?? { mass: 1, friction: 1, curl: 1 };
   return {
-    sweepPower: 1, stamina: 1, needle: 1, preview: 1, mass: 1, curl: 1, friction: 1,
+    sweepPower: 1, stamina: 1, needle: 1, preview: 1, mass: s.mass, curl: s.curl, friction: s.friction,
     mitten: false, startHammer: false, scoreMul: 1, rivalNerves: 1, perfect: 1, sweepStraighten: 1, tea: false,
-    // Active skills (see skills.js): every run starts with the Ice Bolt in slot F.
-    skills: [{ id: 'bolt', level: 1 }],
+    // Active skills (see skills.js): the stone set's signature skill, at the set's level.
+    skills: [{ id: stone?.skill ?? 'bolt', level: stone?.level ?? 1 }],
   };
 }
 
