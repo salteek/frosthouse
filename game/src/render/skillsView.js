@@ -8,7 +8,7 @@ import { currentTeam } from '../match.js';
 import { sx, sy, px } from './camera.js';
 import { SHEET } from '../config.js';
 import { text, callout, keycap } from './ui.js';
-import { drawSprite } from './sprites.js';
+import { drawSprite, hasSprite } from './sprites.js';
 import { ELEMENTS, chargeFor } from '../combos.js';
 
 // ---- Icons, drawn as vector shapes so they stay sharp from 18 px to 90 px.
@@ -68,6 +68,14 @@ export function drawSkillGlyph(ctx, id, x, y, r, alpha = 1) {
 // A glossy round skill badge (button face, clubhouse card icon, HUD tray).
 export function drawSkillBadge(ctx, id, x, y, r, o = {}) {
   const def = SKILLS[id];
+  if (hasSprite(`skill_${id}`)) {
+    // The painted badge (glass disc and rim included).
+    ctx.save();
+    if (o.glow) { ctx.shadowColor = def.color; ctx.shadowBlur = o.glow; }
+    drawSprite(ctx, `skill_${id}`, x, y, r * 2.12, { ay: 0.5 });
+    ctx.restore();
+    return;
+  }
   ctx.save();
   const g = ctx.createRadialGradient(x - r * 0.35, y - r * 0.45, r * 0.1, x, y, r);
   g.addColorStop(0, 'rgba(255,255,255,0.55)');
@@ -229,6 +237,7 @@ export function drawLocks(ctx, scene, time) {
   for (const s of scene.match.stones) {
     if (!s.locked || s.out) continue;
     const x = sx(scene.cam, s.x), y = sy(s.y), r = px(SHEET.stoneR);
+    if (drawSprite(ctx, 'fx_frostring', x, y, r * 3.6 * (1 + Math.sin(time * 3) * 0.03), { ay: 0.5, rot: time * 0.3, blend: 'lighter', alpha: 0.95 })) continue;
     ctx.save();
     ctx.globalCompositeOperation = 'lighter';
     ctx.strokeStyle = `rgba(169,139,255,${(0.55 + 0.25 * Math.sin(time * 4)).toFixed(2)})`;
@@ -297,7 +306,7 @@ function bolt(ctx, scene, sk, k) {
   ctx.save();
   ctx.translate(hx, hy);
   ctx.rotate(Math.atan2(ty - oy, tx - ox));
-  drawSkillGlyph(ctx, 'bolt', 0, 0, 52);
+  if (!drawSprite(ctx, 'fx_spear', 0, 0, 46, { ax: 0.9, ay: 0.5, blend: 'lighter' })) drawSkillGlyph(ctx, 'bolt', 0, 0, 52);
   ctx.restore();
 }
 
@@ -357,7 +366,11 @@ function thunder(ctx, scene, sk, time) {
   ctx.save();
   ctx.globalCompositeOperation = 'lighter';
   ctx.globalAlpha = Math.max(0, 1 - since / 0.45);
-  lightning(ctx, ax + 40, 120, ax, ay, seed, 5);
+  if (hasSprite('fx_lightning')) {
+    // The painted strike, stretched from the sky to the stone; it flickers by flipping each few frames.
+    const h = Math.max(260, ay - 90);
+    drawSprite(ctx, 'fx_lightning', ax, ay + 30, h, { ay: 1, flip: Math.floor(time * 18) % 2 === 1 });
+  } else lightning(ctx, ax + 40, 120, ax, ay, seed, 5);
   if (b) lightning(ctx, ax, ay, sx(scene.cam, b.x), sy(b.y), seed + 13, 3);
   ctx.restore();
 }
@@ -399,6 +412,7 @@ function frostLock(ctx, scene, sk, k) {
 
 
 export function drawElementGlyph(ctx, id, x, y, r, alpha = 1) {
+  if (drawSprite(ctx, `el_${id}`, x, y, r * 2.25, { ay: 0.5, alpha })) return;
   const el = ELEMENTS.find((e) => e.id === id);
   if (id === 'lightning') { ctx.save(); ctx.globalAlpha *= alpha; drawSkillGlyph(ctx, 'thunder', x, y, r); ctx.restore(); return; }
   ctx.save();
@@ -506,7 +520,7 @@ export function drawChargedStone(ctx, scene, time) {
   ctx.restore();
   if (s.charge.includes('hail')) for (let i = 0; i < 4; i++) {
     const a = time * 5 + (i * TAU) / 4;
-    drawElementGlyph(ctx, 'hail', x + Math.cos(a) * r * 1.9, y + Math.sin(a) * r * 1.9, 7);
+    if (!drawSprite(ctx, 'fx_hailstone', x + Math.cos(a) * r * 1.9, y + Math.sin(a) * r * 1.9, 13, { ay: 0.5, blend: 'lighter' })) drawElementGlyph(ctx, 'hail', x + Math.cos(a) * r * 1.9, y + Math.sin(a) * r * 1.9, 7);
   }
 }
 

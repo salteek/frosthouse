@@ -139,7 +139,7 @@ export function stageShot(game, shot, seed) {
     m.phase = 'aim';
     if (useSkill(m, id === 'bolt' ? 0 : 1)) {
       let t = 0;
-      while (t < at && m.phase === 'skill') { updatePlay(scene, 1 / 60, quietInput); t += 1 / 60; }
+      while (t < at && (m.phase === 'skill' || m.phase === 'aim')) { updatePlay(scene, 1 / 60, quietInput); t += 1 / 60; }
     }
     scene.skillHover = -1;
     game.play = scene;

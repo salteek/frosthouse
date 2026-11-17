@@ -910,5 +910,149 @@
   ],
   "mode": "glow",
   "scale": 0.6
+ },
+ {
+  "name": "skill_bolt",
+  "sheet": "game design/18-nov/skill_badges_b.jpg",
+  "box": [
+   109,
+   445,
+   580,
+   570
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "skill_thunder",
+  "sheet": "game design/18-nov/skill_badges_b.jpg",
+  "box": [
+   763,
+   445,
+   580,
+   570
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "skill_gale",
+  "sheet": "game design/18-nov/skill_badges_b.jpg",
+  "box": [
+   1410,
+   445,
+   580,
+   570
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "skill_lock",
+  "sheet": "game design/18-nov/skill_badges_b.jpg",
+  "box": [
+   2063,
+   445,
+   580,
+   570
+  ],
+  "mode": "solid",
+  "scale": 0.45
+ },
+ {
+  "name": "el_fire",
+  "sheet": "game design/18-nov/element_icons_a.jpg",
+  "box": [
+   89,
+   364,
+   800,
+   800
+  ],
+  "mode": "solid",
+  "scale": 0.3
+ },
+ {
+  "name": "el_lightning",
+  "sheet": "game design/18-nov/element_icons_a.jpg",
+  "box": [
+   976,
+   364,
+   800,
+   800
+  ],
+  "mode": "solid",
+  "scale": 0.3
+ },
+ {
+  "name": "el_hail",
+  "sheet": "game design/18-nov/element_icons_a.jpg",
+  "box": [
+   1857,
+   364,
+   800,
+   800
+  ],
+  "mode": "solid",
+  "scale": 0.3
+ },
+ {
+  "name": "fx_lightning",
+  "sheet": "game design/18-nov/vfx_sprite_b.jpg",
+  "box": [
+   230,
+   0,
+   420,
+   1536
+  ],
+  "mode": "glow",
+  "scale": 0.5
+ },
+ {
+  "name": "fx_spear",
+  "sheet": "game design/18-nov/vfx_sprite_b.jpg",
+  "box": [
+   1030,
+   240,
+   1430,
+   320
+  ],
+  "mode": "glow",
+  "scale": 0.35
+ },
+ {
+  "name": "fx_fireburst",
+  "sheet": "game design/18-nov/vfx_sprite_b.jpg",
+  "box": [
+   940,
+   670,
+   800,
+   730
+  ],
+  "mode": "glow",
+  "scale": 0.45
+ },
+ {
+  "name": "fx_hailstone",
+  "sheet": "game design/18-nov/vfx_sprite_b.jpg",
+  "box": [
+   1990,
+   900,
+   320,
+   320
+  ],
+  "mode": "glow",
+  "scale": 0.4
+ },
+ {
+  "name": "fx_frostring",
+  "sheet": "game design/18-nov/Purple_ice_crystal_ring_b.jpg",
+  "box": [
+   50,
+   50,
+   924,
+   924
+  ],
+  "mode": "glow",
+  "scale": 0.4
  }
 ]

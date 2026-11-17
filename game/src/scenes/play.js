@@ -230,7 +230,7 @@ function consumeEvents(scene) {
       run.score += Math.round(pts * run.kit.scoreMul);
       if (el === 'fire') {
         sfx.fire();
-        addFlash(scene.fx, 'spark_b', x, y, 150, 0.55, { spin: 2, grow: 0.8, blend: 'lighter' });
+        addFlash(scene.fx, 'fx_fireburst', x, y, 170, 0.6, { spin: 1.2, grow: 0.9, blend: 'lighter' });
         spawnBurst(scene.fx, x, y, { count: 40, color: '#ff8a3d', speed: 420, life: 0.8, size: 4.5, drag: 2 });
         spawnBurst(scene.fx, x, y, { count: 24, color: '#ffd23f', speed: 300, life: 0.6, size: 3, drag: 2 });
         addFloater(scene.fx, clamp(x, 140, 1140), clamp(y - 70, 170, 540), `FIRE COMBO! +${pts}`, '#ff8a3d', 32);
@@ -244,7 +244,7 @@ function consumeEvents(scene) {
         sfx.hail();
         for (const st of e.stones) {
           const hx = sx(scene.cam, st.x), hy = sy(st.y);
-          for (let i = 0; i < 6; i++) burstSprites(scene.fx, i % 2 ? 'shards' : 'snowflake', hx + scene.fx.rng.range(-40, 40), hy - scene.fx.rng.range(260, 380), { count: 1, angle: Math.PI / 2, spread: 0.15, speed: [900, 1100], size: [14, 22], life: [0.3, 0.38], spin: 8, drag: 0, blend: 'source-over' });
+          for (let i = 0; i < 6; i++) burstSprites(scene.fx, i % 3 ? 'fx_hailstone' : 'snowflake', hx + scene.fx.rng.range(-40, 40), hy - scene.fx.rng.range(260, 380), { count: 1, angle: Math.PI / 2, spread: 0.15, speed: [900, 1100], size: [16, 26], life: [0.3, 0.38], spin: 4, drag: 0, blend: 'lighter' });
           addFlash(scene.fx, 'ring_a', hx, hy, 30, 0.5, { grow: 2, blend: 'lighter', delay: 0.3 });
         }
         addFloater(scene.fx, 640, 230, `HAILSTORM! +${pts}`, '#9fe6ff', 38);

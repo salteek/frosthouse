@@ -14,6 +14,8 @@ const NAMES = [
   'crest_player', 'crest_puffin', 'crest_ironwool', 'crest_ravens', 'crest_sleet', 'crest_pines', 'crest_glacier',
   'icon_eye', 'icon_broom', 'icon_turn_cw', 'icon_turn_ccw', 'aim_target', 'banner_open', 'hack',
   'hazard_drift_a', 'hazard_drift_b', 'hazard_drift_c', 'hazard_slush', 'hazard_wind',
+  'skill_bolt', 'skill_thunder', 'skill_gale', 'skill_lock', 'el_fire', 'el_lightning', 'el_hail',
+  'fx_lightning', 'fx_spear', 'fx_fireburst', 'fx_hailstone', 'fx_frostring',
   'bd_mirror.jpg', 'bd_pine.jpg', 'bd_windy.jpg', 'bd_thaw.jpg', 'bd_aurora.jpg',
 ];
 

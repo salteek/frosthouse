@@ -10,7 +10,7 @@ const C = {
 };
 
 export function drawKitIcon(ctx, icon, x, y, size) {
-  if (icon.startsWith('skill_')) { drawSkillBadge(ctx, icon.slice(6), x, y, size * 0.5, { glow: size * 0.25 }); return; }
+  if (icon.startsWith('skill_')) { drawSkillBadge(ctx, icon.slice(6), x, y, size * 0.62, { glow: size * 0.25 }); return; }
   // The painted icon (in its own glass disc) when it has loaded; the drawn one otherwise.
   if (drawSprite(ctx, `kit_${icon}`, x, y, size * 1.3, { ay: 0.5 })) return;
   const s = size / 2;
