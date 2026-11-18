@@ -279,9 +279,9 @@ function consumeEvents(scene) {
       const ph = BOSS_PHASES[e.phase - 1];
       // Mid-end it waits for the shot call to clear; at the start of an end it comes straight in.
       const wait = m.thrown.player + m.thrown.rival === 0 && m.phase === 'aim' ? 0.3 : 1.5;
-      addFloater(scene.fx, 640, 250, `PHASE ${e.phase}: ${ph.name}`, '#b8f0ff', 40, 2.4, wait);
+      addFloater(scene.fx, 640, 300, `PHASE ${e.phase}: ${ph.name}`, '#b8f0ff', 40, 2.4, wait);
       scene.fx.floaters[scene.fx.floaters.length - 1].onShow = () => sfx.thunder();
-      addFloater(scene.fx, 640, 296, ph.note, '#eaf4ff', 20, 2.4, wait);
+      addFloater(scene.fx, 640, 346, ph.note, '#eaf4ff', 20, 2.4, wait);
       holdForEnd(scene, 2);
     } else if (e.type === 'bounty') {
       run.score += e.points;
@@ -296,9 +296,9 @@ function consumeEvents(scene) {
       run.score += Math.round(GLACIER_BREAKER * run.kit.scoreMul);
       run.stats.glacierBroken = true;
       scene.cinematic = 3.8; // nobody throws until the crack has played out (render/crack.js)
-      addFloater(scene.fx, 640, 250, 'THE GLACIER CRACKS!', PALETTE.gold, 44, 2.4, 1.5);
+      addFloater(scene.fx, 640, 300, 'THE GLACIER CRACKS!', PALETTE.gold, 44, 2.4, 1.5);
       scene.fx.floaters[scene.fx.floaters.length - 1].onShow = () => { startCrack(scene); sfx.crack(); };
-      addFloater(scene.fx, 640, 296, `+2 SHATTER POINTS · YOUR HAMMER · FULL ENERGY · +${Math.round(GLACIER_BREAKER * run.kit.scoreMul)}`, '#eaf4ff', 20, 2.4, 1.5);
+      addFloater(scene.fx, 640, 346, `+2 SHATTER POINTS · YOUR HAMMER · FULL ENERGY · +${Math.round(GLACIER_BREAKER * run.kit.scoreMul)}`, '#eaf4ff', 20, 2.4, 1.5);
       holdForEnd(scene, 2);
     } else if (e.type === 'combo') {
       const el = e.el;
@@ -334,8 +334,8 @@ function consumeEvents(scene) {
     } else if (e.type === 'playerBroken') {
       // The mirror of his crack, without the cinematic: he broke your Resolve.
       sfx.groan();
-      addFloater(scene.fx, 640, 250, 'HRIMGAR BREAKS YOUR RESOLVE', '#ff8a8a', 34, 2.4, 1.5);
-      addFloater(scene.fx, 640, 292, '+2 to him · his hammer · your skills are locked', '#eaf4ff', 18, 2.4, 1.5);
+      addFloater(scene.fx, 640, 300, 'HRIMGAR BREAKS YOUR RESOLVE', '#ff8a8a', 34, 2.4, 1.5);
+      addFloater(scene.fx, 640, 342, '+2 to him · his hammer · your skills are locked', '#eaf4ff', 18, 2.4, 1.5);
       holdForEnd(scene, 2);
     } else if (e.type === 'release') {
       sfx.release();

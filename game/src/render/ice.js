@@ -153,7 +153,7 @@ export function drawSheet(ctx, cam, venue, time) {
     bg.addColorStop(1, '#2b5285');
     ctx.fillStyle = bg;
     ctx.fillRect(bank, top - 6, VIEW.w - bank, bottom - top + 12);
-    if (venue.bossFinal) { /* the boss stands on the bank (render/bossView.js) */ } else if (!drawSprite(ctx, 'banner_open', bank + 46, (top + bottom) / 2, bottom - top - 30, { ay: 0.5 })) {
+    if (venue.bossFinal) { /* the boss stands on the bank (render/bossView.js) */ } else if (!drawSprite(ctx, 'banner_open', Math.min(bank + 46, VIEW.w - 40), (top + bottom) / 2, bottom - top - 50, { ay: 0.5 })) {
       ctx.fillStyle = PALETTE.player;
       ctx.fillRect(bank + 26, top + 30, 34, bottom - top - 60);
       ctx.save();

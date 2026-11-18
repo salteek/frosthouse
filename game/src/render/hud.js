@@ -196,7 +196,7 @@ function drawBossBar(ctx, m, time) {
   BOSS_PHASES.forEach((ph, i) => {
     const cx = bx + bw * (1 - (i + 0.5) / 3);
     const on = !b.cracked && b.phase === ph.n;
-    text(ctx, `${ph.n} · ${ph.name}`, cx, y + 56, { size: 9, weight: 900, align: 'center', color: on ? col : 'rgba(200,215,240,0.4)' });
+    text(ctx, `${ph.n} · ${ph.name}`, cx, y + 57, { size: 10, weight: 900, align: 'center', color: on ? col : 'rgba(200,215,240,0.4)' });
   });
 }
 
