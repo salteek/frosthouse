@@ -78,6 +78,8 @@ export function updatePlay(scene, dt, input) {
   updateBounty(scene.match, dt);
   updateCrack(scene, dt);
   if (crackBurstDue(scene)) {
+    // A slow-motion beat as the ice gives way (cinema.js lands the jolt on the same frame).
+    scene.fx.hitstop = Math.max(scene.fx.hitstop ?? 0, 0.32);
     // Shards burst off the button and off the end of every main crack.
     const cx = sx(scene.cam, SHEET.tee), cy = sy(0);
     burstSprites(scene.fx, 'snowflake', cx, cy, { count: 22, speed: [140, 380], size: [12, 24], life: [0.6, 1.1], spin: 3 });

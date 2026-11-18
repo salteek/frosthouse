@@ -12,6 +12,7 @@ import { drawSprite, portraitFor, crestFor, drawCover } from './sprites.js';
 import { drawStone, teamColours } from './stones.js';
 import { drawKitIcon, trophy } from './icons.js';
 import { BOSS_PHASES, bossPhase } from '../boss.js';
+import { cinemaAmount } from './cinema.js';
 
 const BOTTOM = 620;
 
@@ -25,7 +26,7 @@ export function drawMatchHud(ctx, scene, time, best) {
   drawSheetMap(ctx, m);
   if (m.boss) drawBossBar(ctx, m, time);
   // The controls stay on screen between throws, not only while aiming, so the scheme is always in view.
-  if ((m.phase === 'aim' || m.phase === 'settle') && scene.intro <= 0) drawHintPills(ctx);
+  if ((m.phase === 'aim' || m.phase === 'settle') && scene.intro <= 0 && cinemaAmount(scene) < 0.05) drawHintPills(ctx);
   if (m.lastCall && m.phase === 'settle') drawCall(ctx, m.lastCall, m);
   if (m.phase === 'endScore' && m.endResult) drawEndSummary(ctx, m, time);
   if (m.phase === 'over') drawMatchOver(ctx, scene, time);

@@ -1,7 +1,7 @@
 // "THE GLACIER CRACKS!": glowing cracks race out through the ice from the button, shards burst off,
 // his obstacles melt away, and a faint scar of the cracks stays in the ice for the rest of the final.
 // The cracks are built once in sheet metres (so they sit still on the ice as the camera moves) and grow
-// outward from the button. Kept local to the house: no screen shake and no full-screen flash.
+// outward from the button. No full-screen flash; the camera push-in and the damped shake are in cinema.js.
 
 import { SHEET } from '../config.js';
 import { TAU } from '../geometry.js';

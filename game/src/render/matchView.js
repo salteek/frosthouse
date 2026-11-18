@@ -15,12 +15,14 @@ import { drawFxLayer, drawTrails, drawSnowSmoke } from '../fx.js';
 import { sx as toX, sy as toY } from './camera.js';
 import { callout } from './ui.js';
 import { hasSprite } from './sprites.js';
+import { applyCinemaCamera, drawCinemaOverlay, cinemaAmount } from './cinema.js';
 import { drawBountyPanel, drawBossIntent } from './bountyView.js';
 import { drawSkillButtons, drawSkillStrike, drawLocks, drawComboTrack, drawChargedStone, drawArcs } from './skillsView.js';
 
 export function drawMatch(ctx, scene, time, best) {
   const m = scene.match;
   ctx.save();
+  applyCinemaCamera(ctx, scene); // the Glacier breaking: push-in and a damped shake (cinema.js)
   if (scene.shake > 0) ctx.translate((Math.random() - 0.5) * scene.shake, (Math.random() - 0.5) * scene.shake);
   // The stands go wild for your good shots, an end you score and a match you win.
   const call = m.lastCall;
@@ -81,12 +83,18 @@ export function drawMatch(ctx, scene, time, best) {
     ctx.restore();
   }
   drawMatchHud(ctx, scene, time, best);
-  if (scene.intro <= 0 && m.phase !== 'over') {
+  // The side panels step back while the Glacier breaks, so the shot is clean.
+  const cineFade = 1 - cinemaAmount(scene);
+  if (scene.intro <= 0 && m.phase !== 'over' && cineFade > 0.01) {
+    ctx.save();
+    ctx.globalAlpha = cineFade;
     drawComboTrack(ctx, scene, time);
     drawBountyPanel(ctx, scene, time);
     drawBossIntent(ctx, scene, time);
     drawSkillButtons(ctx, scene, time);
+    ctx.restore();
   }
+  drawCinemaOverlay(ctx, scene);
 }
 
 function drawFx(ctx, fx) {
