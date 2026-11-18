@@ -278,7 +278,7 @@ export function drawCounting(ctx, cam, counting, colour, t) {
 }
 
 // Who is sitting shot right now, as a skip would call it, with a marker on the shot stone.
-export function drawSitting(ctx, cam, result, rival) {
+export function drawSitting(ctx, cam, result, rival, below = false) {
   if (!result.team) return;
   const shot = result.counting[0];
   const colour = teamColours(result.team, rival)[0];
@@ -296,7 +296,8 @@ export function drawSitting(ctx, cam, result, rival) {
   ctx.font = '900 13px system-ui, sans-serif';
   const w = ctx.measureText(label).width + 20;
   const cx = sx(cam, SHEET.tee);
-  const cy = sy(-SHEET.rings[0]) - 16;
+  // In the final the boss panel covers the top of the house, so the label drops just below the panel.
+  const cy = Math.max(sy(-SHEET.rings[0]) - 16, below ? 202 : 0);
   ctx.fillStyle = colour;
   ctx.beginPath();
   ctx.roundRect(cx - w / 2, cy - 12, w, 24, 12);

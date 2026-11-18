@@ -4,6 +4,7 @@
 // to 3 (cheaper, stronger) and can be swapped at the clubhouse. The rivals that carry a power play by the
 // same energy rules.
 
+import { isShattered } from './boss.js';
 import { SHEET } from './config.js';
 import { rivalPowers } from './boss.js';
 
@@ -78,6 +79,7 @@ export function skillTargets(m, id, team = 'player') {
 export function skillBlock(m, slotIndex) {
   const slot = m.kit.skills?.[slotIndex];
   if (!slot) return 'empty';
+  if (isShattered(m, 'player')) return 'broken';
   if (usedThisEnd(m, slot.id)) return 'used';
   if (energyOf(m) < skillCost(slot)) return 'energy';
   if (!skillTargets(m, slot.id).length) return 'target';

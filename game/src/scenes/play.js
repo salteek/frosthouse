@@ -298,7 +298,7 @@ function consumeEvents(scene) {
       scene.cinematic = 3.8; // nobody throws until the crack has played out (render/crack.js)
       addFloater(scene.fx, 640, 250, 'THE GLACIER CRACKS!', PALETTE.gold, 44, 2.4, 1.5);
       scene.fx.floaters[scene.fx.floaters.length - 1].onShow = () => { startCrack(scene); sfx.crack(); };
-      addFloater(scene.fx, 640, 296, `+1 SHATTER POINT · YOUR HAMMER · +${Math.round(GLACIER_BREAKER * run.kit.scoreMul)}`, '#eaf4ff', 20, 2.4, 1.5);
+      addFloater(scene.fx, 640, 296, `+2 SHATTER POINTS · YOUR HAMMER · FULL ENERGY · +${Math.round(GLACIER_BREAKER * run.kit.scoreMul)}`, '#eaf4ff', 20, 2.4, 1.5);
       holdForEnd(scene, 2);
     } else if (e.type === 'combo') {
       const el = e.el;
@@ -335,7 +335,7 @@ function consumeEvents(scene) {
       // The mirror of his crack, without the cinematic: he broke your Resolve.
       sfx.groan();
       addFloater(scene.fx, 640, 250, 'HRIMGAR BREAKS YOUR RESOLVE', '#ff8a8a', 34, 2.4, 1.5);
-      addFloater(scene.fx, 640, 292, '+1 shatter point to him · his hammer next end', '#eaf4ff', 18, 2.4, 1.5);
+      addFloater(scene.fx, 640, 292, '+2 to him · his hammer · your skills are locked', '#eaf4ff', 18, 2.4, 1.5);
       holdForEnd(scene, 2);
     } else if (e.type === 'release') {
       sfx.release();

@@ -151,7 +151,7 @@ export function drawSkillButtons(ctx, scene, time) {
     ctx.globalAlpha = live ? 1 : 0.8;
     drawSkillBadge(ctx, slot.id, b.x, b.y, r, { glow: live ? 14 + pulse * 10 : 0 });
     ctx.globalAlpha = 1;
-    if (block === 'energy' || block === 'used') {
+    if (block === 'energy' || block === 'used' || block === 'broken') {
       // Not charged yet: the badge is shaded, and a ring fills with energy toward its cost.
       ctx.beginPath();
       ctx.arc(b.x, b.y, r, 0, TAU);
@@ -164,7 +164,7 @@ export function drawSkillButtons(ctx, scene, time) {
         ctx.beginPath();
         ctx.arc(b.x, b.y, r + 3, -Math.PI / 2, -Math.PI / 2 + TAU * Math.min(1, have / cost));
         ctx.stroke();
-      } else text(ctx, 'USED', b.x, b.y + 4, { size: 11, weight: 900, align: 'center', color: '#cfe4ff' });
+      } else text(ctx, block === 'broken' ? 'BROKEN' : 'USED', b.x, b.y + 4, { size: 11, weight: 900, align: 'center', color: '#cfe4ff' });
     }
     // The energy cost, on a little crystal at the badge's corner.
     const cx = b.x + r * 0.78, cy = b.y + r * 0.62;

@@ -506,9 +506,9 @@ function drawEndSummary(ctx, m, time) {
   else head = `${teamName(m, r.team)} ${r.stolen ? 'STEALS' : 'SCORES'} ${r.points}`;
   text(ctx, head, VIEW.w / 2, y + 66, { size: 34, weight: 900, align: 'center', color: r.team ? teamColours(r.team, m.rival)[0] : PALETTE.ink, font: FONT_TITLE });
   text(ctx, `${total(m, 'player')} – ${total(m, 'rival')}   ·   hammer to ${teamName(m, m.hammer)}`, VIEW.w / 2, y + 98, { size: 14, weight: 800, align: 'center', color: PALETTE.inkSoft });
-  if (r.shatter && r.rivalShatter) chip(ctx, 'BOTH BROKEN · +1 SHATTER POINT EACH', VIEW.w / 2, y + 136, { align: 'center', fill: '#4a3a7a', size: 13, h: 28 });
-  else if (r.shatter) chip(ctx, `+${r.shatter} SHATTER POINT · HE BROKE · YOUR HAMMER`, VIEW.w / 2, y + 136, { align: 'center', fill: '#7a2bd6', size: 13, h: 28 });
-  else if (r.rivalShatter) chip(ctx, `+${r.rivalShatter} SHATTER POINT TO ${teamName(m, 'rival')} · YOU BROKE · HIS HAMMER`, VIEW.w / 2, y + 136, { align: 'center', fill: PALETTE.bad, size: 13, h: 28 });
+  if (r.shatter && r.rivalShatter) chip(ctx, 'BOTH BROKEN · +2 SHATTER POINTS EACH', VIEW.w / 2, y + 136, { align: 'center', fill: '#4a3a7a', size: 13, h: 28 });
+  else if (r.shatter) chip(ctx, `+${r.shatter} SHATTER POINTS · HE BROKE · YOUR HAMMER`, VIEW.w / 2, y + 136, { align: 'center', fill: '#7a2bd6', size: 13, h: 28 });
+  else if (r.rivalShatter) chip(ctx, `+${r.rivalShatter} SHATTER POINTS TO ${teamName(m, 'rival')} · YOU BROKE · HIS HAMMER`, VIEW.w / 2, y + 136, { align: 'center', fill: PALETTE.bad, size: 13, h: 28 });
   ctx.restore();
 }
 

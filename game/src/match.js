@@ -8,7 +8,7 @@ import { chooseShot, executeShot, rivalWantsSweep } from './ai.js';
 import { applySkillHit, gainEnergy } from './skills.js';
 import { chargeFor, comboOnHit } from './combos.js';
 import { postBounty, bountyProgress, judgeBounty } from './bounties.js';
-import { createBoss, layObstacles, hurtBoss, RESOLVE_PER_POINT, RESOLVE_PER_CALL, bossSkillMod, SHATTER_POINTS, hurtPlayer } from './boss.js';
+import { createBoss, layObstacles, hurtBoss, RESOLVE_PER_POINT, RESOLVE_PER_CALL, bossSkillMod, SHATTER_POINTS, hurtPlayer, SHATTERED, isShattered } from './boss.js';
 
 const R = SHEET.stoneR;
 
@@ -85,7 +85,7 @@ export function deliver(m, team, { aimY, speed, turn }) {
   m.stones.push(stone);
   m.shot = stone;
   m.phase = 'running';
-  m.stamina = THROW.sweepStamina * (team === 'player' ? m.kit.stamina : 1.2);
+  m.stamina = THROW.sweepStamina * (team === 'player' ? m.kit.stamina : 1.2) * (isShattered(m, team) ? SHATTERED.stamina : 1);
   m.sweepCheck = 0;
   m.events.push({ type: 'release', team });
   return stone;
@@ -98,7 +98,9 @@ export function playerThrow(m, { aimY, weight, turn, releaseError }) {
     err = 0;
     m.mittenReady = false;
   }
-  const perfect = Math.abs(err) <= THROW.perfectZone * m.kit.perfect;
+  // Shattered: a narrower perfect zone and a bigger miss (the mirror of the cracked Glacier's shakier throws).
+  if (isShattered(m, 'player')) err = Math.max(-1, Math.min(1, err * SHATTERED.releaseError));
+  const perfect = Math.abs(err) <= THROW.perfectZone * m.kit.perfect * (isShattered(m, 'player') ? SHATTERED.perfect : 1);
   if (perfect) err = 0;
   m.perfect = perfect;
   if (perfect) m.stats.perfects++;

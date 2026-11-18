@@ -6,9 +6,9 @@
 //   CRACKED               (0): his powers are gone, the obstacles melt and his throws go shaky.
 // The final is a tug of war, and the same rules run both ways. You carry a Resolve bar too, and his points
 // and good shots chip it exactly as yours chip his (and it wears to 66/33 by ends 2/3, as his does).
-// Whoever is broken first hands the other the SHATTER POINT (+1 on the scoreboard, in the end it happens)
-// and the hammer for the next end; once per side per match. Losing his powers when he cracks is his alone:
-// that is the boss's phase mechanic, and you have no phases to lose.
+// Whoever is broken first hands the other the SHATTER POINTS (+2 on the scoreboard, in the end it happens),
+// the hammer for the next end and a full energy bar; once per side per match. The broken side is SHATTERED
+// for the rest of the match: no skills or powers, shakier throws, sweepers that tire twice as fast.
 // The obstacles are laid at the start of each end (never mid-throw), stack up phase by phase, hit his stones
 // as hard as yours, and never sit on the centre line, so a straight draw to the button is always there.
 // His Resolve also wears down as the final goes on (at most 66 from end 2, 33 from end 3), so every final
@@ -21,8 +21,8 @@ export const BOSS_PHASES = [
   { n: 3, name: 'FROZEN HEART', note: 'He Frost Locks · ice spikes guard the house', obstacle: 'ICE SPIKES' },
 ];
 
-export const RESOLVE_PER_POINT = 14;
-export const RESOLVE_PER_CALL = { great: 5, good: 2 };
+export const RESOLVE_PER_POINT = 20;
+export const RESOLVE_PER_CALL = { great: 8, good: 3 };
 const WHITEOUT_WIND = -0.0028;
 
 export function createBoss(rival, venue) {
@@ -77,6 +77,7 @@ export function hurtBoss(m, amount) {
   m.events.push({ type: 'bossHurt', amount });
   if (b.resolve <= 0) {
     b.cracked = true;
+    (m.energy ??= { player: 0, rival: 0 }).player = 6;
     b.shatter = 'pending'; // match.js adds the point when the end is counted, then hands you the hammer
     b.melting = b.obstacles; // drawn melting away by the crack animation (render/crack.js)
     b.obstacles = null;
@@ -100,6 +101,7 @@ export function hurtPlayer(m, amount) {
   b.nerveHitT = 0;
   if (b.nerve <= 0) {
     b.broken = true;
+    (m.energy ??= { player: 0, rival: 0 }).rival = 6;
     b.rivalShatter = 'pending';
     m.events.push({ type: 'playerBroken' });
   }
@@ -128,7 +130,11 @@ export function rivalPowers(m) {
 
 // A cracked boss throws worse.
 export const bossSkillMod = (m) => (m.boss?.cracked ? -0.18 : 0);
-export const SHATTER_POINTS = 1;
+export const SHATTER_POINTS = 2;
+// Shattered for the rest of the match (the same for both sides): no skills or powers, shakier throws,
+// and sweepers that tire twice as fast. The side that did the breaking also fills its energy.
+export const SHATTERED = { stamina: 0.5, perfect: 0.5, releaseError: 1.3 };
+export const isShattered = (m, team) => !!m.boss && (team === 'rival' ? m.boss.cracked : m.boss.broken);
 
 export function updateBoss(m, dt) {
   if (m.boss) { m.boss.hitT += dt; m.boss.nerveHitT += dt; }
