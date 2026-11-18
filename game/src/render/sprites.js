@@ -17,7 +17,7 @@ const NAMES = [
   'skill_bolt', 'skill_thunder', 'skill_gale', 'skill_lock', 'el_fire', 'el_lightning', 'el_hail',
   'fx_lightning', 'fx_spear', 'fx_fireburst', 'fx_hailstone', 'fx_frostring',
   'wind_0', 'wind_1', 'wind_2', 'wind_3',
-  'boss_full', 'boss_cracked', 'boss_sweep', 'boss_bust', 'spike_a', 'spike_b', 'ridge_a', 'crack_radial', 'crack_shards',
+  'boss_full', 'boss_cracked', 'boss_sweep', 'thrall_sweep_a', 'thrall_sweep_b', 'thrall_skip', 'boss_bust', 'spike_a', 'spike_b', 'ridge_a', 'crack_radial', 'crack_shards',
   'stone_ruby', 'stone_amber', 'stone_coral', 'stone_ivory', 'hero_ruby', 'hero_amber', 'hero_coral', 'hero_ivory',
   'bd_mirror.jpg', 'bd_pine.jpg', 'bd_windy.jpg', 'bd_thaw.jpg', 'bd_aurora.jpg',
 ];

@@ -1306,5 +1306,41 @@
     ],
     "mode": "solid:12",
     "scale": 0.45
+  },
+  {
+    "name": "thrall_sweep_a",
+    "sheet": "game design/18-nov/thralls_clean.png",
+    "box": [
+      100,
+      388,
+      916,
+      844
+    ],
+    "mode": "solid",
+    "scale": 0.35
+  },
+  {
+    "name": "thrall_sweep_b",
+    "sheet": "game design/18-nov/thralls_clean.png",
+    "box": [
+      1084,
+      232,
+      784,
+      1000
+    ],
+    "mode": "solid",
+    "scale": 0.35
+  },
+  {
+    "name": "thrall_skip",
+    "sheet": "game design/18-nov/thralls_clean.png",
+    "box": [
+      1960,
+      280,
+      724,
+      964
+    ],
+    "mode": "solid",
+    "scale": 0.35
   }
 ]

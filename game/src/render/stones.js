@@ -130,11 +130,16 @@ function drawSweepers(ctx, x, y, s, match, time) {
   // In the final, the boss's stones are swept by his Frost Thralls (unless he has cracked: then they are gone
   // and two shaken rink-mates sweep for him).
   const thralls = !mine && match.boss && !match.boss.cracked;
-  const names = (mine ? ['sweep_red', 'sweep_red2'] : ['sweep_blue', 'sweep_blue2']).map((n) => (thralls ? `thrall:${n}` : n));
+  // The painted thralls if they loaded, else the blue rink's sweepers tinted to ice.
+  const names = thralls && hasSprite('thrall_sweep_a') ? ['thrall_sweep_a', 'thrall_sweep_b']
+    : (mine ? ['sweep_red', 'sweep_red2'] : ['sweep_blue', 'sweep_blue2']).map((n) => (thralls ? `thrall:${n}` : n));
+  const tall = thralls && names[0] === 'thrall_sweep_a' ? 112 : 80;
   if (hasSprite(mine ? 'sweep_red' : 'sweep_blue')) {
     const bob = Math.sin(time * 22) * 3;
     if (thralls) {
-      // A cold mist trails off them, behind the figures.
+      // Dark shadows under their feet so the pale ice figures stand off the ice, and a cold mist behind them.
+      ctx.fillStyle = 'rgba(4,10,30,0.35)';
+      for (const [dx, dy] of [[44, -20], [48, 82]]) { ctx.beginPath(); ctx.ellipse(x + dx, y + dy, 34, 8, 0, 0, TAU); ctx.fill(); }
       for (const [dx, dy] of [[44, -50], [48, 50]]) {
         const g = ctx.createRadialGradient(x + dx, y + dy, 4, x + dx, y + dy, 58);
         g.addColorStop(0, 'rgba(170,230,255,0.32)');
@@ -143,9 +148,9 @@ function drawSweepers(ctx, x, y, s, match, time) {
         ctx.fillRect(x + dx - 60, y + dy - 60, 120, 120);
       }
     }
-    drawSprite(ctx, names[0], x + 44 + bob, y - 18, 80);
+    drawSprite(ctx, names[0], x + 44 + bob, y - 18, tall);
     for (let i = 0; i < 3; i++) drawSprite(ctx, 'shards', x + 46 + Math.sin(time * 30 + i) * 10, y + i * 3 - 4, 14, { ay: 0.5, alpha: 0.7, rot: time * 9 + i });
-    drawSprite(ctx, names[1], x + 48 - bob, y + 84, 80);
+    drawSprite(ctx, names[1], x + 48 - bob, y + 84, tall);
     return;
   }
   const col = teamColours(s.team, match.rival)[0];
@@ -173,7 +178,9 @@ export function drawSkipBroom(ctx, cam, aimY, turn, colour, time, skip = null) {
   ctx.save();
   // The skip stands behind the broom, facing back down the sheet at the thrower.
   const ours = colour === PALETTE.player;
-  if (!drawSprite(ctx, skip ?? (ours ? 'skip_red' : 'skip_blue'), x + 58, y + 34, 82, { flip: true })) {
+  const big = skip === 'thrall_skip';
+  if (big) { ctx.fillStyle = 'rgba(4,10,30,0.35)'; ctx.beginPath(); ctx.ellipse(x + 58, y + 34, 30, 7, 0, 0, TAU); ctx.fill(); }
+  if (!drawSprite(ctx, skip ?? (ours ? 'skip_red' : 'skip_blue'), x + 58, y + 34, big ? 104 : 82, { flip: true })) {
     ctx.globalAlpha = 0.55;
     ctx.fillStyle = colour;
     ctx.beginPath();

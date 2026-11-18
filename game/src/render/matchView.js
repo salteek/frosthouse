@@ -14,6 +14,7 @@ import { drawSprite } from './sprites.js';
 import { drawFxLayer, drawTrails, drawSnowSmoke } from '../fx.js';
 import { sx as toX, sy as toY } from './camera.js';
 import { callout } from './ui.js';
+import { hasSprite } from './sprites.js';
 import { drawBountyPanel, drawBossIntent } from './bountyView.js';
 import { drawSkillButtons, drawSkillStrike, drawLocks, drawComboTrack, drawChargedStone, drawArcs } from './skillsView.js';
 
@@ -35,7 +36,7 @@ export function drawMatch(ctx, scene, time, best) {
     drawSkipBroom(ctx, scene.cam, scene.aim.y, scene.aim.turn, PALETTE.player, time);
   } else if (m.phase === 'aim' && currentTeam(m) === 'rival') {
     // In the final a Frost Thrall holds the broom while Hrimgar calls the line from the bank (bossView.js).
-    const thrall = m.boss && !m.boss.cracked ? 'thrall:skip_blue' : null;
+    const thrall = m.boss && !m.boss.cracked ? (hasSprite('thrall_skip') ? 'thrall_skip' : 'thrall:skip_blue') : null;
     drawSkipBroom(ctx, scene.cam, Math.sin(time * 1.3) * 0.5, 1, m.rival.colour, time, thrall);
   }
   drawSnowSmoke(ctx, scene, (x) => toX(scene.cam, x), toY);
