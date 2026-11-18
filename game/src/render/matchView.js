@@ -34,7 +34,9 @@ export function drawMatch(ctx, scene, time, best) {
     drawPathPreview(ctx, scene.cam, scene.preview.path, previewLength(scene.run), 'rgba(224,56,62,0.85)', true);
     drawSkipBroom(ctx, scene.cam, scene.aim.y, scene.aim.turn, PALETTE.player, time);
   } else if (m.phase === 'aim' && currentTeam(m) === 'rival') {
-    drawSkipBroom(ctx, scene.cam, Math.sin(time * 1.3) * 0.5, 1, m.rival.colour, time);
+    // In the final a Frost Thrall holds the broom while Hrimgar calls the line from the bank (bossView.js).
+    const thrall = m.boss && !m.boss.cracked ? 'thrall:skip_blue' : null;
+    drawSkipBroom(ctx, scene.cam, Math.sin(time * 1.3) * 0.5, 1, m.rival.colour, time, thrall);
   }
   drawSnowSmoke(ctx, scene, (x) => toX(scene.cam, x), toY);
   drawTrails(ctx, scene, (x) => toX(scene.cam, x), toY, time);

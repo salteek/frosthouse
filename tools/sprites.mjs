@@ -58,9 +58,11 @@ function bgMask(img, bg, x0, y0, w, h, tol) {
   return m;
 }
 
-function cut(img, bg, x0, y0, w, h, mode) {
+function cut(img, bg, x0, y0, w, h, spec) {
+  // 'solid' or 'solid:<tol>' (a lower tolerance keeps dark clothing that sits near the sheet's background colour).
+  const [mode, tolStr] = String(spec).split(':');
   const out = Buffer.alloc(w * h * 4);
-  const m = mode === 'solid' ? bgMask(img, bg, x0, y0, w, h, 26) : null;
+  const m = mode === 'solid' ? bgMask(img, bg, x0, y0, w, h, Number(tolStr ?? 26)) : null;
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
     const i = ((y0 + y) * img.w + x0 + x) * 4, o = (y * w + x) * 4, d = img.data;
     if (mode === 'solid') {

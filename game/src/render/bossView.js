@@ -5,6 +5,7 @@ import { SHEET } from '../config.js';
 import { TAU } from '../geometry.js';
 import { sx, SHEET_BOTTOM } from './camera.js';
 import { drawSprite, hasSprite } from './sprites.js';
+import { currentTeam } from '../match.js';
 
 const SWAP_AT = 0.75; // seconds into the crack animation (render/crack.js BURST_AT)
 
@@ -33,7 +34,11 @@ export function drawBossFigure(ctx, scene) {
   ctx.beginPath();
   ctx.ellipse(x - 10, feet - 6, 120, 20, 0, 0, TAU);
   ctx.fill();
-  // Facing left, down the sheet toward the thrower.
-  drawSprite(ctx, broken ? 'boss_cracked' : 'boss_full', x, feet, broken ? h * 0.96 : h);
+  // Facing left, down the sheet toward the thrower. On his own turn (until he cracks) he takes up his
+  // broom and raises a hand to call the line for his Frost Thralls.
+  const calling = !broken && hasSprite('boss_sweep') && m.phase !== 'over' && m.phase !== 'endScore' && currentTeam(m) === 'rival'
+    && (m.phase === 'aim' || (m.phase === 'running' && m.shot?.team === 'rival') || m.phase === 'skill');
+  if (calling) drawSprite(ctx, 'boss_sweep', x + 10, feet, h * 0.96);
+  else drawSprite(ctx, broken ? 'boss_cracked' : 'boss_full', x, feet, broken ? h * 0.96 : h);
   ctx.restore();
 }

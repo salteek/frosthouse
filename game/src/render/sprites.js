@@ -17,7 +17,7 @@ const NAMES = [
   'skill_bolt', 'skill_thunder', 'skill_gale', 'skill_lock', 'el_fire', 'el_lightning', 'el_hail',
   'fx_lightning', 'fx_spear', 'fx_fireburst', 'fx_hailstone', 'fx_frostring',
   'wind_0', 'wind_1', 'wind_2', 'wind_3',
-  'boss_full', 'boss_cracked', 'boss_bust', 'spike_a', 'spike_b', 'ridge_a', 'crack_radial', 'crack_shards',
+  'boss_full', 'boss_cracked', 'boss_sweep', 'boss_bust', 'spike_a', 'spike_b', 'ridge_a', 'crack_radial', 'crack_shards',
   'stone_ruby', 'stone_amber', 'stone_coral', 'stone_ivory', 'hero_ruby', 'hero_amber', 'hero_coral', 'hero_ivory',
   'bd_mirror.jpg', 'bd_pine.jpg', 'bd_windy.jpg', 'bd_thaw.jpg', 'bd_aurora.jpg',
 ];
@@ -60,9 +60,32 @@ export function spriteCanvas(name, h) {
   return (small[key] = c);
 }
 
+// The boss's Frost Thralls: his minions are the rival curlers turned to ice, a cold blue-white tint of
+// the painted sprite made once and kept. Drawn with drawSprite under the name `thrall:<sprite>`.
+function thrall(name) {
+  const key = `thrall:${name}`;
+  if (cache[key] !== undefined) return cache[key];
+  const im = cache[name];
+  if (!im || typeof document === 'undefined') return null;
+  const c = document.createElement('canvas');
+  c.width = im.width; c.height = im.height;
+  const g = c.getContext('2d');
+  g.filter = 'grayscale(1) sepia(1) hue-rotate(165deg) saturate(1.6) brightness(1.25) contrast(1.1)';
+  g.drawImage(im, 0, 0);
+  g.filter = 'none';
+  // Frost on top: a pale wash on the lit parts, so they read as ice rather than people.
+  g.globalCompositeOperation = 'source-atop';
+  const grad = g.createLinearGradient(0, 0, 0, c.height);
+  grad.addColorStop(0, 'rgba(220,248,255,0.35)');
+  grad.addColorStop(1, 'rgba(120,190,255,0.15)');
+  g.fillStyle = grad;
+  g.fillRect(0, 0, c.width, c.height);
+  return (cache[key] = c);
+}
+
 // Draw a sprite `h` pixels tall. Anchor (ax, ay) is a fraction of its box: the default is its feet.
 export function drawSprite(ctx, name, x, y, h, o = {}) {
-  const im = cache[name];
+  const im = name.startsWith('thrall:') ? thrall(name.slice(7)) : cache[name];
   if (!im) return false;
   const w = (im.width * h) / im.height;
   ctx.save();

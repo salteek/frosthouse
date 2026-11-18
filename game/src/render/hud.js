@@ -359,9 +359,10 @@ function drawShotPanel(ctx, scene, time) {
       ctx.stroke();
       ctx.restore();
     }
-    const msg = empty ? (mine ? 'OUT OF BREATH! the stone runs free' : `${m.rival.short} sweepers are spent`)
+    const crew = m.boss && !m.boss.cracked ? 'Frost Thralls' : `${m.rival.short} sweepers`;
+    const msg = empty ? (mine ? 'OUT OF BREATH! the stone runs free' : `${crew} are spent`)
       : scene.sweeping ? (low ? 'ALMOST SPENT! sweep only if it needs it' : 'SWEEPING! farther and straighter')
-      : mine ? 'Hold SPACE or the mouse to sweep' : `${m.rival.short} sweepers ready`;
+      : mine ? 'Hold SPACE or the mouse to sweep' : `${crew} ready`;
     text(ctx, msg, nx, BOTTOM + 84, { size: 12, weight: 800, color: empty || (low && scene.sweeping) ? '#ff8080' : scene.sweeping ? PALETTE.good : PALETTE.inkSoft });
   } else {
     text(ctx, 'RELEASE', nx, BOTTOM + 22, { size: 12, weight: 900, color: PALETTE.inkSoft });

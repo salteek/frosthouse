@@ -189,11 +189,18 @@ export function stageShot(game, shot, seed) {
     const thrown = Number(new URLSearchParams(globalThis.location?.search ?? '').get('n') ?? 4);
     for (let i = 0; i < thrown; i++) autoThrow(scene, 0.85);
     m.streak = 2;
-    deliver(m, 'player', executeShot(chooseShot(m, 'player', m.rng), 0.97, 1, m.rng));
+    // &team=rival stages the rival's throw instead (n even); &team=rivalaim holds the rival's aim.
+    const team = new URLSearchParams(globalThis.location?.search ?? '').get('team');
+    if (team === 'rivalaim') { m.phase = 'aim'; scene.thinkTimer = 99; game.play = scene; game.mode = 'play'; game.save = { best: 18240, trophies: 1, runs: 6, lastRuns: [] }; return; }
+    if (team === 'rival') deliver(m, 'rival', executeShot(chooseShot(m, 'rival', m.rng), 0.97, 1, m.rng));
+    else deliver(m, 'player', executeShot(chooseShot(m, 'player', m.rng), 0.97, 1, m.rng));
     const sweep = { ...quietInput, isDown: (k) => k === 'Space' };
     let guard = 0;
     const stopAt = Number(new URLSearchParams(globalThis.location?.search ?? '').get('at') ?? 24.2);
-    while (m.phase === 'running' && m.shot && m.shot.x < stopAt && guard++ < 6000) updatePlay(scene, 1 / 60, m.shot.x > 21 ? sweep : quietInput);
+    while (m.phase === 'running' && m.shot && m.shot.x < stopAt && guard++ < 6000) {
+      if (team === 'rival') { m.rivalSweeping = true; m.sweepCheck = 1; }
+      updatePlay(scene, 1 / 60, m.shot.x > 21 && team !== 'rival' ? sweep : quietInput);
+    }
     game.play = scene;
     game.mode = 'play';
     game.save = { best: 18240, trophies: 1, runs: 6, lastRuns: [] };

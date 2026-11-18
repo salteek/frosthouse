@@ -1294,5 +1294,17 @@
     ],
     "mode": "glow",
     "scale": 0.4
+  },
+  {
+    "name": "boss_sweep",
+    "sheet": "game design/18-nov/Frost_giant_character_sprite_sheet_c4f1b12a_2K.jpg",
+    "box": [
+      940,
+      120,
+      830,
+      1300
+    ],
+    "mode": "solid:12",
+    "scale": 0.45
   }
 ]
