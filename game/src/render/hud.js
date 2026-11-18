@@ -124,7 +124,7 @@ function drawScoreboard(ctx, m) {
 // The final's boss bar, hung under the top panels: The Glacier's RESOLVE, split into his three phases.
 function drawBossBar(ctx, m, time) {
   const b = m.boss;
-  const x = 392, y = 106, w = 492, h = 80;
+  const x = 392, y = 106, w = 492, h = 88;
   const col = b.cracked ? '#9fb4d8' : ['#5fb7ea', '#b8f0ff', '#c4a8ff'][b.phase - 1];
   panel(ctx, x, y, w, h, { radius: 12, glow: b.cracked ? undefined : col, fillTop: 'rgba(16,22,52,0.95)', fill: 'rgba(10,14,36,0.95)' });
   chip(ctx, 'BOSS', x + 12, y + 17, { fill: '#7a2bd6', size: 10, h: 18 });
@@ -175,7 +175,7 @@ function drawBossBar(ctx, m, time) {
   }
   // Your own Resolve, chipped by his points and good shots by the same rules (boss.js hurtPlayer).
   {
-    const ny = y + 64, nx = x + 112, nw = w - 160, nf = b.nerve / 100;
+    const ny = y + 72, nx = x + 112, nw = w - 160, nf = b.nerve / 100;
     text(ctx, 'YOUR RESOLVE', x + 12, ny + 9, { size: 11, weight: 900, color: b.broken ? PALETTE.bad : '#ffb3b8' });
     roundRect(ctx, nx, ny, nw, 9, 4.5);
     ctx.fillStyle = 'rgba(255,255,255,0.08)';
@@ -269,19 +269,21 @@ function drawRivalCard(ctx, m) {
   else drawSprite(ctx, portraitFor(r), x + w - 30, 99, 88);
   chip(ctx, r.style.toUpperCase(), x + w - 62, 49, { align: 'right', fill: r.dark, size: 10, h: 18 });
   text(ctx, `“${r.motto}”`, x + 22, 72, { size: 11, weight: 600, color: PALETTE.inkSoft, font: 'Georgia, serif' });
-  // Stones left for each side.
+  // Stones left for each side, kept left of the portrait.
+  let rowX = 0;
   ['player', 'rival'].forEach((team, i) => {
     const left = stonesLeft(m, team);
     const cols = teamColours(team, m.rival);
-    const bx = x + 22 + i * 172;
-    text(ctx, team === 'player' ? 'YOU' : r.short, bx, 93, { size: 10, weight: 900, color: PALETTE.inkSoft });
+    const bx = i === 0 ? x + 22 : rowX;
+    const lw = text(ctx, team === 'player' ? 'YOU' : r.short, bx, 93, { size: 10, weight: 900, color: PALETTE.inkSoft });
     for (let k = 0; k < m.stonesPerTeam; k++) {
       ctx.globalAlpha = k < left ? 1 : 0.18;
       ctx.fillStyle = cols[0];
       ctx.beginPath();
-      ctx.arc(bx + 76 + k * 14, 89, 5, 0, TAU);
+      ctx.arc(bx + lw + 10 + k * 12, 89, 4.5, 0, TAU);
       ctx.fill();
     }
+    rowX = bx + lw + 10 + m.stonesPerTeam * 12 + 14;
     ctx.globalAlpha = 1;
   });
 }
@@ -316,14 +318,20 @@ function drawShotPanel(ctx, scene, time) {
     prev = z.upTo;
   });
   const wx = sx0 + scene.aim.weight * sw;
-  ctx.fillStyle = PALETTE.ink;
+  ctx.fillStyle = PALETTE.text;
   ctx.beginPath();
   ctx.moveTo(wx, sy0 - 1);
   ctx.lineTo(wx - 7, sy0 - 11);
   ctx.lineTo(wx + 7, sy0 - 11);
   ctx.closePath();
   ctx.fill();
-  ctx.fillRect(wx - 2, sy0 - 2, 4, 26);
+  // A notch below the bar too, so the needle never covers the zone's name.
+  ctx.beginPath();
+  ctx.moveTo(wx, sy0 + 21);
+  ctx.lineTo(wx - 6, sy0 + 29);
+  ctx.lineTo(wx + 6, sy0 + 29);
+  ctx.closePath();
+  ctx.fill();
   let hx = sx0 + sw - 168;
   hx += keycap(ctx, 'W/S', hx, BOTTOM + 23, { size: 10 }) + 4;
   hx += keycap(ctx, 'WHEEL', hx, BOTTOM + 23, { size: 10 }) + 4;
@@ -401,7 +409,7 @@ function drawShotPanel(ctx, scene, time) {
     ctx.fill();
     ctx.fillStyle = 'rgba(255,255,255,0.92)';
     ctx.fillRect(nx + cw / 2 - (zone * cw) / 2, BOTTOM + 42, zone * cw, 20);
-    text(ctx, 'PERFECT', nx + cw / 2, BOTTOM + 56, { size: 9, weight: 900, align: 'center', color: PALETTE.good });
+    text(ctx, 'PERFECT', nx + cw / 2, BOTTOM + 38, { size: 10, weight: 900, align: 'center', color: '#7dffb4' });
     if (scene.charging) {
       const p = nx + cw / 2 + (scene.needle * cw) / 2;
       ctx.fillStyle = PALETTE.ink;
@@ -430,6 +438,7 @@ function drawBuild(ctx, scene) {
     text(ctx, 'Kit picks and skills from the clubhouse show here.', x + 14, y + 56, { size: 12, color: PALETTE.inkSoft });
     return;
   }
+  if (!items.length) text(ctx, 'No kit yet: win a match to pick one.', x + 14, y + 50, { size: 12, color: PALETTE.inkSoft });
   // Kit names, flowed into at most two lines.
   const names = items.map(({ item, count }) => item.name + (count > 1 ? ` x${count}` : ''));
   const maxW = w - 28;
