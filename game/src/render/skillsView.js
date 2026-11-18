@@ -7,7 +7,7 @@ import { SKILLS, SKILL_BUTTONS, SKILL_KEY_NAMES, skillTargets, skillBlock, skill
 import { currentTeam } from '../match.js';
 import { sx, sy, px } from './camera.js';
 import { SHEET } from '../config.js';
-import { text, callout, keycap } from './ui.js';
+import { text, callout, keycap, roundRect } from './ui.js';
 import { drawSprite, hasSprite } from './sprites.js';
 import { ELEMENTS, chargeFor } from '../combos.js';
 
@@ -203,8 +203,7 @@ export function drawSkillButtons(ctx, scene, time) {
     ctx.fillStyle = 'rgba(10,16,38,0.92)';
     ctx.strokeStyle = def.color;
     ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.roundRect(tx, ty, tw, 84, 12);
+    roundRect(ctx, tx, ty, tw, 84, 12);
     ctx.fill();
     ctx.stroke();
     text(ctx, `${def.name.toUpperCase()}  ·  LEVEL ${slot.level}`, tx + 14, ty + 22, { size: 13, weight: 900, color: def.color });
@@ -478,8 +477,7 @@ export function drawComboTrack(ctx, scene, time) {
   ctx.fillStyle = 'rgba(8,14,34,0.62)';
   ctx.strokeStyle = live.length ? 'rgba(255,170,80,0.7)' : 'rgba(150,200,255,0.25)';
   ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.roundRect(x0, y0, 150, 54, 12);
+  roundRect(ctx, x0, y0, 150, 54, 12);
   ctx.fill();
   ctx.stroke();
   text(ctx, spent ? 'COMBO USED THIS END' : live.length ? 'STONE CHARGED' : 'STREAK COMBO', x0 + 10, y0 + 14, { size: 9, weight: 900, color: live.length ? '#ffc070' : '#9fb4d8' });
@@ -498,8 +496,7 @@ export function drawComboTrack(ctx, scene, time) {
   // Frost energy: six crystals, filled by good shots, spent on skills.
   const e = energyOf(m), ey = y0 + 62;
   ctx.fillStyle = 'rgba(8,14,34,0.62)';
-  ctx.beginPath();
-  ctx.roundRect(x0, ey, 150, 26, 10);
+  roundRect(ctx, x0, ey, 150, 26, 10);
   ctx.fill();
   text(ctx, 'ENERGY', x0 + 10, ey + 17, { size: 9, weight: 900, color: '#9fd8ff' });
   for (let i = 0; i < MAX_ENERGY; i++) {

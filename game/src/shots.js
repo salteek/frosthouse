@@ -115,6 +115,9 @@ export function stageShot(game, shot, seed) {
     scene.match.bounty = { id: 'clear', progress: 2, done: true, failed: false, t: 2 };
     // Hold the frame a third of a second after the call, while the confetti is still in the air.
     for (let i = 0; i < 20; i++) updatePlay(scene, 1 / 60, quietInput);
+    // A clean cover: no control hints over the ice, no energy floater crossing the hog line.
+    scene.coverShot = true;
+    scene.fx.floaters = scene.fx.floaters.filter((f) => !/ENERGY/.test(f.text));
     game.play = scene;
     game.mode = 'play';
     game.save = { best: 18240, trophies: 1, runs: 6, lastRuns: [] };

@@ -7,7 +7,8 @@ import { RIVALS } from '../rivals.js';
 import { currentTeam, stonesLeft, total } from '../match.js';
 import { weightName } from '../scenes/play.js';
 import { kitItems } from '../tournament.js';
-import { panel, text, chip, bar, keycap, roundRect, formatScore, FONT_TITLE, callout, twinkle } from './ui.js';
+import { SKILLS } from '../skills.js';
+import { panel, text, chip, bar, keycap, heading, roundRect, formatScore, FONT_TITLE, callout, twinkle } from './ui.js';
 import { drawSprite, portraitFor, crestFor, drawCover } from './sprites.js';
 import { drawStone, teamColours } from './stones.js';
 import { drawKitIcon, trophy } from './icons.js';
@@ -23,10 +24,10 @@ export function drawMatchHud(ctx, scene, time, best) {
   drawScorePanel(ctx, scene.run, best, m, time);
   drawRivalCard(ctx, m);
   drawShotPanel(ctx, scene, time);
-  drawSheetMap(ctx, m);
+  drawBuild(ctx, scene);
   if (m.boss) drawBossBar(ctx, m, time);
   // The controls stay on screen between throws, not only while aiming, so the scheme is always in view.
-  if ((m.phase === 'aim' || m.phase === 'settle') && scene.intro <= 0 && cinemaAmount(scene) < 0.05) drawHintPills(ctx);
+  if (!scene.coverShot && (m.phase === 'aim' || m.phase === 'settle') && scene.intro <= 0 && cinemaAmount(scene) < 0.05) drawHintPills(ctx);
   if (m.lastCall && m.phase === 'settle') drawCall(ctx, m.lastCall, m);
   if (m.phase === 'endScore' && m.endResult) drawEndSummary(ctx, m, time);
   if (m.phase === 'over') drawMatchOver(ctx, scene, time);
@@ -126,11 +127,10 @@ function drawBossBar(ctx, m, time) {
   const x = 392, y = 106, w = 492, h = 80;
   const col = b.cracked ? '#9fb4d8' : ['#5fb7ea', '#b8f0ff', '#c4a8ff'][b.phase - 1];
   panel(ctx, x, y, w, h, { radius: 12, glow: b.cracked ? undefined : col, fillTop: 'rgba(16,22,52,0.95)', fill: 'rgba(10,14,36,0.95)' });
-  drawSprite(ctx, 'boss_bust', x - 4, y + h + 2, 74, { ax: 1, alpha: b.cracked ? 0.55 : 1 });
   chip(ctx, 'BOSS', x + 12, y + 17, { fill: '#7a2bd6', size: 10, h: 18 });
-  text(ctx, 'THE GLACIER · RESOLVE', x + 64, y + 22, { size: 13, weight: 900, color: '#eaf4ff' });
+  text(ctx, 'THE GLACIER · RESOLVE', x + 64, y + 23, { size: 15, weight: 900, color: '#eaf4ff' });
   const tag = b.cracked ? 'CRACKED · powers gone' : `PHASE ${b.phase}/3 · ${bossPhase(b).name}`;
-  text(ctx, tag, x + w - 12, y + 22, { size: 13, weight: 900, align: 'right', color: col });
+  text(ctx, tag, x + w - 12, y + 23, { size: 15, weight: 900, align: 'right', color: col });
   // The bar: three segments, notched at the phase thresholds; it flashes white for a moment when hit.
   const bx = x + 12, by = y + 30, bw = w - 24, bh = 14;
   roundRect(ctx, bx, by, bw, bh, 7);
@@ -156,7 +156,7 @@ function drawBossBar(ctx, m, time) {
     ctx.fillStyle = 'rgba(10,14,36,0.95)';
     ctx.fillRect(bx + bw * t - 1.5, by - 2, 3, bh + 4);
   }
-  text(ctx, `${Math.ceil(b.resolve)}`, bx + Math.max(bh, bw * frac) - 6, by + 11, { size: 11, weight: 900, align: 'right', color: '#0a1024' });
+  text(ctx, `${Math.ceil(b.resolve)}`, bx + Math.max(bh, bw * frac) - 6, by + 12, { size: 12, weight: 900, align: 'right', color: '#0a1024' });
   if (b.cracked) {
     // The empty bar is split by glowing cracks.
     ctx.save();
@@ -176,7 +176,7 @@ function drawBossBar(ctx, m, time) {
   // Your own Resolve, chipped by his points and good shots by the same rules (boss.js hurtPlayer).
   {
     const ny = y + 64, nx = x + 112, nw = w - 160, nf = b.nerve / 100;
-    text(ctx, 'YOUR RESOLVE', x + 12, ny + 8, { size: 10, weight: 900, color: b.broken ? PALETTE.bad : '#ffb3b8' });
+    text(ctx, 'YOUR RESOLVE', x + 12, ny + 9, { size: 11, weight: 900, color: b.broken ? PALETTE.bad : '#ffb3b8' });
     roundRect(ctx, nx, ny, nw, 9, 4.5);
     ctx.fillStyle = 'rgba(255,255,255,0.08)';
     ctx.fill();
@@ -190,13 +190,13 @@ function drawBossBar(ctx, m, time) {
       if (b.nerveHitT < 0.35) { ctx.globalAlpha = 1 - b.nerveHitT / 0.35; ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.globalAlpha = 1; }
     }
     for (const t of [1 / 3, 2 / 3]) { ctx.fillStyle = 'rgba(10,14,36,0.95)'; ctx.fillRect(nx + nw * t - 1, ny - 1, 2, 11); }
-    text(ctx, b.broken ? 'BROKEN' : `${Math.ceil(b.nerve)}`, x + w - 12, ny + 8, { size: 10, weight: 900, align: 'right', color: b.broken ? PALETTE.bad : '#ffb3b8' });
+    text(ctx, b.broken ? 'BROKEN' : `${Math.ceil(b.nerve)}`, x + w - 12, ny + 9, { size: 12, weight: 900, align: 'right', color: b.broken ? PALETTE.bad : '#ffb3b8' });
   }
   // The three phases named under their thirds of the bar (the bar drains right to left, so phase 1 is on the right).
   BOSS_PHASES.forEach((ph, i) => {
     const cx = bx + bw * (1 - (i + 0.5) / 3);
     const on = !b.cracked && b.phase === ph.n;
-    text(ctx, `${ph.n} · ${ph.name}`, cx, y + 57, { size: 10, weight: 900, align: 'center', color: on ? col : 'rgba(200,215,240,0.4)' });
+    text(ctx, `${ph.n} · ${ph.name}`, cx, y + 58, { size: 11, weight: 900, align: 'center', color: on ? col : 'rgba(200,215,240,0.4)' });
   });
 }
 
@@ -409,9 +409,49 @@ function drawShotPanel(ctx, scene, time) {
     }
     text(ctx, scene.charging ? 'Let go on PERFECT!' : yourTurn ? 'Hold on the ice, let go on PERFECT' : 'Wait for your turn', nx, BOTTOM + 84, { size: 12, weight: 800, color: scene.charging ? PALETTE.player : PALETTE.inkSoft });
   }
-  if (scene.run.owned.length) {
-    kitItems(scene.run).slice(0, 6).forEach(({ item }, i) => drawKitIcon(ctx, item.icon, 846 - i * 24, BOTTOM + 84, 18));
+}
+
+// Your build, named: every kit pick and skill you carry into this match, in the bottom-right board.
+function drawBuild(ctx, scene) {
+  const x = 876;
+  const w = VIEW.w - x - 14;
+  const y = BOTTOM;
+  const run = scene.run;
+  panel(ctx, x, y, w, VIEW.h - BOTTOM - 8);
+  const items = kitItems(run);
+  const skills = run.kit.skills ?? [];
+  heading(ctx, `YOUR BUILD · ${items.length} KIT · ${skills.length} SKILL${skills.length === 1 ? '' : 'S'}`, x + 14, y + 23, { size: 13, color: '#bfe6ff' });
+  let hx = x + w - 138;
+  hx += keycap(ctx, 'ESC', hx, y + 22, { size: 9 }) + 3;
+  hx += text(ctx, 'pause', hx, y + 21, { size: 10, weight: 700, color: PALETTE.inkSoft }) + 6;
+  hx += keycap(ctx, 'M', hx, y + 22, { size: 9 }) + 3;
+  text(ctx, 'mute', hx, y + 21, { size: 10, weight: 700, color: PALETTE.inkSoft });
+  if (!items.length && !skills.length) {
+    text(ctx, 'Kit picks and skills from the clubhouse show here.', x + 14, y + 56, { size: 12, color: PALETTE.inkSoft });
+    return;
   }
+  // Kit names, flowed into at most two lines.
+  const names = items.map(({ item, count }) => item.name + (count > 1 ? ` x${count}` : ''));
+  const maxW = w - 28;
+  let lineY = y + 46, cx = x + 14, lines = 1;
+  names.forEach((n, i) => {
+    const label = n + (i < names.length - 1 ? ' · ' : '');
+    ctx.font = `700 13px ${'"DIN Alternate", "Barlow", Roboto, system-ui, sans-serif'}`;
+    const tw = ctx.measureText(label).width;
+    if (cx + tw > x + 14 + maxW && cx > x + 14) {
+      if (lines === 2) return;
+      lines++; lineY += 18; cx = x + 14;
+    }
+    cx += text(ctx, label, cx, lineY, { size: 13, color: '#eef5ff' });
+  });
+  // Skills with their levels on tags in the skill's own colour.
+  let sx = x + 14;
+  const sy = y + 84;
+  skills.forEach((sk) => {
+    const def = SKILLS[sk.id];
+    sx += text(ctx, def.name, sx, sy, { size: 13, color: '#ffffff' }) + 6;
+    sx += chip(ctx, `L${sk.level}`, sx, sy - 5, { fill: def.color, size: 11, h: 17, pad: 10 }) + 14;
+  });
 }
 
 function drawSheetMap(ctx, m) {
@@ -419,7 +459,7 @@ function drawSheetMap(ctx, m) {
   const w = VIEW.w - x - 14;
   const y = BOTTOM;
   panel(ctx, x, y, w, VIEW.h - BOTTOM - 8);
-  text(ctx, 'THE SHEET', x + 14, y + 20, { size: 11, weight: 900, color: PALETTE.inkSoft });
+  heading(ctx, 'THE SHEET', x + 14, y + 22, { size: 12 });
   const k = (w - 28) / (SHEET.end + 1);
   const mx = (sxm) => x + 14 + (sxm + 1) * k;
   const my = (sym) => y + 52 + sym * k;

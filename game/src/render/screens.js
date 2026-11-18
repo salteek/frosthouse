@@ -10,7 +10,7 @@ import { RIVALS } from '../rivals.js';
 import { VENUES, venueById } from '../venues.js';
 import { KIT } from '../kit.js';
 import { DIFFICULTIES, kitItems, grade } from '../tournament.js';
-import { panel, text, chip, button, hints, roundRect, inside, formatScore, FONT_TITLE, nightSky, callout, shade } from './ui.js';
+import { panel, text, chip, button, hints, heading, plate, roundRect, inside, formatScore, FONT_TITLE, nightSky, callout, shade } from './ui.js';
 import { drawSprite, hasSprite, portraitFor, crestFor, KIT_RIM, drawCover } from './sprites.js';
 import { drawStone } from './stones.js';
 import { drawKitIcon, trophy, star } from './icons.js';
@@ -107,7 +107,7 @@ export function drawTitle(ctx, state, time, save) {
     text(ctx, d.note, bx + 84, by + 51, { size: 10, weight: 800, align: 'center', color: dark ? '#2b5684' : 'rgba(255,255,255,0.82)', raw: true });
     hit(hits, `diff:${d.id}`, bx, by, 168, 64);
   });
-  text(ctx, 'LAST RUNS', px0 + 24, ry + 244, { size: 11, weight: 900, color: PALETTE.inkSoft });
+  heading(ctx, 'LAST RUNS', px0 + 24, ry + 246, { size: 12 });
   const last = save.lastRuns.length ? save.lastRuns : [{ outcome: null }];
   last.forEach((r, i) => {
     const label = r.outcome == null ? 'No runs yet: the lake is waiting' : r.outcome === 'champion' ? `CHAMPION · ${formatScore(r.score)}` : `OUT IN ROUND ${r.round + 1} · ${formatScore(r.score)}`;
@@ -116,7 +116,7 @@ export function drawTitle(ctx, state, time, save) {
 
   // The rinks waiting on the ladder.
   panel(ctx, 40, 512, 1200, 120);
-  text(ctx, 'THE LADDER', VIEW.w - 64, 538, { size: 12, weight: 900, color: PALETTE.inkSoft, align: 'right' });
+  heading(ctx, 'THE LADDER', VIEW.w - 64, 540, { size: 13, align: 'right' });
   RIVALS.forEach((r, i) => {
     const cx = 120 + i * 196;
     if (!drawSprite(ctx, portraitFor(r), cx - 2, 628, 104)) drawStone(ctx, cx, 578, time * 0.5 + i, [r.colour, r.dark], { radius: 15 });
@@ -168,7 +168,7 @@ export function drawClubhouse(ctx, state, time, run) {
 
   // Ladder.
   panel(ctx, 40, 116, 400, 520);
-  text(ctx, 'THE FROST LAKE OPEN', 60, 146, { size: 15, weight: 900, color: PALETTE.accent });
+  heading(ctx, 'THE FROST LAKE OPEN', 60, 148, { size: 16, color: '#8fd3ff' });
   RIVALS.forEach((r, i) => {
     const y = 178 + i * 76;
     const res = run.results.filter((x) => x.rival === r.id);
@@ -191,7 +191,7 @@ export function drawClubhouse(ctx, state, time, run) {
   // Kit offer.
   panel(ctx, 464, 116, 776, 400);
   if (run.offer) {
-    text(ctx, 'PICK YOUR KIT', 488, 150, { size: 22, weight: 900, font: FONT_TITLE });
+    heading(ctx, 'PICK YOUR KIT', 488, 152, { size: 22, color: PALETTE.text });
     text(ctx, 'One upgrade for the rest of the Open. Click a card or press 1, 2 or 3.', 488, 174, { size: 14, weight: 700, color: PALETTE.inkSoft });
     run.offer.forEach((k, i) => {
       const x = 488 + i * 248;
@@ -229,12 +229,12 @@ export function drawClubhouse(ctx, state, time, run) {
 
   // Current kit.
   panel(ctx, 464, 532, 776, 104);
-  text(ctx, 'YOUR KIT', 488, 560, { size: 12, weight: 900, color: PALETTE.inkSoft });
+  heading(ctx, 'YOUR KIT', 488, 562, { size: 12 });
   const items = kitItems(run);
   if (!items.length) text(ctx, 'Nothing yet but a borrowed broom.', 488, 600, { size: 15, weight: 700, color: PALETTE.inkSoft });
   // Skills, at the right of the tray: badge, name and level.
   const skills = run.kit.skills ?? [];
-  if (skills.length) text(ctx, 'SKILLS', 1000, 560, { size: 12, weight: 900, color: PALETTE.inkSoft });
+  if (skills.length) heading(ctx, 'SKILLS', 1000, 562, { size: 12 });
   skills.forEach((sk, i) => {
     const x = 1016 + i * 110;
     drawSkillBadge(ctx, sk.id, x + 4, 598, 20, { glow: 10 });
@@ -291,7 +291,7 @@ export function drawResults(ctx, state, time, run, saveInfo) {
     text(ctx, `Beaten by ${by.name}`, 189, 300, { size: 16, weight: 900, align: 'center' });
     text(ctx, `“${by.motto}”`, 189, 326, { size: 13, weight: 600, align: 'center', font: 'Georgia, serif', color: PALETTE.inkSoft });
   }
-  text(ctx, `YOUR KIT (${run.owned.length} picked)`, 44, 376, { size: 12, weight: 900, color: PALETTE.inkSoft });
+  heading(ctx, `YOUR KIT · ${run.owned.length} PICKED`, 44, 378, { size: 13 });
   const items = kitItems(run);
   if (!items.length) text(ctx, 'No kit picked this run', 44, 404, { size: 14, weight: 700, color: PALETTE.inkSoft });
   items.slice(0, 8).forEach(({ item, count }, i) => {
@@ -313,7 +313,7 @@ export function drawResults(ctx, state, time, run, saveInfo) {
     ctx.fill();
     text(ctx, gr, 450, 236, { size: 62, weight: 900, align: 'center', color: '#ffffff', font: FONT_TITLE });
   }
-  text(ctx, 'SCORE', 524, 182, { size: 13, weight: 900, color: PALETTE.inkSoft });
+  heading(ctx, 'SCORE', 524, 184, { size: 14 });
   text(ctx, formatScore(run.score), 522, 246, { size: 64, weight: 900, color: PALETTE.ink, font: FONT_TITLE });
   if (s0.glacierBroken) chip(ctx, 'FEAT · GLACIER BREAKER', 524, 270, { fill: '#7a2bd6', size: 12, h: 24 });
   if (saveInfo.newBest) chip(ctx, 'NEW BEST!', 1232, 196, { align: 'right', fill: PALETTE.good, size: 18, h: 36 });
@@ -334,9 +334,7 @@ export function drawResults(ctx, state, time, run, saveInfo) {
   tiles.forEach(([label, value, col], i) => {
     const x = 394 + (i % 4) * 212;
     const y = 290 + Math.floor(i / 4) * 92;
-    button(ctx, '', x, y, 200, 80, { fill: col === PALETTE.ink ? '#24345c' : col, radius: 12 });
-    text(ctx, label, x + 100, y + 26, { size: 12, weight: 900, align: 'center', color: 'rgba(255,255,255,0.85)' });
-    text(ctx, value, x + 100, y + 62, { size: value.length > 10 ? 18 : 28, weight: 900, align: 'center', color: '#ffffff' });
+    plate(ctx, label, value, x, y, 200, 80, col === PALETTE.ink ? '#24345c' : col, { size: value.length > 10 ? 20 : 30 });
   });
 
   const hov = state.hover;
@@ -355,14 +353,13 @@ export function drawResults(ctx, state, time, run, saveInfo) {
   text(ctx, `${run.difficulty.toUpperCase()} · seed ${run.seed}`, 1232, 622, { size: 11, weight: 700, color: PALETTE.inkSoft, align: 'right' });
   text(ctx, 'M · MUTE', 1146, 528, { size: 13, weight: 900, color: PALETTE.inkSoft, align: 'center' });
   const lr = saveInfo.lastRuns ?? [];
-  text(ctx, 'LAST RUNS', 394, 598, { size: 11, weight: 900, color: PALETTE.inkSoft });
-  let lx = 470;
+  let lx = 394 + heading(ctx, 'LAST RUNS', 394, 600, { size: 12 }) + 12;
   lr.forEach((r) => {
     lx += chip(ctx, r.outcome === 'champion' ? `CHAMPION ${formatScore(r.score)}` : `OUT R${r.round + 1} · ${formatScore(r.score)}`, lx, 594, { fill: r.outcome === 'champion' ? PALETTE.good : PALETTE.bad, size: 11, h: 22 }) + 8;
   });
 
   // The road through the ladder, match by match.
-  text(ctx, 'ROAD THROUGH THE OPEN', 44, 548, { size: 12, weight: 900, color: PALETTE.inkSoft });
+  heading(ctx, 'ROAD THROUGH THE OPEN', 44, 550, { size: 13 });
   run.results.slice(-8).forEach((res, i) => {
     const rv = RIVALS.find((r) => r.id === res.rival);
     const x = 44 + (i % 2) * 150;
