@@ -153,7 +153,12 @@ export function drawSheet(ctx, cam, venue, time) {
     bg.addColorStop(1, '#2b5285');
     ctx.fillStyle = bg;
     ctx.fillRect(bank, top - 6, VIEW.w - bank, bottom - top + 12);
-    if (venue.bossFinal) { /* the boss stands on the bank (render/bossView.js) */ } else if (!drawSprite(ctx, 'banner_open', Math.min(bank + 46, VIEW.w - 40), (top + bottom) / 2, bottom - top - 50, { ay: 0.5 })) {
+    // The banner is sized to fit the strip of bank in view and centred on it, so it is never cut by the
+    // screen edge or tucked under the ice (the bank is only ~70 px wide when the camera is at rest).
+    const edge = right + 4;
+    const room = VIEW.w - edge - 8;
+    const bh = Math.min(bottom - top - 50, (room * 706) / 197);
+    if (venue.bossFinal) { /* the boss stands on the bank (render/bossView.js) */ } else if (room > 36 && !drawSprite(ctx, 'banner_open', edge + room / 2, (top + bottom) / 2, bh, { ay: 0.5 })) {
       ctx.fillStyle = PALETTE.player;
       ctx.fillRect(bank + 26, top + 30, 34, bottom - top - 60);
       ctx.save();
