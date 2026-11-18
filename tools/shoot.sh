@@ -6,7 +6,7 @@ C="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 OUT=${1:-screenshots}
 T=$(mktemp -d)
 i=1
-for s in play crack clubhouse results; do
+for s in play title clubhouse results; do
   q="shot=$s"; [ "$s" = crack ] && q="shot=crack&at=1.0"
   "$C" --headless=new --disable-gpu --hide-scrollbars --user-data-dir="$T/p$s" --window-size=1280,720 --virtual-time-budget=9000 --screenshot="$T/$s.png" "http://127.0.0.1:${PORT:-8081}/index.html?$q&nc=$$" >/dev/null 2>&1
   # Step the quality down until the JPEG fits the hand-in gate's 256 KiB per screenshot.

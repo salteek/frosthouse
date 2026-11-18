@@ -65,7 +65,7 @@ export function drawTitle(ctx, state, time, save) {
 
   if (!drawSprite(ctx, 'logo', VIEW.w / 2, 18, 112, { ay: 0 })) logo(ctx, VIEW.w / 2, 112, 92);
   text(ctx, 'A CURLING TOURNAMENT ON THE FROZEN LAKES', VIEW.w / 2, 154, { size: 17, weight: 900, align: 'center', color: '#8fd3ff' });
-  text(ctx, '6 rival rinks · 5 frozen lakes · 4 stone sets · 4 skills · 14 kit upgrades · elemental combos', VIEW.w / 2, 178, { size: 15, weight: 700, align: 'center', color: PALETTE.inkSoft });
+  text(ctx, '6 rival rinks · a frost-giant boss final · 4 stone sets · 4 skills · 14 kit upgrades · end bounties · elemental combos', VIEW.w / 2, 178, { size: 15, weight: 700, align: 'center', color: PALETTE.inkSoft });
 
   // How the game works, as labelled rules.
   const rx = 40;

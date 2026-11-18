@@ -67,7 +67,8 @@ export function stageShot(game, shot, seed) {
   }
   if (shot === 'title') {
     game.mode = 'title';
-    game.save = { best: 0, trophies: 0, runs: 0, lastRuns: [] };
+    // A player who has been here before: a best score, a trophy and their last few runs.
+    game.save = { best: 18240, trophies: 1, runs: 6, lastRuns: [{ outcome: 'champion', round: 6, score: 18240 }, { outcome: 'eliminated', round: 4, score: 6120 }, { outcome: 'eliminated', round: 1, score: 2210 }] };
     game.hover = 'play';
     return;
   }
