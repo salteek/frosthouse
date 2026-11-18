@@ -304,6 +304,7 @@ export function drawResults(ctx, state, time, run, saveInfo) {
   // Right: grade, score, tiles.
   panel(ctx, 370, 138, 886, 500);
   const gr = grade(run);
+  const s0 = run.stats;
   // The painted medal for the grade; the drawn disc only if it did not load.
   if (!drawSprite(ctx, `grade_${gr}`, 450, 214, 124, { ay: 0.5 })) {
     ctx.fillStyle = gr === 'S' || gr === 'A' ? PALETTE.gold : PALETTE.accent;
@@ -314,6 +315,7 @@ export function drawResults(ctx, state, time, run, saveInfo) {
   }
   text(ctx, 'SCORE', 524, 182, { size: 13, weight: 900, color: PALETTE.inkSoft });
   text(ctx, formatScore(run.score), 522, 246, { size: 64, weight: 900, color: PALETTE.ink, font: FONT_TITLE });
+  if (s0.glacierBroken) chip(ctx, 'FEAT · GLACIER BREAKER', 524, 270, { fill: '#7a2bd6', size: 12, h: 24 });
   if (saveInfo.newBest) chip(ctx, 'NEW BEST!', 1232, 196, { align: 'right', fill: PALETTE.good, size: 18, h: 36 });
   else chip(ctx, `BEST ${formatScore(saveInfo.best)}`, 1232, 196, { align: 'right', fill: PALETTE.ink, size: 14, h: 30 });
 
@@ -325,7 +327,7 @@ export function drawResults(ctx, state, time, run, saveInfo) {
     ['POINTS', `${s.pointsFor} – ${s.pointsAgainst}`, PALETTE.player],
     ['PERFECT RELEASES', String(s.perfects), PALETTE.good],
     ['TAKEOUTS', String(s.takeouts), '#ff7a45'],
-    ['ON THE BUTTON', String(s.buttons), PALETTE.gold],
+    ['BOUNTIES', `${s.bounties ?? 0} / ${s.bountiesPosted ?? 0}`, PALETTE.gold],
     ['BEST STREAK', `x${Math.min(4, Math.max(1, s.bestStreak ?? 0))}`, '#7f95ad'],
     ['BEST SHOT', s.bestCall ? s.bestCall.text.replace('!', '') : '—', PALETTE.ink],
   ];

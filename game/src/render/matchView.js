@@ -14,6 +14,7 @@ import { drawSprite } from './sprites.js';
 import { drawFxLayer, drawTrails, drawSnowSmoke } from '../fx.js';
 import { sx as toX, sy as toY } from './camera.js';
 import { callout } from './ui.js';
+import { drawBountyPanel, drawBossIntent } from './bountyView.js';
 import { drawSkillButtons, drawSkillStrike, drawLocks, drawComboTrack, drawChargedStone, drawArcs } from './skillsView.js';
 
 export function drawMatch(ctx, scene, time, best) {
@@ -79,6 +80,8 @@ export function drawMatch(ctx, scene, time, best) {
   drawMatchHud(ctx, scene, time, best);
   if (scene.intro <= 0 && m.phase !== 'over') {
     drawComboTrack(ctx, scene, time);
+    drawBountyPanel(ctx, scene, time);
+    drawBossIntent(ctx, scene, time);
     drawSkillButtons(ctx, scene, time);
   }
 }

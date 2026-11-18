@@ -13,6 +13,7 @@ import { spawnBurst, addFloater, updateParticles } from '../particles.js';
 import { impact, celebrate, sparkle, sweepSpray, updateFx, recordTrails, emitSnowSmoke, addFlash, burstSprites } from '../fx.js';
 import { sx, sy } from '../render/camera.js';
 import { updateBoss, BOSS_PHASES } from '../boss.js';
+import { updateBounty, bountyDef } from '../bounties.js';
 import { startCrack, updateCrack, crackBurstDue, crackTips } from '../render/crack.js';
 import { clamp } from '../geometry.js';
 
@@ -53,6 +54,7 @@ function previewPath(scene) {
   return r.path;
 }
 
+const GLACIER_BREAKER = 1000;
 const AIM_LIMIT = SHEET.width / 2 + 0.25;
 
 export function weightName(w) {
@@ -73,6 +75,7 @@ export function updatePlay(scene, dt, input) {
   emitSnowSmoke(scene, dt);
   if (scene.skillBanner) scene.skillBanner.t += dt;
   updateBoss(scene.match, dt);
+  updateBounty(scene.match, dt);
   updateCrack(scene, dt);
   if (crackBurstDue(scene)) {
     // Shards burst off the button and off the end of every main crack.
@@ -278,12 +281,22 @@ function consumeEvents(scene) {
       scene.fx.floaters[scene.fx.floaters.length - 1].onShow = () => sfx.thunder();
       addFloater(scene.fx, 640, 296, ph.note, '#eaf4ff', 20, 2.4, wait);
       holdForEnd(scene, 2);
+    } else if (e.type === 'bounty') {
+      run.score += e.points;
+      sfx.cheer(0.7);
+      const name = bountyDef(e.id).name;
+      addFloater(scene.fx, 360, 312, `BOUNTY: ${name} +${e.points}`, PALETTE.gold, 22, 2.0, m.phase === 'endScore' ? 0.9 : 0.6);
+      if (e.resolve) addFloater(scene.fx, 360, 340, `-${e.resolve} RESOLVE · +1 ENERGY`, '#c4a8ff', 16, 2.0, m.phase === 'endScore' ? 0.9 : 0.6);
+      else addFloater(scene.fx, 360, 340, '+1 ENERGY', '#6fd3ff', 16, 2.0, m.phase === 'endScore' ? 0.9 : 0.6);
     } else if (e.type === 'bossCracked') {
       sfx.cheer(1.4);
+      // GLACIER BREAKER: a big bonus for taking his powers away, paid even if he breaks on the last point.
+      run.score += Math.round(GLACIER_BREAKER * run.kit.scoreMul);
+      run.stats.glacierBroken = true;
       scene.cinematic = 3.8; // nobody throws until the crack has played out (render/crack.js)
       addFloater(scene.fx, 640, 250, 'THE GLACIER CRACKS!', PALETTE.gold, 44, 2.4, 1.5);
       scene.fx.floaters[scene.fx.floaters.length - 1].onShow = () => { startCrack(scene); sfx.crack(); };
-      addFloater(scene.fx, 640, 296, 'His powers are gone', '#eaf4ff', 20, 2.4, 1.5);
+      addFloater(scene.fx, 640, 296, `His powers are gone · GLACIER BREAKER +${Math.round(GLACIER_BREAKER * run.kit.scoreMul)}`, '#eaf4ff', 20, 2.4, 1.5);
       holdForEnd(scene, 2);
     } else if (e.type === 'combo') {
       const el = e.el;

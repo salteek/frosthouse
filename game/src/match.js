@@ -7,6 +7,7 @@ import { callShot } from './callouts.js';
 import { chooseShot, executeShot, rivalWantsSweep } from './ai.js';
 import { applySkillHit, gainEnergy } from './skills.js';
 import { chargeFor, comboOnHit } from './combos.js';
+import { postBounty, bountyProgress, judgeBounty } from './bounties.js';
 import { createBoss, layObstacles, hurtBoss, RESOLVE_PER_POINT, RESOLVE_PER_CALL, bossSkillMod } from './boss.js';
 
 const R = SHEET.stoneR;
@@ -52,6 +53,7 @@ export function createMatch({ rival, venue, kit, difficulty, rng, ends = MATCH.e
     boss: createBoss(rival, venue), // the final's boss state (boss.js), or null
   };
   if (m.boss) layObstacles(m);
+  postBounty(m);
   return m;
 }
 
@@ -100,6 +102,7 @@ export function playerThrow(m, { aimY, weight, turn, releaseError }) {
   if (perfect) err = 0;
   m.perfect = perfect;
   if (perfect) m.stats.perfects++;
+  if (perfect) bountyProgress(m, 'perfect');
   const aim = aimY + err * THROW.aimError * SHEET.tee;
   const speed = speedFromWeight(weight) * (1 + err * THROW.weightError);
   return deliver(m, 'player', { aimY: aim, speed, turn });
@@ -163,6 +166,7 @@ export function updateSkill(m, dt) {
   sk.rest = (sk.rest ?? 0) + dt;
   if (sk.rest < 0.35) return;
   const out = m.stones.filter((st) => st.out && st.team !== sk.team).length;
+  if (sk.team === 'player') bountyProgress(m, 'out', out);
   m.stones = m.stones.filter((st) => !st.out);
   m.events.push({ type: 'skillDone', id: sk.id, out });
   m.skill = null;
@@ -178,6 +182,7 @@ function finishThrow(m) {
     m.events.push({ type: 'hog', stone: s });
   }
   const call = callShot(m.before, m.stones, s.id, s.team);
+  const knocked = m.stones.filter((st) => st.out && st !== s && st.team !== s.team).length;
   m.lastCall = { ...call, team: s.team, t: 0, perfect: s.team === 'player' && m.perfect, streak: 1 };
   if (s.team === 'player') {
     m.events.push({ type: 'energy', team: 'player', gain: gainEnergy(m, 'player', call, m.perfect) });
@@ -186,6 +191,8 @@ function finishThrow(m) {
     const mult = Math.min(SCORE.streakMax, Math.max(1, m.streak));
     m.lastCall.streak = mult;
     m.stats.bestStreak = Math.max(m.stats.bestStreak, m.streak);
+    bountyProgress(m, 'out', knocked);
+    bountyProgress(m, 'streak', m.streak);
     m.stats.calls.push(call.text);
     if (!m.stats.bestCall || call.points > m.stats.bestCall.points) m.stats.bestCall = call;
     if (call.text.includes('TAKEOUT') || call.text.includes('HIT')) m.stats.takeouts++;
@@ -222,6 +229,7 @@ function scoreEnd(m) {
   if (res.team) m.hammer = res.team === 'player' ? 'rival' : 'player';
   m.endResult = { ...res, tea, stolen, t: 0 };
   m.events.push({ type: 'endScored', result: m.endResult });
+  judgeBounty(m, res);
   if (res.team === 'player') hurtBoss(m, res.points * RESOLVE_PER_POINT);
   if (res.team === 'player') m.events.push({ type: 'points', points: Math.round(res.points * SCORE.pointPerStone * m.kit.scoreMul) });
 }
@@ -247,5 +255,6 @@ export function nextEnd(m) {
     const fresh = layObstacles(m);
     if (fresh.length) m.events.push({ type: 'bossObstacles', names: fresh });
   }
+  postBounty(m);
   return true;
 }

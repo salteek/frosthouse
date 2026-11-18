@@ -110,6 +110,8 @@ export function stageShot(game, shot, seed) {
     }
     const { scene, run: r } = best;
     game.run = r;
+    // The end's bounty has just paid out: two of theirs knocked out.
+    scene.match.bounty = { id: 'clear', progress: 2, done: true, failed: false, t: 2 };
     // Hold the frame a third of a second after the call, while the confetti is still in the air.
     for (let i = 0; i < 20; i++) updatePlay(scene, 1 / 60, quietInput);
     game.play = scene;
@@ -250,6 +252,7 @@ export function stageShot(game, shot, seed) {
     giveKit(run, picks);
     run.score = 15890;
     run.stats.hogged = 1;
+    Object.assign(run.stats, { bounties: 14, bountiesPosted: 24, glacierBroken: true });
     game.saveInfo = { best: 15890, newBest: true, lastRuns: [{ outcome: 'champion', round: 6, score: 15890 }, { outcome: 'eliminated', round: 3, score: 6120 }, { outcome: 'eliminated', round: 1, score: 2210 }] };
     game.mode = 'results';
     game.hover = 'again';
