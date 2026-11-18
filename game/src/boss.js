@@ -4,6 +4,11 @@
 //   Phase 2, WHITEOUT     (66–34): a blizzard wind pushes every stone, hers too; snow drifts blow onto the sheet.
 //   Phase 3, FROZEN HEART (33–1): he also carries Frost Lock, paid with energy like yours; ice spikes guard the house.
 //   CRACKED               (0): his powers are gone, the obstacles melt and his throws go shaky.
+// The final is a tug of war, and the same rules run both ways. You carry a Resolve bar too, and his points
+// and good shots chip it exactly as yours chip his (and it wears to 66/33 by ends 2/3, as his does).
+// Whoever is broken first hands the other the SHATTER POINT (+1 on the scoreboard, in the end it happens)
+// and the hammer for the next end; once per side per match. Losing his powers when he cracks is his alone:
+// that is the boss's phase mechanic, and you have no phases to lose.
 // The obstacles are laid at the start of each end (never mid-throw), stack up phase by phase, hit his stones
 // as hard as yours, and never sit on the centre line, so a straight draw to the button is always there.
 // His Resolve also wears down as the final goes on (at most 66 from end 2, 33 from end 3), so every final
@@ -22,7 +27,7 @@ const WHITEOUT_WIND = -0.0028;
 
 export function createBoss(rival, venue) {
   if (!rival.boss) return null;
-  return { resolve: 100, phase: 1, cracked: false, hitT: 9, baseVenue: { ...venue, bossFinal: true }, obstacles: null, laidPhase: 0 };
+  return { resolve: 100, nerve: 100, nerveHitT: 9, phase: 1, cracked: false, hitT: 9, baseVenue: { ...venue, bossFinal: true }, obstacles: null, laidPhase: 0 };
 }
 
 export const SPIKE_R = 0.18;
@@ -32,8 +37,9 @@ export const SPIKE_R = 0.18;
 export function layObstacles(m) {
   const b = m.boss;
   if (!b) return [];
-  if (b.cracked) { b.obstacles = null; applyPhase(m); return []; }
   const cap = m.end >= 3 ? 33 : m.end >= 2 ? 66 : 100;
+  if (b.nerve > cap) hurtPlayer(m, b.nerve - cap);
+  if (b.cracked) { b.obstacles = null; applyPhase(m); return []; }
   if (b.resolve > cap) hurtBoss(m, b.resolve - cap);
   const rng = m.rng;
   const side = rng.chance(0.5) ? 1 : -1;
@@ -71,6 +77,7 @@ export function hurtBoss(m, amount) {
   m.events.push({ type: 'bossHurt', amount });
   if (b.resolve <= 0) {
     b.cracked = true;
+    b.shatter = 'pending'; // match.js adds the point when the end is counted, then hands you the hammer
     b.melting = b.obstacles; // drawn melting away by the crack animation (render/crack.js)
     b.obstacles = null;
     m.venue = b.baseVenue;
@@ -82,6 +89,19 @@ export function hurtBoss(m, amount) {
     b.phase = p;
     applyPhase(m);
     m.events.push({ type: 'bossPhase', phase: p });
+  }
+}
+
+// Chip your Resolve (the mirror of hurtBoss). At zero you are broken: the boss is owed the Shatter Point.
+export function hurtPlayer(m, amount) {
+  const b = m.boss;
+  if (!b || b.broken || amount <= 0) return;
+  b.nerve = Math.max(0, b.nerve - amount);
+  b.nerveHitT = 0;
+  if (b.nerve <= 0) {
+    b.broken = true;
+    b.rivalShatter = 'pending';
+    m.events.push({ type: 'playerBroken' });
   }
 }
 
@@ -107,8 +127,9 @@ export function rivalPowers(m) {
 }
 
 // A cracked boss throws worse.
-export const bossSkillMod = (m) => (m.boss?.cracked ? -0.14 : 0);
+export const bossSkillMod = (m) => (m.boss?.cracked ? -0.18 : 0);
+export const SHATTER_POINTS = 1;
 
 export function updateBoss(m, dt) {
-  if (m.boss) m.boss.hitT += dt;
+  if (m.boss) { m.boss.hitT += dt; m.boss.nerveHitT += dt; }
 }

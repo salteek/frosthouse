@@ -8,7 +8,7 @@ import { chooseShot, executeShot, rivalWantsSweep } from './ai.js';
 import { applySkillHit, gainEnergy } from './skills.js';
 import { chargeFor, comboOnHit } from './combos.js';
 import { postBounty, bountyProgress, judgeBounty } from './bounties.js';
-import { createBoss, layObstacles, hurtBoss, RESOLVE_PER_POINT, RESOLVE_PER_CALL, bossSkillMod } from './boss.js';
+import { createBoss, layObstacles, hurtBoss, RESOLVE_PER_POINT, RESOLVE_PER_CALL, bossSkillMod, SHATTER_POINTS, hurtPlayer } from './boss.js';
 
 const R = SHEET.stoneR;
 
@@ -202,6 +202,7 @@ function finishThrow(m) {
     m.events.push({ type: 'call', call, mult, points: Math.round((call.points + (m.perfect ? SCORE.perfectRelease : 0)) * m.kit.scoreMul * mult), x: s.x, y: s.y });
   } else {
     gainEnergy(m, 'rival', call, false);
+    hurtPlayer(m, RESOLVE_PER_CALL[call.tone] ?? 0);
     m.rivalStreak = call.tone === 'great' || call.tone === 'good' ? (m.rivalStreak ?? 0) + 1 : 0;
     m.events.push({ type: 'rivalCall', call });
   }
@@ -231,6 +232,29 @@ function scoreEnd(m) {
   m.events.push({ type: 'endScored', result: m.endResult });
   judgeBounty(m, res);
   if (res.team === 'player') hurtBoss(m, res.points * RESOLVE_PER_POINT);
+  if (res.team === 'rival') hurtPlayer(m, res.points * RESOLVE_PER_POINT);
+  // The Shatter Point: breaking the boss is worth a point on the board, in the end he broke.
+  if (m.boss?.shatter === 'pending') {
+    m.boss.shatter = 'paid';
+    m.boss.shatterEnd = m.end;
+    m.scores.player[m.scores.player.length - 1] += SHATTER_POINTS;
+    m.stats.pointsFor += SHATTER_POINTS;
+    m.endResult.shatter = SHATTER_POINTS;
+    m.hammer = 'player'; // and you take the hammer for the next end
+    m.events.push({ type: 'shatterPoint', points: SHATTER_POINTS });
+  }
+  // The same rule the other way: if he broke your Resolve, the point and the hammer are his.
+  if (m.boss?.rivalShatter === 'pending') {
+    m.boss.rivalShatter = 'paid';
+    m.boss.rivalShatterEnd = m.end;
+    m.scores.rival[m.scores.rival.length - 1] += SHATTER_POINTS;
+    m.stats.pointsAgainst += SHATTER_POINTS;
+    m.endResult.rivalShatter = SHATTER_POINTS;
+    // Both broken in the same end: the points cancel out and the hammer follows the normal rule.
+    if (m.endResult.shatter) m.hammer = res.team === 'player' ? 'rival' : res.team === 'rival' ? 'player' : m.hammer;
+    else m.hammer = 'rival';
+    m.events.push({ type: 'shatterPoint', points: SHATTER_POINTS, team: 'rival' });
+  }
   if (res.team === 'player') m.events.push({ type: 'points', points: Math.round(res.points * SCORE.pointPerStone * m.kit.scoreMul) });
 }
 

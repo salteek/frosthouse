@@ -62,7 +62,7 @@ export function drawCinemaOverlay(ctx, scene) {
     text(ctx, `THE FINAL · END ${scene.match.end}`, 640, bar - 26, { size: 13, weight: 900, align: 'center', color: '#8fa6cc' });
     const line = t < BURST ? 'THE ICE GIVES WAY…' : 'HRIMGAR IS BROKEN';
     text(ctx, line, 640, 720 - bar + 36, { size: 26, weight: 900, align: 'center', color: '#dff6ff', font: FONT_TITLE });
-    if (t >= BURST) text(ctx, 'his powers are gone · his obstacles melt · his throws go shaky', 640, 720 - bar + 58, { size: 12, weight: 800, align: 'center', color: '#8fa6cc' });
+    if (t >= BURST) text(ctx, '+1 shatter point · your hammer next end · his powers are gone', 640, 720 - bar + 58, { size: 12, weight: 800, align: 'center', color: '#8fa6cc' });
     ctx.restore();
   }
 }

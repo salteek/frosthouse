@@ -110,6 +110,8 @@ function drawScoreboard(ctx, m) {
     m.scores[team].forEach((pts, i) => {
       const cx = x + 168 + i * cell + cell / 2;
       text(ctx, String(pts), cx, ry, { size: 18, weight: 900, align: 'center', color: pts > 0 ? c0 : 'rgba(255,255,255,0.28)', raw: true });
+      // The end you broke the Glacier in carries a violet shatter mark (its point is in the number).
+      if (m.boss && (team === 'player' ? m.boss.shatterEnd : m.boss.rivalShatterEnd) === i + 1) text(ctx, '✦', cx + 10, ry - 12, { size: 11, weight: 900, align: 'center', color: '#c4a8ff', raw: true });
     });
     roundRect(ctx, x + w - 50, ry - 21, 40, 28, 8);
     ctx.fillStyle = c0;
@@ -121,7 +123,7 @@ function drawScoreboard(ctx, m) {
 // The final's boss bar, hung under the top panels: The Glacier's RESOLVE, split into his three phases.
 function drawBossBar(ctx, m, time) {
   const b = m.boss;
-  const x = 392, y = 106, w = 492, h = 62;
+  const x = 392, y = 106, w = 492, h = 80;
   const col = b.cracked ? '#9fb4d8' : ['#5fb7ea', '#b8f0ff', '#c4a8ff'][b.phase - 1];
   panel(ctx, x, y, w, h, { radius: 12, glow: b.cracked ? undefined : col, fillTop: 'rgba(16,22,52,0.95)', fill: 'rgba(10,14,36,0.95)' });
   drawSprite(ctx, 'boss_bust', x - 4, y + h + 2, 74, { ax: 1, alpha: b.cracked ? 0.55 : 1 });
@@ -170,6 +172,25 @@ function drawBossBar(ctx, m, time) {
       ctx.stroke();
     }
     ctx.restore();
+  }
+  // Your own Resolve, chipped by his points and good shots by the same rules (boss.js hurtPlayer).
+  {
+    const ny = y + 64, nx = x + 112, nw = w - 160, nf = b.nerve / 100;
+    text(ctx, 'YOUR RESOLVE', x + 12, ny + 8, { size: 10, weight: 900, color: b.broken ? PALETTE.bad : '#ffb3b8' });
+    roundRect(ctx, nx, ny, nw, 9, 4.5);
+    ctx.fillStyle = 'rgba(255,255,255,0.08)';
+    ctx.fill();
+    if (nf > 0) {
+      roundRect(ctx, nx, ny, Math.max(9, nw * nf), 9, 4.5);
+      const g2 = ctx.createLinearGradient(nx, 0, nx + nw, 0);
+      g2.addColorStop(0, '#ff4d6d');
+      g2.addColorStop(1, '#ff9a6b');
+      ctx.fillStyle = g2;
+      ctx.fill();
+      if (b.nerveHitT < 0.35) { ctx.globalAlpha = 1 - b.nerveHitT / 0.35; ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.globalAlpha = 1; }
+    }
+    for (const t of [1 / 3, 2 / 3]) { ctx.fillStyle = 'rgba(10,14,36,0.95)'; ctx.fillRect(nx + nw * t - 1, ny - 1, 2, 11); }
+    text(ctx, b.broken ? 'BROKEN' : `${Math.ceil(b.nerve)}`, x + w - 12, ny + 8, { size: 10, weight: 900, align: 'right', color: b.broken ? PALETTE.bad : '#ffb3b8' });
   }
   // The three phases named under their thirds of the bar (the bar drains right to left, so phase 1 is on the right).
   BOSS_PHASES.forEach((ph, i) => {
@@ -447,7 +468,7 @@ function drawCall(ctx, call, m) {
   const colour = call.tone === 'great' ? PALETTE.gold : call.tone === 'good' ? PALETTE.accent : call.tone === 'bad' ? PALETTE.bad : PALETTE.inkSoft;
   ctx.save();
   ctx.globalAlpha = a;
-  ctx.translate(640, m.boss ? 226 : 200);
+  ctx.translate(640, m.boss ? 250 : 200);
   ctx.scale(scale, scale);
   ctx.rotate(tilt);
   const who = call.team === 'player' ? '' : `${m.rival.short}: `;
@@ -485,6 +506,9 @@ function drawEndSummary(ctx, m, time) {
   else head = `${teamName(m, r.team)} ${r.stolen ? 'STEALS' : 'SCORES'} ${r.points}`;
   text(ctx, head, VIEW.w / 2, y + 66, { size: 34, weight: 900, align: 'center', color: r.team ? teamColours(r.team, m.rival)[0] : PALETTE.ink, font: FONT_TITLE });
   text(ctx, `${total(m, 'player')} – ${total(m, 'rival')}   ·   hammer to ${teamName(m, m.hammer)}`, VIEW.w / 2, y + 98, { size: 14, weight: 800, align: 'center', color: PALETTE.inkSoft });
+  if (r.shatter && r.rivalShatter) chip(ctx, 'BOTH BROKEN · +1 SHATTER POINT EACH', VIEW.w / 2, y + 136, { align: 'center', fill: '#4a3a7a', size: 13, h: 28 });
+  else if (r.shatter) chip(ctx, `+${r.shatter} SHATTER POINT · HE BROKE · YOUR HAMMER`, VIEW.w / 2, y + 136, { align: 'center', fill: '#7a2bd6', size: 13, h: 28 });
+  else if (r.rivalShatter) chip(ctx, `+${r.rivalShatter} SHATTER POINT TO ${teamName(m, 'rival')} · YOU BROKE · HIS HAMMER`, VIEW.w / 2, y + 136, { align: 'center', fill: PALETTE.bad, size: 13, h: 28 });
   ctx.restore();
 }
 

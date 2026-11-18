@@ -1,5 +1,5 @@
 // End bounties: every end posts one side goal for your rink. Land it and the crowd pays out: score,
-// one frost energy, and in the final a chip off The Glacier's Resolve. Miss it and nothing is lost,
+// one frost energy. Miss it and nothing is lost,
 // so a bounty is a reason to try the harder shot, never a penalty for playing the end safe.
 // Some are settled live (they tick the moment you do them); the rest are judged when the end is counted.
 
@@ -7,10 +7,8 @@ import { SHEET } from './config.js';
 import { createRng, seedFromString } from './rng.js';
 import { distToButton } from './scoring.js';
 import { MAX_ENERGY, energyOf } from './skills.js';
-import { hurtBoss } from './boss.js';
 
 export const BOUNTY_SCORE = 250;
-export const BOUNTY_RESOLVE = 10;
 
 const FOUR_FOOT = SHEET.rings[2];
 
@@ -69,9 +67,8 @@ function complete(m) {
   b.t = 0;
   m.stats.bounties = (m.stats.bounties ?? 0) + 1;
   (m.energy ??= { player: 0, rival: 0 }).player = Math.min(MAX_ENERGY, energyOf(m) + 1);
-  const resolve = m.boss && !m.boss.cracked ? BOUNTY_RESOLVE : 0;
-  m.events.push({ type: 'bounty', id: b.id, points: Math.round(BOUNTY_SCORE * m.kit.scoreMul), resolve });
-  hurtBoss(m, resolve);
+  // Bounties pay score and energy only: Resolve in the final moves by the same rules for both sides.
+  m.events.push({ type: 'bounty', id: b.id, points: Math.round(BOUNTY_SCORE * m.kit.scoreMul), resolve: 0 });
 }
 
 export function updateBounty(m, dt) {

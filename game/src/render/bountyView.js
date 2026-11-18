@@ -2,7 +2,7 @@
 
 import { TAU } from '../geometry.js';
 import { text } from './ui.js';
-import { bountyDef, BOUNTY_SCORE, BOUNTY_RESOLVE } from '../bounties.js';
+import { bountyDef, BOUNTY_SCORE } from '../bounties.js';
 import { BOSS_PHASES, phaseFor } from '../boss.js';
 
 const X0 = 26, W = 150;
@@ -44,7 +44,7 @@ export function drawBountyPanel(ctx, scene, time) {
     ctx.fill();
   }
   const status = b.done ? 'PAID ✓' : b.failed ? 'MISSED' : def.when === 'end' ? 'at the count' : `${b.progress}/${def.goal}`;
-  const reward = m.boss && !m.boss.cracked ? `+1 energy · -${BOUNTY_RESOLVE} resolve` : '+1 energy';
+  const reward = '+1 energy';
   text(ctx, b.done || b.failed ? status : reward, X0 + 10, y0 + 70, { size: 9, weight: 900, color: b.done ? gold : '#9fb4d8' });
   ctx.restore();
 }
@@ -54,15 +54,15 @@ export function drawBossIntent(ctx, scene, time) {
   const m = scene.match;
   const bs = m.boss;
   if (!bs) return;
-  const y0 = 196, h = 88;
+  const y0 = 182, h = bs.cracked ? 88 : 102;
   const violet = '#c4a8ff';
   ctx.save();
   glass(ctx, X0, y0, W, h, bs.cracked ? 'rgba(150,170,200,0.3)' : 'rgba(196,168,255,0.6)');
   text(ctx, bs.cracked ? 'HRIMGAR · BROKEN' : 'INCOMING · NEXT END', X0 + 10, y0 + 15, { size: 9, weight: 900, color: violet });
   if (bs.cracked) {
     text(ctx, 'NO MORE TRICKS', X0 + 10, y0 + 38, { size: 14, weight: 900, color: '#ffffff' });
-    text(ctx, 'Obstacles melted', X0 + 10, y0 + 56, { size: 10, weight: 700, color: '#b9cbe6' });
-    text(ctx, 'His throws go shaky', X0 + 10, y0 + 72, { size: 10, weight: 700, color: '#b9cbe6' });
+    text(ctx, bs.shatter === 'paid' ? '+1 SHATTER POINT PAID' : '+1 SHATTER POINT', X0 + 10, y0 + 56, { size: 10, weight: 900, color: '#ffc23a' });
+    text(ctx, 'Your hammer · he throws shaky', X0 + 10, y0 + 72, { size: 10, weight: 700, color: '#b9cbe6' });
     ctx.restore();
     return;
   }
@@ -76,5 +76,6 @@ export function drawBossIntent(ctx, scene, time) {
   const extra = np >= 3 ? 'Frost Lock · spikes' : np >= 2 ? 'Blizzard wind' : 'Thunder strike';
   text(ctx, extra, X0 + 10, y0 + 64, { size: 10, weight: 700, color: '#b9cbe6' });
   text(ctx, `${Math.ceil(bs.resolve)} RESOLVE TO CRACK HIM`, X0 + 10, y0 + 80, { size: 9, weight: 900, color: violet });
+  text(ctx, 'BREAK EITHER: +1 & HAMMER', X0 + 10, y0 + 95, { size: 9, weight: 900, color: '#ffc23a' });
   ctx.restore();
 }

@@ -79,7 +79,7 @@ export function drawMatch(ctx, scene, time, best) {
     ctx.fillRect(0, 0, 1280, 720);
     ctx.save();
     ctx.globalAlpha = scene.slowmo;
-    callout(ctx, 'LAST STONE', 640, m.boss ? 214 : 186, 34, { tone: 'violet' }); // below the boss bar in the final
+    callout(ctx, 'LAST STONE', 640, m.boss ? 232 : 186, 34, { tone: 'violet' }); // below the boss bar in the final
     ctx.restore();
   }
   drawMatchHud(ctx, scene, time, best);
